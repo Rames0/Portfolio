@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     metadataBase: new URL('https://ramesh0.com.np'),
     title: {
-        default: "ramesh0 - Ramesh Maharjan | Full Stack Developer | React, Next.js, PHP Expert",
+        default: "Ramesh | Full Stack Developer | React, Next.js, PHP Expert",
         template: "%s | ramesh0"
     },
     description: "ramesh0 (Ramesh Maharjan) - Expert Full Stack Developer from Nepal with 1+ years experience. Specializing in React, Next.js, Laravel, PHP, Python Django, PostgreSQL, MariaDB. Visit ramesh0.com.np for portfolio and contact.",
@@ -46,8 +46,8 @@ export const metadata: Metadata = {
         type: "website",
         locale: "en_US",
         url: "https://ramesh0.com.np",
-        siteName: "ramesh0 - Ramesh Maharjan Portfolio",
-        title: "ramesh0 - Ramesh Maharjan | Full Stack Developer",
+        siteName: "Ramesh Portfolio",
+        title: "Ramesh | Full Stack Developer",
         description: "ramesh0.com.np - Expert Full Stack Developer with 1+ years experience building scalable web applications. Specializing in React, Next.js, Laravel, Python Django, and modern web technologies.",
         images: [
             {
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         site: "@rameshdev",
         creator: "@rameshdev",
-        title: "ramesh0 - Ramesh Maharjan | Full Stack Developer",
+        title: "Ramesh | Full Stack Developer",
         description: "ramesh0.com.np - Expert Full Stack Developer from Nepal with 1+ years experience in React, Next.js, Laravel, Python Django, and modern web technologies.",
         images: ["/Profile.jpeg"],
     },
