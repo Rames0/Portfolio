@@ -136,7 +136,7 @@ const HeroSection = memo(function HeroSection() {
           achievements: [
             "Delivered 6+ major projects with high quality standards",
             "Built scalable POS systems for restaurant management",
-            "Developed multi-language platforms supporting 5+ languages",
+            "Developed multi-language platforms supporting 8+ languages",
             "Improved application performance by 40% through optimization",
             "Implemented CI/CD pipelines reducing deployment time by 60%",
             "Created reusable component libraries and design systems"

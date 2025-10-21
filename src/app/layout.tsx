@@ -21,7 +21,7 @@ export const metadata: Metadata = {
         default: "Ramesh Maharjan - Full Stack Developer | React, Next.js, PHP, Python Expert",
         template: "%s | Ramesh Maharjan"
     },
-    description: "Expert Full Stack Developer from Nepal with 5+ years experience. Specializing in React, Next.js, Laravel, PHP, Python Django, PostgreSQL, MariaDB. Building scalable web applications, POS systems, and enterprise solutions.",
+    description: "Expert Full Stack Developer from Nepal with 1+ years experience. Specializing in React, Next.js, Laravel, PHP, Python Django, PostgreSQL, MariaDB. Building scalable web applications, POS systems, and enterprise solutions.",
     keywords: ["Full Stack Developer", "React Developer", "Next.js Expert", "PHP Laravel Developer", "Python Django", "Web Developer Nepal", "Kathmandu Developer", "PostgreSQL", "MariaDB", "Node.js", "TypeScript", "Tailwind CSS", "REST API", "POS System Developer", "Enterprise Web Applications", "Freelance Developer Nepal"],
     authors: [{ name: "Ramesh Maharjan", url: "https://ramesh0.com.np" }],
     creator: "Ramesh Maharjan",
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
         url: "https://ramesh0.com.np",
         siteName: "Ramesh Maharjan Portfolio",
         title: "Ramesh Maharjan - Full Stack Developer | React, Next.js, PHP Expert",
-        description: "Expert Full Stack Developer with 5+ years experience building scalable web applications. Specializing in React, Next.js, Laravel, Python Django, and modern web technologies.",
+        description: "Expert Full Stack Developer with 1+ years experience building scalable web applications. Specializing in React, Next.js, Laravel, Python Django, and modern web technologies.",
         images: [
             {
                 url: "/Profile.jpeg",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
         site: "@rameshdev",
         creator: "@rameshdev",
         title: "Ramesh Maharjan - Full Stack Developer | React, Next.js, PHP Expert",
-        description: "Expert Full Stack Developer from Nepal with 5+ years experience in React, Next.js, Laravel, Python Django, and modern web technologies.",
+        description: "Expert Full Stack Developer from Nepal with 1+ years experience in React, Next.js, Laravel, Python Django, and modern web technologies.",
         images: ["/Profile.jpeg"],
     },
     alternates: {
