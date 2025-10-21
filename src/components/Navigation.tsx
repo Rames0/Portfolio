@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Home as HomeIcon, User, Code, Briefcase, Rocket, Folder, MessageSquare } from "lucide-react";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState, useEffect } from "react";
 
 interface NavigationProps {
   activeSection: string;
@@ -10,6 +10,8 @@ interface NavigationProps {
 }
 
 const Navigation = memo(function Navigation({ activeSection, scrollToSection }: NavigationProps) {
+  const [showNav, setShowNav] = useState(false);
+
   const navItems = [
     { icon: <HomeIcon className="w-5 h-5" />, id: 'home' },
     { icon: <User className="w-5 h-5" />, id: 'about' },
@@ -23,6 +25,25 @@ const Navigation = memo(function Navigation({ activeSection, scrollToSection }: 
   const handleClick = useCallback((sectionId: string) => {
     scrollToSection(sectionId);
   }, [scrollToSection]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth < 1024) {
+        setShowNav(window.scrollY > 600);
+      } else {
+        setShowNav(true);
+      }
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
+
+  if (!showNav) return null;
 
   return (
     <nav className="hidden lg:flex fixed right-8 top-1/2 -translate-y-1/2 z-50 flex-col gap-6">

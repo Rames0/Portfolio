@@ -32,7 +32,7 @@ const AboutSection = memo(function AboutSection() {
                   <Award className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
                 <h3 className="text-white text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">Experience</h3>
-                <p className="text-gray-300 text-sm sm:text-base">1 year building enterprise applications with modern tech stack</p>
+                <p className="text-gray-300 text-sm sm:text-base">1+ year building enterprise applications with modern tech stack</p>
             </Card>
           </Card3D>
 

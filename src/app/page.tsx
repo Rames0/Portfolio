@@ -76,7 +76,7 @@ const projects = [
         tech: "Laravel, PostgreSQL, Tailwind CSS", 
         url: "",
         type: "Government Portal",
-        image: "/Ambience.png"
+        image: "/placeholder.svg"
     },
     { 
         title: "Sam Maharjan Portfolio",
@@ -203,6 +203,7 @@ const ContactForm = memo(function ContactForm() {
 export default function Home() {
     const [activeSection, setActiveSection] = useState('home');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [showMobileHeader, setShowMobileHeader] = useState(false);
 
     // Optimized scroll handler with throttling
     useEffect(() => {
@@ -220,6 +221,7 @@ export default function Home() {
                         return false;
                     });
                     if (current) setActiveSection(current);
+                    setShowMobileHeader(window.scrollY > 600);
                     ticking = false;
                 });
                 ticking = true;
@@ -250,7 +252,9 @@ export default function Home() {
                 <Navigation activeSection={activeSection} scrollToSection={scrollToSection} />
 
                 {/* Mobile Header */}
-                <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-black/80 backdrop-blur-xl border-b border-zinc-800">
+                <header className={`lg:hidden fixed top-0 left-0 right-0 z-40 bg-black/80 backdrop-blur-xl border-b border-zinc-800 transition-transform duration-300 ${
+                    showMobileHeader ? 'translate-y-0' : '-translate-y-full'
+                }`}>
                     <div className="flex items-center justify-between px-6 py-4">
                         <span className="text-xl font-bold text-emerald-400">RAMESH</span>
                         <button onClick={() => setMobileMenuOpen(true)} className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center hover:border-emerald-400 transition-colors">
@@ -326,10 +330,22 @@ export default function Home() {
                         </div>
 
                         <h2 className="text-5xl md:text-6xl font-light mb-16">
-                            Work <span className="text-emerald-400">Journey</span>
+                            Work & <span className="text-emerald-400">Education</span>
                         </h2>
 
                         <div className="space-y-10">
+                            <Card3D>
+                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
+                                    <div className="flex flex-col md:flex-row md:items-center gap-4">
+                                        <div className="px-4 py-2 bg-gradient-to-r from-blue-400/20 to-purple-400/20 border border-blue-400/30 rounded-full text-blue-400 font-semibold min-w-[150px] text-center shadow-[0_4px_16px_0_rgba(59,130,246,0.2)]">2020 - 2025</div>
+                                        <div className="flex-1">
+                                            <h3 className="text-2xl font-semibold mb-2 text-white">Bachelor in Computer Application</h3>
+                                            <p className="text-gray-300 mb-2">Tribhuvan University</p>
+                                            <p className="text-gray-400">Completed comprehensive computer science education with focus on software development, database management, and web technologies.</p>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Card3D>
                             {experiences.map((exp, i) => (
                                 <Card3D key={i}>
                                     <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
@@ -397,16 +413,16 @@ export default function Home() {
                             </Card3D>
 
                             <Card3D>
-                                <Card className="bg-gradient-to-br from-zinc-950 to-zinc-900 backdrop-blur-xl border-2 border-zinc-700/50 p-8 h-full shadow-2xl shadow-zinc-900/50 hover:border-purple-500/50 transition-colors">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center mb-6 shadow-[0_8px_24px_0_rgba(168,85,247,0.4)]">
+                                <Card className="bg-gradient-to-br from-zinc-950 to-zinc-900 backdrop-blur-xl border-2 border-zinc-700/50 p-8 h-full shadow-2xl shadow-zinc-900/50 hover:border-teal-500/50 transition-colors">
+                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mb-6 shadow-[0_8px_24px_0_rgba(20,184,166,0.4)]">
                                         <Users className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-white">Team Leadership</h3>
-                                    <p className="text-gray-300 mb-4">Leading development teams and managing complex projects from concept to deployment</p>
+                                    <h3 className="text-2xl font-semibold mb-4 text-white">UI/UX Design</h3>
+                                    <p className="text-gray-300 mb-4">Creating intuitive and visually appealing user interfaces with modern design principles</p>
                                     <ul className="space-y-2 text-sm text-gray-400">
-                                        <li>• Project Management</li>
-                                        <li>• Code Reviews</li>
-                                        <li>• Mentoring</li>
+                                        <li>• Responsive Design</li>
+                                        <li>• User Experience</li>
+                                        <li>• Prototyping</li>
                                     </ul>
                                 </Card>
                             </Card3D>
@@ -421,14 +437,14 @@ export default function Home() {
                             </Card3D>
                             <Card3D>
                                 <Card className="bg-white/5 backdrop-blur-xl border border-blue-400/30 p-6 text-center rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.2)] hover:shadow-[0_12px_48px_0_rgba(59,130,246,0.4)] transition-all duration-300">
-                                    <div className="text-4xl font-bold text-blue-400 mb-2">1</div>
+                                    <div className="text-4xl font-bold text-blue-400 mb-2">1+</div>
                                     <p className="text-gray-300">Year Experience</p>
                                 </Card>
                             </Card3D>
                             <Card3D>
                                 <Card className="bg-white/5 backdrop-blur-xl border border-purple-400/30 p-6 text-center rounded-2xl shadow-[0_8px_32px_0_rgba(168,85,247,0.2)] hover:shadow-[0_12px_48px_0_rgba(168,85,247,0.4)] transition-all duration-300">
-                                    <div className="text-4xl font-bold text-purple-400 mb-2">7</div>
-                                    <p className="text-gray-300">Team Members</p>
+                                    <div className="text-4xl font-bold text-purple-400 mb-2">100%</div>
+                                    <p className="text-gray-300">Client Satisfaction</p>
                                 </Card>
                             </Card3D>
                             <Card3D>
@@ -523,7 +539,7 @@ export default function Home() {
                             </Card>
 
                             <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 h-full rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-                                    <h3 className="text-2xl font-semibold mb-6">Contact Info</h3>
+                                    <h3 className="text-emerald-400 text-2xl font-semibold mb-6">Contact Info</h3>
                                     <div className="space-y-10">
                                         <div className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
                                             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_4px_16px_0_rgba(16,185,129,0.4)]">

@@ -191,31 +191,31 @@ const HeroSection = memo(function HeroSection() {
         { 
           title: "Ambience Infosys Corporate Website", 
           desc: "Modern IT company website with service showcase, client testimonials, and contact management system.",
-          tech: "Next.js, Tailwind CSS, Node.js, PostgreSQL",
+          tech: "Next.js, Tailwind CSS, Node.js, MariaDB",
           impact: "Increased client inquiries by 150%"
         },
         { 
           title: "Kansai Japanese Language Institute", 
           desc: "Educational platform with course management, student enrollment, and progress tracking system.",
-          tech: "Laravel, MariaDB, Tailwind CSS, JavaScript",
+          tech: "Next.js, MariaDB, Tailwind CSS, Node.js",
           impact: "Streamlined course management for 500+ students"
         },
         { 
           title: "Rakmina Consultancy Multi-language Platform", 
           desc: "Comprehensive consultancy platform supporting multiple languages for international opportunities.",
-          tech: "Laravel, PostgreSQL, Multi-language Support",
+          tech: "Next.js, MariaDb, Multi-language Support",
           impact: "Expanded reach to 10+ countries"
         },
         { 
           title: "Lucazsoft Restaurant POS System", 
           desc: "Complete restaurant management system with inventory, sales tracking, and reporting features.",
-          tech: "Laravel, MariaDB, Node.js, Real-time Updates",
+          tech: "Next.js, MariaDB, Node.js, Real-time Updates",
           impact: "Reduced order processing time by 70%"
         },
         { 
           title: "GWP Government Portal", 
           desc: "Comprehensive government web portal managing all government-related services and information.",
-          tech: "Laravel, PostgreSQL, Tailwind CSS, Security",
+          tech: "Html, Css, Java Script, Grails, Security",
           impact: "Digitized 50+ government services"
         }
       ];
@@ -332,7 +332,7 @@ const HeroSection = memo(function HeroSection() {
           transition={{ delay: 0.5, duration: 0.8 }}
           className="text-5xl md:text-7xl lg:text-8xl font-light mb-8 leading-tight"
         >
-          Say Hi from <span className="text-emerald-400 font-bold">Ramesh</span>,<br />
+          Hi, I'm <span className="text-emerald-400 font-bold">Ramesh</span><br />
           <span className="bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
             Full-Stack Developer
           </span>
@@ -344,9 +344,9 @@ const HeroSection = memo(function HeroSection() {
           transition={{ delay: 0.8, duration: 0.8 }}
           className="text-gray-400 text-lg leading-relaxed max-w-2xl mb-12"
         >
-          Full-stack developer at NIRC Nepal specializing in React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript. 
+          Full-stack developer at NIRC (Nepal Incubation & Research Center) specializing in React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript.
           Delivering enterprise solutions including government portals, POS systems, and multi-language platforms. 
-          1 year of experience with 6+ major projects deployed and maintained.
+          1+ year of experience with 6+ major projects deployed and maintained.
         </motion.p>
 
         <motion.div 

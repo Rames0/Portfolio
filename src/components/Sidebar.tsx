@@ -16,7 +16,7 @@ const Sidebar = memo(function Sidebar() {
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="hidden lg:block fixed left-8 top-32 w-80 z-50"
+      className="relative lg:fixed mx-auto lg:mx-0 mt-16 mb-8 lg:mt-0 lg:mb-0 w-full max-w-sm lg:max-w-none lg:w-80 lg:left-8 lg:top-32 z-50"
     >
       <Card className="bg-white/5 backdrop-blur-xl border border-emerald-400/30 rounded-3xl p-6 flex flex-col shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] relative z-10">
         <div className="text-center mb-6">
