@@ -89,10 +89,10 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
         <head>
-            <link rel="icon" href="/favicon.ico" sizes="any" />
-            <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
-            <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
-            <link rel="apple-touch-icon" href="/icon-192.png" />
+            <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+            <link rel="icon" href="/favicon.svg" sizes="192x192" />
+            <link rel="icon" href="/favicon.svg" sizes="512x512" />
+            <link rel="apple-touch-icon" href="/favicon.svg" />
             <meta name="theme-color" content="#10b981" />
             <Script
                 id="schema-org"
