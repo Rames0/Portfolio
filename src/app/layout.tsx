@@ -18,11 +18,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     metadataBase: new URL('https://ramesh0.com.np'),
     title: {
-        default: "Ramesh Maharjan - Full Stack Developer | React, Next.js, PHP, Python Expert",
-        template: "%s | Ramesh Maharjan"
+        default: "ramesh0 - Ramesh Maharjan | Full Stack Developer | React, Next.js, PHP Expert",
+        template: "%s | ramesh0"
     },
-    description: "Expert Full Stack Developer from Nepal with 1+ years experience. Specializing in React, Next.js, Laravel, PHP, Python Django, PostgreSQL, MariaDB. Building scalable web applications, POS systems, and enterprise solutions.",
-    keywords: ["Full Stack Developer", "React Developer", "Next.js Expert", "PHP Laravel Developer", "Python Django", "Web Developer Nepal", "Kathmandu Developer", "PostgreSQL", "MariaDB", "Node.js", "TypeScript", "Tailwind CSS", "REST API", "POS System Developer", "Enterprise Web Applications", "Freelance Developer Nepal"],
+    description: "ramesh0 (Ramesh Maharjan) - Expert Full Stack Developer from Nepal with 1+ years experience. Specializing in React, Next.js, Laravel, PHP, Python Django, PostgreSQL, MariaDB. Visit ramesh0.com.np for portfolio and contact.",
+    keywords: ["ramesh0", "ramesh0.com.np", "Ramesh Maharjan", "Full Stack Developer", "React Developer", "Next.js Expert", "PHP Laravel Developer", "Python Django", "Web Developer Nepal", "Kathmandu Developer", "PostgreSQL", "MariaDB", "Node.js", "TypeScript", "Tailwind CSS", "REST API", "POS System Developer", "Enterprise Web Applications", "Freelance Developer Nepal"],
     authors: [{ name: "Ramesh Maharjan", url: "https://ramesh0.com.np" }],
     creator: "Ramesh Maharjan",
     publisher: "Ramesh Maharjan",
@@ -46,9 +46,9 @@ export const metadata: Metadata = {
         type: "website",
         locale: "en_US",
         url: "https://ramesh0.com.np",
-        siteName: "Ramesh Maharjan Portfolio",
-        title: "Ramesh Maharjan - Full Stack Developer | React, Next.js, PHP Expert",
-        description: "Expert Full Stack Developer with 1+ years experience building scalable web applications. Specializing in React, Next.js, Laravel, Python Django, and modern web technologies.",
+        siteName: "ramesh0 - Ramesh Maharjan Portfolio",
+        title: "ramesh0 - Ramesh Maharjan | Full Stack Developer",
+        description: "ramesh0.com.np - Expert Full Stack Developer with 1+ years experience building scalable web applications. Specializing in React, Next.js, Laravel, Python Django, and modern web technologies.",
         images: [
             {
                 url: "/Profile.jpeg",
@@ -62,16 +62,15 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         site: "@rameshdev",
         creator: "@rameshdev",
-        title: "Ramesh Maharjan - Full Stack Developer | React, Next.js, PHP Expert",
-        description: "Expert Full Stack Developer from Nepal with 1+ years experience in React, Next.js, Laravel, Python Django, and modern web technologies.",
+        title: "ramesh0 - Ramesh Maharjan | Full Stack Developer",
+        description: "ramesh0.com.np - Expert Full Stack Developer from Nepal with 1+ years experience in React, Next.js, Laravel, Python Django, and modern web technologies.",
         images: ["/Profile.jpeg"],
     },
     alternates: {
         canonical: "https://ramesh0.com.np",
     },
     verification: {
-        google: "your-google-verification-code",
-        yandex: "your-yandex-verification-code",
+        google: "tBq-YUyYidrrfTTz27-QIGCEGhowp57xv6X4szIFoc8",
     },
     category: "technology",
 };
@@ -103,6 +102,7 @@ export default function RootLayout({
                         "@context": "https://schema.org",
                         "@type": "Person",
                         "name": "Ramesh Maharjan",
+                        "alternateName": "ramesh0",
                         "url": "https://ramesh0.com.np",
                         "image": "https://ramesh0.com.np/Profile.jpeg",
                         "sameAs": [

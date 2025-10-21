@@ -332,7 +332,8 @@ const HeroSection = memo(function HeroSection() {
           transition={{ delay: 0.5, duration: 0.8 }}
           className="text-5xl md:text-7xl lg:text-8xl font-light mb-8 leading-tight"
         >
-          Hi, I'm <span className="text-emerald-400 font-bold">Ramesh</span><br />
+          Hi, I'm <span className="text-emerald-400 font-bold">ramesh0</span><br />
+          <span className="text-gray-400 text-2xl md:text-3xl block mt-2">Ramesh Maharjan</span>
           <span className="bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
             Full-Stack Developer
           </span>
@@ -344,7 +345,7 @@ const HeroSection = memo(function HeroSection() {
           transition={{ delay: 0.8, duration: 0.8 }}
           className="text-gray-400 text-lg leading-relaxed max-w-2xl mb-12"
         >
-          Full-stack developer at NIRC (Nepal Incubation & Research Center) specializing in React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript.
+          Welcome to ramesh0.com.np! Full-stack developer at NIRC (Nepal Incubation & Research Center) specializing in React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript.
           Delivering enterprise solutions including government portals, POS systems, and multi-language platforms. 
           1+ year of experience with 6+ major projects deployed and maintained.
         </motion.p>
