@@ -536,6 +536,34 @@
   .hover-scale:hover {
     transform: none;
   }
+  
+  /* Increase touch targets on mobile */
+  .touch-friendly {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px;
+  }
+  
+  /* Disable hover effects on touch devices */
+  .no-touch-hover:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Enhanced mobile interactions */
+@media (max-width: 768px) {
+  .mobile-optimized {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+  }
 }
 
 /* Enhanced Performance Optimizations */
@@ -599,6 +627,64 @@
 
 .body-responsive {
   @apply text-sm sm:text-base md:text-lg;
+}
+
+/* Enhanced responsive grid utilities */
+.grid-responsive-auto-fit {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.grid-responsive-auto-fill {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+/* Responsive flex utilities */
+.flex-responsive-col {
+  @apply flex flex-col sm:flex-row;
+}
+
+.flex-responsive-row {
+  @apply flex flex-row sm:flex-col;
+}
+
+/* Responsive spacing utilities */
+.space-responsive {
+  @apply space-y-4 sm:space-y-6 md:space-y-8;
+}
+
+.gap-responsive-sm {
+  @apply gap-2 sm:gap-3 md:gap-4;
+}
+
+.gap-responsive-md {
+  @apply gap-4 sm:gap-6 md:gap-8;
+}
+
+.gap-responsive-lg {
+  @apply gap-6 sm:gap-8 md:gap-10 lg:gap-12;
+}
+
+/* Responsive border radius */
+.rounded-responsive {
+  @apply rounded-lg sm:rounded-xl md:rounded-2xl;
+}
+
+/* Responsive shadows */
+.shadow-responsive {
+  @apply shadow-md sm:shadow-lg md:shadow-xl;
+}
+
+/* Responsive aspect ratios */
+.aspect-responsive-square {
+  @apply aspect-square;
+}
+
+.aspect-responsive-video {
+  @apply aspect-video;
+}
+
+.aspect-responsive-portrait {
+  @apply aspect-[3/4] sm:aspect-[4/5];
 }
 
 /* Mobile touch targets */
@@ -692,5 +778,98 @@
   
   .auto-dark-bg {
     background-color: rgba(15, 23, 42, 0.8);
+  }
+}
+
+/* Additional Responsive Enhancements */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .auto-contrast {
+    border: 2px solid;
+    background: transparent;
+  }
+  
+  .auto-contrast-text {
+    color: CanvasText;
+    background: Canvas;
+  }
+}
+
+/* Responsive font loading */
+@media (max-width: 640px) {
+  .font-display-swap {
+    font-display: swap;
+  }
+}
+
+/* Responsive image optimization */
+.img-responsive {
+  @apply w-full h-auto object-cover;
+  content-visibility: auto;
+  contain-intrinsic-size: 300px 200px;
+}
+
+/* Responsive video */
+.video-responsive {
+  @apply w-full h-auto;
+  aspect-ratio: 16/9;
+}
+
+/* Responsive table */
+.table-responsive {
+  @apply w-full overflow-x-auto;
+}
+
+@media (max-width: 640px) {
+  .table-responsive table {
+    font-size: 0.875rem;
+  }
+  
+  .table-responsive th,
+  .table-responsive td {
+    padding: 0.5rem 0.25rem;
+  }
+}
+
+/* Ultra-wide screen optimizations */
+@media (min-width: 1920px) {
+  .ultra-wide-container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+}
+
+/* Tablet landscape optimizations */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .tablet-landscape-optimized {
+    padding: 1rem 2rem;
+  }
+}
+
+/* Mobile landscape optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .mobile-landscape-optimized {
+    padding: 0.5rem 1rem;
+  }
+  
+  .mobile-landscape-text {
+    font-size: 0.875rem;
+  }
+}
+
+/* Foldable device support */
+@media (max-width: 280px) {
+  .foldable-optimized {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
+}
+
+/* Large mobile devices (iPhone Pro Max, etc.) */
+@media (min-width: 414px) and (max-width: 640px) {
+  .large-mobile-optimized {
+    font-size: 1rem;
+    padding: 1rem;
   }
 }

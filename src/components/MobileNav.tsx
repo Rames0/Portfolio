@@ -62,26 +62,26 @@ export default function MobileNav({ isOpen, onClose, activeSection }: MobileNavP
       
       {/* Mobile Menu */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 max-w-[85vw] z-50 bg-slate-950/95 backdrop-blur-xl border-l border-white/10 shadow-[-8px_0_32px_0_rgba(0,0,0,0.5)] transform transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 h-full w-72 sm:w-80 max-w-[85vw] z-50 bg-slate-950/95 backdrop-blur-xl border-l border-white/10 shadow-[-8px_0_32px_0_rgba(0,0,0,0.5)] transform transition-transform duration-300 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <div className="text-xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
+          <div className="text-lg sm:text-xl font-bold bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
             RAMESH.DEV
           </div>
           <button
             onClick={onClose}
             className="p-2 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all duration-200 shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] active:scale-95"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
         
         {/* Navigation Items */}
-        <nav className="p-6">
-          <div className="space-y-2">
+        <nav className="p-4 sm:p-6">
+          <div className="space-y-1.5 sm:space-y-2">
             {navItems.map((item, index) => {
               const Icon = item.icon;
               const isActive = activeSection === item.name.toLowerCase();
@@ -89,15 +89,15 @@ export default function MobileNav({ isOpen, onClose, activeSection }: MobileNavP
                 <button
                   key={item.name}
                   onClick={() => handleNavClick(item.href)}
-                  className={`w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all duration-200 active:scale-95 ${
+                  className={`w-full flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl text-left transition-all duration-200 active:scale-95 ${
                     isActive 
                       ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30 text-white shadow-[0_4px_16px_0_rgba(6,182,212,0.3)]' 
                       : 'text-gray-300 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 shadow-[0_2px_8px_0_rgba(0,0,0,0.2)]'
                   }`}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-cyan-400' : 'text-gray-400'}`} />
-                  <span className="font-medium">{item.name}</span>
+                  <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? 'text-cyan-400' : 'text-gray-400'}`} />
+                  <span className="font-medium text-sm sm:text-base">{item.name}</span>
                   {isActive && (
                     <div className="ml-auto w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
                   )}
@@ -108,11 +108,11 @@ export default function MobileNav({ isOpen, onClose, activeSection }: MobileNavP
         </nav>
         
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/10">
+        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 border-t border-white/10">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-3">
+            <div className="flex items-center justify-center gap-2 mb-2 sm:mb-3">
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-sm text-emerald-300 font-medium">Available for opportunities</span>
+              <span className="text-xs sm:text-sm text-emerald-300 font-medium">Available for opportunities</span>
             </div>
             <p className="text-xs text-gray-400">
               Full Stack Developer from Nepal 🇳🇵

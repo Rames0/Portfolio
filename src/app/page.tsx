@@ -252,13 +252,13 @@ export default function Home() {
                 <Navigation activeSection={activeSection} scrollToSection={scrollToSection} />
 
                 {/* Mobile Header */}
-                <header className={`lg:hidden fixed top-0 left-0 right-0 z-40 bg-black/80 backdrop-blur-xl border-b border-zinc-800 transition-transform duration-300 ${
+                <header className={`lg:hidden fixed top-0 left-0 right-0 z-40 bg-black/80 backdrop-blur-xl border-b border-zinc-800 transition-transform duration-300 safe-area-top ${
                     showMobileHeader ? 'translate-y-0' : '-translate-y-full'
                 }`}>
-                    <div className="flex items-center justify-between px-6 py-4">
-                        <span className="text-xl font-bold text-emerald-400">RAMESH</span>
-                        <button onClick={() => setMobileMenuOpen(true)} className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center hover:border-emerald-400 transition-colors">
-                            <Menu className="w-5 h-5" />
+                    <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+                        <span className="text-lg sm:text-xl font-bold text-emerald-400">RAMESH</span>
+                        <button onClick={() => setMobileMenuOpen(true)} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-zinc-800 flex items-center justify-center hover:border-emerald-400 transition-colors touch-target">
+                            <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                     </div>
                 </header>
@@ -266,7 +266,7 @@ export default function Home() {
                 <MobileNav isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} activeSection={activeSection} />
 
                 {/* Main Content */}
-                <main className="lg:ml-[400px] lg:mr-32 px-6 lg:px-12">
+                <main className="lg:ml-[400px] lg:mr-32 px-4 sm:px-6 lg:px-12">
                     <HeroSection />
                     <AboutSection />
 
@@ -283,21 +283,21 @@ export default function Home() {
                             <span className="text-sm text-gray-400">SKILLS</span>
                         </div>
 
-                        <h2 className="text-5xl md:text-6xl font-light mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
                             Technical <span className="text-emerald-400">Expertise</span>
                         </h2>
 
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
                             {skills.map((skill, i) => (
                                 <Card3D key={i}>
-                                    <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                        <div className="flex items-center gap-4 mb-4">
-                                            <div className={`w-14 h-14 rounded-full bg-gradient-to-br from-zinc-800/80 to-zinc-900/80 flex items-center justify-center ${skill.color} shadow-[0_4px_16px_0_rgba(0,0,0,0.25)]`}>
-                                                {skill.icon}
+                                    <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
+                                        <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                                            <div className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-zinc-800/80 to-zinc-900/80 flex items-center justify-center ${skill.color} shadow-[0_4px_16px_0_rgba(0,0,0,0.25)]`}>
+                                                <div className="w-5 h-5 sm:w-6 sm:h-6">{skill.icon}</div>
                                             </div>
                                             <div className="flex-1">
-                                                <h3 className="text-xl font-semibold text-white">{skill.name}</h3>
-                                                <p className="text-sm text-gray-300">{skill.level}% Proficiency</p>
+                                                <h3 className="text-lg sm:text-xl font-semibold text-white">{skill.name}</h3>
+                                                <p className="text-xs sm:text-sm text-gray-300">{skill.level}% Proficiency</p>
                                             </div>
                                         </div>
                                         <div className="w-full bg-zinc-800/50 rounded-full h-3 overflow-hidden shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.3)]">
@@ -329,19 +329,19 @@ export default function Home() {
                             <span className="text-sm text-gray-400">EXPERIENCE</span>
                         </div>
 
-                        <h2 className="text-5xl md:text-6xl font-light mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
                             Work & <span className="text-emerald-400">Education</span>
                         </h2>
 
-                        <div className="space-y-10">
+                        <div className="space-y-6 sm:space-y-8 lg:space-y-10">
                             <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                    <div className="flex flex-col md:flex-row md:items-center gap-4">
-                                        <div className="px-4 py-2 bg-gradient-to-r from-blue-400/20 to-purple-400/20 border border-blue-400/30 rounded-full text-blue-400 font-semibold min-w-[150px] text-center shadow-[0_4px_16px_0_rgba(59,130,246,0.2)]">2020 - 2025</div>
+                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                                        <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-400/20 to-purple-400/20 border border-blue-400/30 rounded-full text-blue-400 font-semibold text-sm sm:text-base min-w-[120px] sm:min-w-[150px] text-center shadow-[0_4px_16px_0_rgba(59,130,246,0.2)]">2020 - 2025</div>
                                         <div className="flex-1">
-                                            <h3 className="text-2xl font-semibold mb-2 text-white">Bachelor in Computer Application</h3>
-                                            <p className="text-gray-300 mb-2">Tribhuvan University</p>
-                                            <p className="text-gray-400">Completed comprehensive computer science education with focus on software development, database management, and web technologies.</p>
+                                            <h3 className="text-xl sm:text-2xl font-semibold mb-1 sm:mb-2 text-white">Bachelor in Computer Application</h3>
+                                            <p className="text-gray-300 mb-1 sm:mb-2 text-sm sm:text-base">Tribhuvan University</p>
+                                            <p className="text-gray-400 text-sm sm:text-base">Completed comprehensive computer science education with focus on software development, database management, and web technologies.</p>
                                         </div>
                                     </div>
                                 </Card>
@@ -349,12 +349,12 @@ export default function Home() {
                             {experiences.map((exp, i) => (
                                 <Card3D key={i}>
                                     <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                        <div className="flex flex-col md:flex-row md:items-center gap-4">
-                                            <div className="px-4 py-2 bg-gradient-to-r from-emerald-400/20 to-blue-400/20 border border-emerald-400/30 rounded-full text-emerald-400 font-semibold min-w-[150px] text-center shadow-[0_4px_16px_0_rgba(16,185,129,0.2)]">{exp.year}</div>
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                                            <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-emerald-400/20 to-blue-400/20 border border-emerald-400/30 rounded-full text-emerald-400 font-semibold text-sm sm:text-base min-w-[120px] sm:min-w-[150px] text-center shadow-[0_4px_16px_0_rgba(16,185,129,0.2)]">{exp.year}</div>
                                             <div className="flex-1">
-                                                <h3 className="text-2xl font-semibold mb-2 text-white">{exp.role}</h3>
-                                                <p className="text-gray-300 mb-2">{exp.company}</p>
-                                                <p className="text-gray-400">{exp.desc}</p>
+                                                <h3 className="text-xl sm:text-2xl font-semibold mb-1 sm:mb-2 text-white">{exp.role}</h3>
+                                                <p className="text-gray-300 mb-1 sm:mb-2 text-sm sm:text-base">{exp.company}</p>
+                                                <p className="text-gray-400 text-sm sm:text-base">{exp.desc}</p>
                                             </div>
                                         </div>
                                     </Card>
@@ -377,18 +377,18 @@ export default function Home() {
                             <span className="text-sm text-gray-400">SERVICES</span>
                         </div>
 
-                        <h2 className="text-5xl md:text-6xl font-light mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
                             What I <span className="text-emerald-400">Offer</span>
                         </h2>
 
-                        <div className="grid md:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
                             <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 h-full rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mb-6 shadow-[0_8px_24px_0_rgba(16,185,129,0.4)]">
-                                        <Globe className="w-8 h-8 text-white" />
+                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_8px_24px_0_rgba(16,185,129,0.4)]">
+                                        <Globe className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-white">Web Development</h3>
-                                    <p className="text-gray-300 mb-4">Full-stack web applications using Next.js, React, Laravel, and modern technologies</p>
+                                    <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-white">Web Development</h3>
+                                    <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">Full-stack web applications using Next.js, React, Laravel, and modern technologies</p>
                                     <ul className="space-y-2 text-sm text-gray-400">
                                         <li>• Responsive Design</li>
                                         <li>• API Integration</li>
@@ -398,12 +398,12 @@ export default function Home() {
                             </Card3D>
 
                             <Card3D>
-                                <Card className="bg-gradient-to-br from-zinc-950 to-zinc-900 backdrop-blur-xl border-2 border-zinc-700/50 p-8 h-full shadow-2xl shadow-zinc-900/50 hover:border-blue-500/50 transition-colors">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mb-6 shadow-[0_8px_24px_0_rgba(59,130,246,0.4)]">
-                                        <Server className="w-8 h-8 text-white" />
+                                <Card className="bg-gradient-to-br from-zinc-950 to-zinc-900 backdrop-blur-xl border-2 border-zinc-700/50 p-4 sm:p-6 lg:p-8 h-full shadow-2xl shadow-zinc-900/50 hover:border-blue-500/50 transition-colors">
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_8px_24px_0_rgba(59,130,246,0.4)]">
+                                        <Server className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-white">Backend Systems</h3>
-                                    <p className="text-gray-300 mb-4">Scalable backend solutions with Node.js, Laravel, and database optimization</p>
+                                    <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-white">Backend Systems</h3>
+                                    <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">Scalable backend solutions with Node.js, Laravel, and database optimization</p>
                                     <ul className="space-y-2 text-sm text-gray-400">
                                         <li>• RESTful APIs</li>
                                         <li>• Authentication</li>
@@ -413,12 +413,12 @@ export default function Home() {
                             </Card3D>
 
                             <Card3D>
-                                <Card className="bg-gradient-to-br from-zinc-950 to-zinc-900 backdrop-blur-xl border-2 border-zinc-700/50 p-8 h-full shadow-2xl shadow-zinc-900/50 hover:border-teal-500/50 transition-colors">
-                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mb-6 shadow-[0_8px_24px_0_rgba(20,184,166,0.4)]">
-                                        <Users className="w-8 h-8 text-white" />
+                                <Card className="bg-gradient-to-br from-zinc-950 to-zinc-900 backdrop-blur-xl border-2 border-zinc-700/50 p-4 sm:p-6 lg:p-8 h-full shadow-2xl shadow-zinc-900/50 hover:border-teal-500/50 transition-colors">
+                                    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_8px_24px_0_rgba(20,184,166,0.4)]">
+                                        <Users className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-semibold mb-4 text-white">UI/UX Design</h3>
-                                    <p className="text-gray-300 mb-4">Creating intuitive and visually appealing user interfaces with modern design principles</p>
+                                    <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-white">UI/UX Design</h3>
+                                    <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">Creating intuitive and visually appealing user interfaces with modern design principles</p>
                                     <ul className="space-y-2 text-sm text-gray-400">
                                         <li>• Responsive Design</li>
                                         <li>• User Experience</li>
@@ -428,29 +428,29 @@ export default function Home() {
                             </Card3D>
                         </div>
 
-                        <div className="mt-12 grid md:grid-cols-4 gap-10">
+                        <div className="mt-8 sm:mt-10 lg:mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-10">
                             <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-emerald-400/30 p-6 text-center rounded-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.2)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.4)] transition-all duration-300">
-                                    <div className="text-4xl font-bold text-emerald-400 mb-2">6+</div>
-                                    <p className="text-gray-300">Major Projects</p>
+                                <Card className="bg-white/5 backdrop-blur-xl border border-emerald-400/30 p-3 sm:p-4 lg:p-6 text-center rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.2)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.4)] transition-all duration-300">
+                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-400 mb-1 sm:mb-2">6+</div>
+                                    <p className="text-gray-300 text-xs sm:text-sm lg:text-base">Major Projects</p>
                                 </Card>
                             </Card3D>
                             <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-blue-400/30 p-6 text-center rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.2)] hover:shadow-[0_12px_48px_0_rgba(59,130,246,0.4)] transition-all duration-300">
-                                    <div className="text-4xl font-bold text-blue-400 mb-2">1+</div>
-                                    <p className="text-gray-300">Year Experience</p>
+                                <Card className="bg-white/5 backdrop-blur-xl border border-blue-400/30 p-3 sm:p-4 lg:p-6 text-center rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.2)] hover:shadow-[0_12px_48px_0_rgba(59,130,246,0.4)] transition-all duration-300">
+                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-400 mb-1 sm:mb-2">1+</div>
+                                    <p className="text-gray-300 text-xs sm:text-sm lg:text-base">Year Experience</p>
                                 </Card>
                             </Card3D>
                             <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-purple-400/30 p-6 text-center rounded-2xl shadow-[0_8px_32px_0_rgba(168,85,247,0.2)] hover:shadow-[0_12px_48px_0_rgba(168,85,247,0.4)] transition-all duration-300">
-                                    <div className="text-4xl font-bold text-purple-400 mb-2">100%</div>
-                                    <p className="text-gray-300">Client Satisfaction</p>
+                                <Card className="bg-white/5 backdrop-blur-xl border border-purple-400/30 p-3 sm:p-4 lg:p-6 text-center rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(168,85,247,0.2)] hover:shadow-[0_12px_48px_0_rgba(168,85,247,0.4)] transition-all duration-300">
+                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-400 mb-1 sm:mb-2">100%</div>
+                                    <p className="text-gray-300 text-xs sm:text-sm lg:text-base">Client Satisfaction</p>
                                 </Card>
                             </Card3D>
                             <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-pink-400/30 p-6 text-center rounded-2xl shadow-[0_8px_32px_0_rgba(236,72,153,0.2)] hover:shadow-[0_12px_48px_0_rgba(236,72,153,0.4)] transition-all duration-300">
-                                    <div className="text-4xl font-bold text-pink-400 mb-2">12+</div>
-                                    <p className="text-gray-300">Technologies</p>
+                                <Card className="bg-white/5 backdrop-blur-xl border border-pink-400/30 p-3 sm:p-4 lg:p-6 text-center rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(236,72,153,0.2)] hover:shadow-[0_12px_48px_0_rgba(236,72,153,0.4)] transition-all duration-300">
+                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-400 mb-1 sm:mb-2">12+</div>
+                                    <p className="text-gray-300 text-xs sm:text-sm lg:text-base">Technologies</p>
                                 </Card>
                             </Card3D>
                         </div>
@@ -470,40 +470,40 @@ export default function Home() {
                             <span className="text-sm text-gray-400">PROJECTS</span>
                         </div>
 
-                        <h2 className="text-5xl md:text-6xl font-light mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
                             Featured <span className="text-emerald-400">Work</span>
                         </h2>
 
-                        <div className="grid md:grid-cols-2 gap-16">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
                             {projects.map((project, i) => (
                                 <Card3D key={i}>
-                                    <Card className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden h-full rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1 group">
-                                        <div className="relative w-full h-48 overflow-hidden bg-zinc-800">
+                                    <Card className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1 group">
+                                        <div className="relative w-full h-40 sm:h-48 overflow-hidden bg-zinc-800">
                                             <img 
                                                 src={project.image} 
                                                 alt={`${project.title} - ${project.type} screenshot`}
                                                 loading="lazy"
                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                             />
-                                            <div className="absolute top-4 right-4">
+                                            <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
                                                 <a href={project.url} target="_blank" rel="noopener noreferrer">
-                                                    <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm border border-emerald-400/30 flex items-center justify-center hover:bg-emerald-400/20 transition-all">
-                                                        <ExternalLink className="w-5 h-5 text-emerald-400" />
+                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/50 backdrop-blur-sm border border-emerald-400/30 flex items-center justify-center hover:bg-emerald-400/20 transition-all">
+                                                        <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
                                                     </div>
                                                 </a>
                                             </div>
                                         </div>
-                                        <div className="p-8">
-                                            <div className="mb-3">
-                                                <span className="px-3 py-1 bg-emerald-400/10 border border-emerald-400/30 rounded-full text-xs text-emerald-400 shadow-[0_2px_8px_0_rgba(16,185,129,0.2)]">
+                                        <div className="p-4 sm:p-6 lg:p-8">
+                                            <div className="mb-2 sm:mb-3">
+                                                <span className="px-2 py-1 sm:px-3 sm:py-1 bg-emerald-400/10 border border-emerald-400/30 rounded-full text-xs text-emerald-400 shadow-[0_2px_8px_0_rgba(16,185,129,0.2)]">
                                                     {project.type}
                                                 </span>
                                             </div>
-                                            <h3 className="text-2xl font-semibold mb-3 text-white">{project.title}</h3>
-                                            <p className="text-gray-300 mb-4">{project.desc}</p>
-                                            <div className="flex flex-wrap gap-2">
+                                            <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 text-white">{project.title}</h3>
+                                            <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">{project.desc}</p>
+                                            <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                                 {project.tech.split(", ").map((tech, j) => (
-                                                    <span key={j} className="px-3 py-1 bg-zinc-800/50 border border-zinc-600/50 rounded-full text-xs text-gray-300 shadow-[0_2px_8px_0_rgba(0,0,0,0.3)]">
+                                                    <span key={j} className="px-2 py-0.5 sm:px-3 sm:py-1 bg-zinc-800/50 border border-zinc-600/50 rounded-full text-xs text-gray-300 shadow-[0_2px_8px_0_rgba(0,0,0,0.3)]">
                                                         {tech}
                                                     </span>
                                                 ))}
@@ -529,34 +529,34 @@ export default function Home() {
                             <span className="text-sm text-gray-400">CONTACT</span>
                         </div>
 
-                        <h2 className="text-5xl md:text-6xl font-light mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
                             Let's <span className="text-emerald-400">Connect</span>
                         </h2>
 
-                        <div className="grid md:grid-cols-2 gap-16">
-                            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
+                            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
                                 <ContactForm />
                             </Card>
 
-                            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 h-full rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-                                    <h3 className="text-emerald-400 text-2xl font-semibold mb-6">Contact Info</h3>
-                                    <div className="space-y-10">
-                                        <div className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
-                                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_4px_16px_0_rgba(16,185,129,0.4)]">
-                                                <Mail className="w-6 h-6 text-white" />
+                            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+                                    <h3 className="text-emerald-400 text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Contact Info</h3>
+                                    <div className="space-y-6 sm:space-y-8 lg:space-y-10">
+                                        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-zinc-900/50 border border-zinc-800">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_4px_16px_0_rgba(16,185,129,0.4)]">
+                                                <Mail className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
                                             </div>
                                             <div>
-                                                <p className="text-sm text-gray-400">Email</p>
-                                                <p className="text-white font-medium">mhrjan0@gmail.com</p>
+                                                <p className="text-xs sm:text-sm text-gray-400">Email</p>
+                                                <p className="text-white font-medium text-sm sm:text-base">mhrjan0@gmail.com</p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
-                                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-[0_4px_16px_0_rgba(59,130,246,0.4)]">
-                                                <MapPin className="w-6 h-6 text-white" />
+                                        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-zinc-900/50 border border-zinc-800">
+                                            <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-[0_4px_16px_0_rgba(59,130,246,0.4)]">
+                                                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
                                             </div>
                                             <div>
-                                                <p className="text-sm text-gray-400">Location</p>
-                                                <p className="text-white font-medium">Kathmandu, Nepal</p>
+                                                <p className="text-xs sm:text-sm text-gray-400">Location</p>
+                                                <p className="text-white font-medium text-sm sm:text-base">Kathmandu, Nepal</p>
                                             </div>
                                         </div>
                                     </div>

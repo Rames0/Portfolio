@@ -309,28 +309,28 @@ const HeroSection = memo(function HeroSection() {
   }, []);
 
   return (
-    <section id="home" className="min-h-screen flex flex-col justify-center py-20">
+    <section id="home" className="min-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-20">
       <motion.div 
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
-        className="max-w-4xl"
+        className="max-w-4xl px-4 sm:px-0"
       >
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 mb-8 bg-white/5 backdrop-blur shadow-[0_2px_8px_0_rgba(0,0,0,0.3)]"
+          className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-white/10 mb-6 sm:mb-8 bg-white/5 backdrop-blur shadow-[0_2px_8px_0_rgba(0,0,0,0.3)]"
         >
-          <HomeIcon className="w-4 h-4 text-emerald-400" />
-          <span className="text-sm text-gray-400">INTRODUCE</span>
+          <HomeIcon className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
+          <span className="text-xs sm:text-sm text-gray-400">INTRODUCE</span>
         </motion.div>
         
         <motion.h1 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-light mb-8 leading-tight"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-light mb-6 sm:mb-8 leading-tight"
         >
           Hi, I'm <span className="text-emerald-400 font-bold">Ramesh</span><br />
           <span className="bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -342,7 +342,7 @@ const HeroSection = memo(function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
-          className="text-gray-400 text-lg leading-relaxed max-w-2xl mb-12"
+          className="text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl mb-8 sm:mb-10 lg:mb-12"
         >
           Full-stack developer at NIRC (Nepal Incubation & Research Center) specializing in React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript.
           Delivering enterprise solutions including government portals, POS systems, and multi-language platforms. 
@@ -353,7 +353,7 @@ const HeroSection = memo(function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.8 }}
-          className="flex gap-4"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4"
         >
           <motion.div
             whileHover={{ scale: 1.05 }}
@@ -362,7 +362,7 @@ const HeroSection = memo(function HeroSection() {
             <Button 
               onClick={generateCV} 
               disabled={isGeneratingCV}
-              className={`relative overflow-hidden font-semibold rounded-full px-8 py-6 transition-all duration-300 active:scale-95 ${
+              className={`relative overflow-hidden font-semibold rounded-full px-6 py-4 sm:px-8 sm:py-6 transition-all duration-300 active:scale-95 text-sm sm:text-base ${
                 cvGenerated 
                   ? 'bg-green-500 hover:bg-green-600 text-white shadow-[0_4px_16px_0_rgba(34,197,94,0.4)]' 
                   : isGeneratingCV 
@@ -398,8 +398,8 @@ const HeroSection = memo(function HeroSection() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Button onClick={handleViewProjects} variant="outline" className="text-white bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-400 hover:text-white rounded-full px-8 py-6 transition-all duration-300 shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] hover:shadow-[0_4px_16px_0_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:scale-95">
-              <Eye className="w-4 h-4 mr-2" />
+            <Button onClick={handleViewProjects} variant="outline" className="text-white bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-400 hover:text-white rounded-full px-6 py-4 sm:px-8 sm:py-6 transition-all duration-300 shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] hover:shadow-[0_4px_16px_0_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:scale-95 text-sm sm:text-base">
+              <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
               View Projects
             </Button>
           </motion.div>

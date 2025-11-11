@@ -32,46 +32,42 @@ export default function BackgroundAnimation() {
         if (Math.abs(scrollY - lastScrollY.current) < 1) return;
         lastScrollY.current = scrollY;
 
-        // Cancel previous animation frame
-        if (animationFrameRef.current) {
-            cancelAnimationFrame(animationFrameRef.current);
-        }
+        const transforms = {
+            radial: `translate3d(0, ${scrollY * 0.3}px, 0)`,
+            grid: `translate3d(0, ${scrollY * 0.5}px, 0)`,
+            blob1: `translate3d(${scrollY * 0.2}px, ${scrollY * 0.4}px, 0)`,
+            blob2: `translate3d(-${scrollY * 0.3}px, -${scrollY * 0.2}px, 0)`,
+            blob3: `translate3d(-${scrollY * 0.25}px, ${scrollY * 0.35}px, 0)`
+        };
 
-        animationFrameRef.current = requestAnimationFrame(() => {
-            const transforms = {
-                radial: `translate3d(0, ${scrollY * 0.3}px, 0)`,
-                grid: `translate3d(0, ${scrollY * 0.5}px, 0)`,
-                blob1: `translate3d(${scrollY * 0.2}px, ${scrollY * 0.4}px, 0)`,
-                blob2: `translate3d(-${scrollY * 0.3}px, -${scrollY * 0.2}px, 0)`,
-                blob3: `translate3d(-${scrollY * 0.25}px, ${scrollY * 0.35}px, 0)`
-            };
+        // Batch DOM updates for better performance
+        const elements = [
+            { ref: radialRef, transform: transforms.radial },
+            { ref: gridRef, transform: transforms.grid },
+            { ref: blob1Ref, transform: transforms.blob1 },
+            { ref: blob2Ref, transform: transforms.blob2 },
+            { ref: blob3Ref, transform: transforms.blob3 }
+        ];
 
-            // Batch DOM updates for better performance
-            const elements = [
-                { ref: radialRef, transform: transforms.radial },
-                { ref: gridRef, transform: transforms.grid },
-                { ref: blob1Ref, transform: transforms.blob1 },
-                { ref: blob2Ref, transform: transforms.blob2 },
-                { ref: blob3Ref, transform: transforms.blob3 }
-            ];
+        elements.forEach(({ ref, transform }) => {
+            if (ref.current) {
+                ref.current.style.transform = transform;
+            }
+        });
 
-            elements.forEach(({ ref, transform }) => {
-                if (ref.current) {
-                    ref.current.style.transform = transform;
-                }
-            });
-
-            // Update particles with optimized calculations
-            particlesRef.current.forEach((particle, i) => {
-                if (particle) {
-                    particle.style.transform = `translate3d(0, ${scrollY * (0.1 + i * 0.02)}px, 0)`;
-                }
-            });
+        // Update particles with optimized calculations
+        particlesRef.current.forEach((particle, i) => {
+            if (particle) {
+                particle.style.transform = `translate3d(0, ${scrollY * (0.1 + i * 0.02)}px, 0)`;
+            }
         });
     }, []);
 
     useEffect(() => {
         setMounted(true);
+        
+        // Start animations immediately
+        handleScroll();
         
         // Use passive listener for better performance
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -102,18 +98,27 @@ export default function BackgroundAnimation() {
             
             <div 
                 ref={blob1Ref}
-                className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl animate-pulse"
-                style={{ willChange: 'transform' }}
+                className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"
+                style={{ 
+                    willChange: 'transform',
+                    animation: 'pulse 4s ease-in-out infinite'
+                }}
             />
             <div 
                 ref={blob2Ref}
-                className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse"
-                style={{ animationDelay: '1s', willChange: 'transform' }}
+                className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+                style={{ 
+                    willChange: 'transform',
+                    animation: 'pulse 4s ease-in-out infinite 1s'
+                }}
             />
             <div 
                 ref={blob3Ref}
-                className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse"
-                style={{ animationDelay: '2s', willChange: 'transform' }}
+                className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl"
+                style={{ 
+                    willChange: 'transform',
+                    animation: 'pulse 4s ease-in-out infinite 2s'
+                }}
             />
             
             {mounted && particlesData.map((particle, index) => (
@@ -124,10 +129,9 @@ export default function BackgroundAnimation() {
                     style={{
                         left: `${particle.left}%`,
                         top: `${particle.top}%`,
-                        animationDelay: `${particle.delay}s`,
-                        animationDuration: `${particle.duration}s`,
                         willChange: 'transform',
-                        transform: 'translateZ(0)' // Force GPU acceleration
+                        transform: 'translateZ(0)',
+                        animation: `float ${particle.duration}s ease-in-out infinite ${particle.delay}s`
                     }}
                 />
             ))}
