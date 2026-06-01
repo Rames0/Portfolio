@@ -309,7 +309,7 @@ const HeroSection = memo(function HeroSection() {
   }, []);
 
   return (
-    <section id="home" className="min-h-screen flex flex-col justify-center py-12 sm:py-16 lg:py-20">
+    <section id="home" className="min-h-screen flex flex-col justify-center py-12 sm:py-12 lg:py-16">
       <motion.div 
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -342,7 +342,7 @@ const HeroSection = memo(function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
-          className="text-gray-400 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl mb-8 sm:mb-10 lg:mb-12"
+          className="text-gray-200 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl mb-8 sm:mb-10 lg:mb-12"
         >
           Full-stack developer at NIRC (Nepal Incubation & Research Center) specializing in React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript.
           Delivering enterprise solutions including government portals, POS systems, and multi-language platforms. 

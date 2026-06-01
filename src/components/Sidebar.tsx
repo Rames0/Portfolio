@@ -33,7 +33,7 @@ const Sidebar = memo(function Sidebar() {
         >
           <div className="w-full aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 shadow-[0_4px_16px_0_rgba(16,185,129,0.2)]">
             <img 
-              src="/Profile.jpeg" 
+              src="/favicon.svg"
               alt="Ramesh Profile" 
               className="w-full h-full object-cover"
               loading="lazy"
@@ -54,10 +54,10 @@ const Sidebar = memo(function Sidebar() {
 
         <div className="flex justify-center gap-3 mb-5 lg:mb-6">
           {[
-            { icon: <Instagram className="w-4 h-4" />, url: "#" },
-            { icon: <Linkedin className="w-4 h-4" />, url: "#" },
-            { icon: <Github className="w-4 h-4" />, url: "#" },
-            { icon: <Twitter className="w-4 h-4" />, url: "#" }
+            { icon: <Instagram className="w-4 h-4" />, url: "https://www.instagram.com" },
+            { icon: <Linkedin className="w-4 h-4" />, url: "https://www.linkedin.com/in/ramesh-mhr-1b0514337" },
+            { icon: <Github className="w-4 h-4" />, url: "https://github.com/Rames0" },
+            { icon: <Twitter className="w-4 h-4" />, url: "https://www.twitter.com" }
           ].map((social, i) => (
             <motion.a 
               key={i} 
