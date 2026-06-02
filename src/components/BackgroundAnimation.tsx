@@ -26,9 +26,11 @@ export default function BackgroundAnimation() {
 
     // Optimized scroll handler with throttling and GPU acceleration
     const handleScroll = useCallback(() => {
+        // Disable parallax on mobile to prevent background movement on scroll
+        if (window.innerWidth < 768) return;
+
         const scrollY = window.scrollY;
         
-        // Only update if scroll position changed significantly (throttling)
         if (Math.abs(scrollY - lastScrollY.current) < 1) return;
         lastScrollY.current = scrollY;
 
@@ -40,7 +42,6 @@ export default function BackgroundAnimation() {
             blob3: `translate3d(-${scrollY * 0.25}px, ${scrollY * 0.35}px, 0)`
         };
 
-        // Batch DOM updates for better performance
         const elements = [
             { ref: radialRef, transform: transforms.radial },
             { ref: gridRef, transform: transforms.grid },
@@ -55,7 +56,6 @@ export default function BackgroundAnimation() {
             }
         });
 
-        // Update particles with optimized calculations
         particlesRef.current.forEach((particle, i) => {
             if (particle) {
                 particle.style.transform = `translate3d(0, ${scrollY * (0.1 + i * 0.02)}px, 0)`;
