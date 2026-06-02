@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 export default function BackgroundAnimation() {
     const radialRef = useRef<HTMLDivElement>(null);
-    const gridRef = useRef<HTMLDivElement>(null);
     const blob1Ref = useRef<HTMLDivElement>(null);
     const blob2Ref = useRef<HTMLDivElement>(null);
     const blob3Ref = useRef<HTMLDivElement>(null);
@@ -36,7 +35,6 @@ export default function BackgroundAnimation() {
 
         const transforms = {
             radial: `translate3d(0, ${scrollY * 0.3}px, 0)`,
-            grid: `translate3d(0, ${scrollY * 0.5}px, 0)`,
             blob1: `translate3d(${scrollY * 0.2}px, ${scrollY * 0.4}px, 0)`,
             blob2: `translate3d(-${scrollY * 0.3}px, -${scrollY * 0.2}px, 0)`,
             blob3: `translate3d(-${scrollY * 0.25}px, ${scrollY * 0.35}px, 0)`
@@ -44,7 +42,6 @@ export default function BackgroundAnimation() {
 
         const elements = [
             { ref: radialRef, transform: transforms.radial },
-            { ref: gridRef, transform: transforms.grid },
             { ref: blob1Ref, transform: transforms.blob1 },
             { ref: blob2Ref, transform: transforms.blob2 },
             { ref: blob3Ref, transform: transforms.blob3 }
@@ -90,11 +87,7 @@ export default function BackgroundAnimation() {
                 style={{ willChange: 'transform' }}
             />
             
-            <div 
-                ref={gridRef}
-                className="absolute inset-0 bg-[linear-gradient(to_right,#10b98108_1px,transparent_1px),linear-gradient(to_bottom,#10b98108_1px,transparent_1px)] bg-[size:4rem_4rem]"
-                style={{ willChange: 'transform' }}
-            />
+
             
             <div 
                 ref={blob1Ref}
