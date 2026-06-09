@@ -398,7 +398,7 @@ export default function Home() {
                             </Card3D>
 
                             <Card3D>
-                                <Card className="bg-gradient-to-br from-zinc-950 to-zinc-900 backdrop-blur-xl border-2 border-zinc-700/50 p-4 sm:p-6 lg:p-8 h-full shadow-2xl shadow-zinc-900/50 hover:border-blue-500/50 transition-colors">
+                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
                                     <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_8px_24px_0_rgba(59,130,246,0.4)]">
                                         <Server className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                                     </div>
@@ -413,7 +413,7 @@ export default function Home() {
                             </Card3D>
 
                             <Card3D>
-                                <Card className="bg-gradient-to-br from-zinc-950 to-zinc-900 backdrop-blur-xl border-2 border-zinc-700/50 p-4 sm:p-6 lg:p-8 h-full shadow-2xl shadow-zinc-900/50 hover:border-teal-500/50 transition-colors">
+                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
                                     <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_8px_24px_0_rgba(20,184,166,0.4)]">
                                         <Users className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                                     </div>

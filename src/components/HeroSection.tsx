@@ -17,294 +17,317 @@ const HeroSection = memo(function HeroSection() {
   const generateCV = useCallback(async () => {
     setIsGeneratingCV(true);
     setCvGenerated(false);
-    
+
     try {
-      // Simulate processing time for better UX
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const doc = new jsPDF();
-      const primaryColor = [16, 185, 129]; // Emerald color
-      
-      // Page dimensions and margins
-      const pageWidth = 210;
-      const pageHeight = 297;
-      const margin = 20;
-      const contentWidth = pageWidth - (margin * 2);
-      
-      // Helper function to add text with proper wrapping
-      const addText = (text: string, x: number, y: number, options: { align?: 'left' | 'center' | 'right' } = {}) => {
-        const lines = doc.splitTextToSize(text, contentWidth - (x - margin));
-        doc.text(lines, x, y, options);
-        return y + (lines.length * 5);
-      };
-      
-      // Helper function to check if we need a new page
-      const checkNewPage = (requiredSpace: number) => {
-        if (yPos + requiredSpace > pageHeight - margin) {
-          doc.addPage();
-          return margin;
-        }
-        return yPos;
-      };
-      
-      // Professional header
-      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.rect(0, 0, pageWidth, 40, 'F');
-      
-      // Main title
-      doc.setTextColor(255, 255, 255);
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+      const K   = [0,   0,   0]   as const; // black
+      const GR  = [90,  90,  90]  as const; // gray
+      const LG  = [160, 160, 160] as const; // light gray
+      const WH  = [255, 255, 255] as const; // white
+      const OW  = [245, 245, 245] as const; // off-white sidebar
+
+      const PW = 210, PH = 297;
+      const SB  = 68;
+      const ML  = SB + 8;
+      const MR  = 14;
+      const MW  = PW - ML - MR;
+      const SML = 8;
+      const SMW = SB - SML - 4;
+
+      // no sidebar bg
+
+      // white header with bottom border
+      doc.setFillColor(...WH);
+      doc.rect(0, 0, PW, 46, 'F');
+      doc.setDrawColor(...LG);
+      doc.setLineWidth(0.4);
+      doc.line(0, 46, PW, 46);
+
+      doc.setTextColor(...K);
+      doc.setFont('helvetica', 'bold');
       doc.setFontSize(24);
-      doc.setFont('helvetica', 'bold');
-      doc.text('RAMESH MAHARJAN', pageWidth / 2, 18, { align: 'center' });
-      
-      // Professional subtitle
+      doc.text('RAMESH MAHARJAN', PW / 2, 18, { align: 'center' });
+
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Full-Stack Developer', pageWidth / 2, 26, { align: 'center' });
-      
-      // Contact information
-      doc.setFontSize(9);
-      doc.text('Email: mhrjan0@gmail.com | Location: Kathmandu, Nepal', pageWidth / 2, 34, { align: 'center' });
-      
-      // Start content after header
-      let yPos = 50;
-      
-      // Professional Summary Section
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('PROFESSIONAL SUMMARY', margin, yPos);
-      
-      // Decorative line
-      doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.setLineWidth(0.5);
-      doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
-      
-      yPos += 8;
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      const summary = 'Full-Stack Developer with 1 year of expertise in modern web technologies including React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript. Delivering enterprise solutions including government portals, POS systems, and multi-language platforms.';
-      yPos = addText(summary, margin, yPos) + 5;
-      
-      // Technical Skills Section
-      yPos = checkNewPage(30);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('TECHNICAL EXPERTISE', margin, yPos);
-      doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
-      
-      yPos += 8;
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      
-      const skillCategories = [
-        { title: 'Frontend Development', skills: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'JavaScript'], level: 'Expert' },
-        { title: 'Backend Development', skills: ['Node.js', 'Laravel', 'PHP', 'RESTful APIs', 'GraphQL'], level: 'Advanced' },
-        { title: 'Database Management', skills: ['PostgreSQL', 'MariaDB', 'MySQL', 'Database Design'], level: 'Expert' },
-        { title: 'DevOps & Tools', skills: ['Git', 'Docker', 'AWS', 'CI/CD', 'Linux'], level: 'Intermediate' }
-      ];
-      
-      skillCategories.forEach(cat => {
+      doc.setTextColor(...GR);
+      doc.text('Full-Stack Developer', PW / 2, 26, { align: 'center' });
+
+      doc.setFontSize(9.5);
+      doc.setTextColor(...GR);
+      doc.text('React  Next.js  Node.js  Java  Grails  Django  PostgreSQL', PW / 2, 33, { align: 'center' });
+
+      doc.setFontSize(8.5);
+      doc.setTextColor(...LG);
+      doc.text('mhrjan0@gmail.com   |   Kathmandu, Nepal   |   github.com/ramesh', PW / 2, 40, { align: 'center' });
+
+      // sidebar divider (starts after header)
+      doc.setFillColor(...LG);
+      doc.rect(SB - 0.5, 46, 0.5, PH - 46, 'F');
+
+      let sy = 52;
+      let my = 52;
+
+      const sectionHeading = (label: string, x: number, y: number, w: number) => {
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.text(`${cat.title} (${cat.level}):`, margin, yPos);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0, 0, 0);
-        doc.text(cat.skills.join(' • '), margin + 5, yPos + 4);
-        yPos += 8;
-      });
-      
-      // Professional Experience Section
-      yPos = checkNewPage(40);
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('PROFESSIONAL EXPERIENCE', margin, yPos);
-      doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
-      
-      yPos += 8;
-      const experiences = [
-        { 
-          year: "2024 - Present", 
-          role: "Full-Stack Developer", 
-          company: "NIRC Nepal (Incubation And Research Company)", 
-          desc: "Developing enterprise applications using React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript. Delivering 6+ major projects including government portals, POS systems, and multi-language platforms.",
-          achievements: [
-            "Delivered 6+ major projects with high quality standards",
-            "Built scalable POS systems for restaurant management",
-            "Developed multi-language platforms supporting 8+ languages",
-            "Improved application performance by 40% through optimization",
-            "Implemented CI/CD pipelines reducing deployment time by 60%",
-            "Created reusable component libraries and design systems"
-          ]
-        }
-      ];
-      
-      experiences.forEach((exp) => {
-        yPos = checkNewPage(25);
-        
-        // Role and company
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text(exp.role, margin, yPos);
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.text(exp.company, margin, yPos + 4);
-        doc.text(exp.year, pageWidth - margin, yPos + 4, { align: 'right' });
-        
-        // Description
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0, 0, 0);
-        yPos = addText(exp.desc, margin, yPos + 8) + 2;
-        
-        // Key achievements
         doc.setFontSize(9);
-        doc.setTextColor(100, 100, 100);
-        doc.text('Key Achievements:', margin, yPos);
-        
-        exp.achievements.forEach((achievement) => {
-          doc.text(`• ${achievement}`, margin + 5, yPos + 4);
-          yPos += 4;
+        doc.setTextColor(...K);
+        doc.text(label.toUpperCase(), x, y);
+        doc.setDrawColor(...K);
+        doc.setLineWidth(0.4);
+        doc.line(x, y + 1.2, x + w, y + 1.2);
+        return y + 5;
+      };
+
+      const justifyLine = (line: string, x: number, y: number, w: number) => {
+        const words = line.trim().split(' ');
+        if (words.length <= 1) { doc.text(line, x, y); return; }
+        const totalWordWidth = words.reduce((sum: number, wd: string) => sum + doc.getTextWidth(wd), 0);
+        const gap = (w - totalWordWidth) / (words.length - 1);
+        let cx = x;
+        words.forEach((word: string, wi: number) => {
+          doc.text(word, cx, y);
+          cx += doc.getTextWidth(word) + (wi < words.length - 1 ? gap : 0);
         });
-        
-        yPos += 5;
-      });
-      
-      // Projects Section
-      doc.addPage();
-      yPos = margin;
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('KEY PROJECTS', margin, yPos);
-      doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
-      
-      yPos += 8;
-      const projects = [
-        { 
-          title: "Ambience Infosys Corporate Website", 
-          desc: "Modern IT company website with service showcase, client testimonials, and contact management system.",
-          tech: "Next.js, Tailwind CSS, Node.js, MariaDB",
-          impact: "Increased client inquiries by 150%"
-        },
-        { 
-          title: "Kansai Japanese Language Institute", 
-          desc: "Educational platform with course management, student enrollment, and progress tracking system.",
-          tech: "Next.js, MariaDB, Tailwind CSS, Node.js",
-          impact: "Streamlined course management for 500+ students"
-        },
-        { 
-          title: "Rakmina Consultancy Multi-language Platform", 
-          desc: "Comprehensive consultancy platform supporting multiple languages for international opportunities.",
-          tech: "Next.js, MariaDb, Multi-language Support",
-          impact: "Expanded reach to 10+ countries"
-        },
-        { 
-          title: "Lucazsoft Restaurant POS System", 
-          desc: "Complete restaurant management system with inventory, sales tracking, and reporting features.",
-          tech: "Next.js, MariaDB, Node.js, Real-time Updates",
-          impact: "Reduced order processing time by 70%"
-        },
-        { 
-          title: "GWP Government Portal", 
-          desc: "Comprehensive government web portal managing all government-related services and information.",
-          tech: "Html, Css, Java Script, Grails, Security",
-          impact: "Digitized 50+ government services"
-        }
-      ];
-      
-      projects.forEach((project) => {
-        yPos = checkNewPage(20);
-        
-        // Project title
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text(project.title, margin, yPos);
-        
-        // Impact
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.text(`Impact: ${project.impact}`, pageWidth - margin, yPos, { align: 'right' });
-        
-        // Description
+      };
+
+      const bodyText = (text: string, x: number, y: number, w: number) => {
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0, 0, 0);
-        yPos = addText(project.desc, margin, yPos + 4) + 2;
-        
-        // Technologies
-        doc.setFontSize(8);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Technologies: ${project.tech}`, margin, yPos);
-        
-        yPos += 8;
+        doc.setFontSize(9.5);
+        doc.setTextColor(...K);
+        const lines: string[] = doc.splitTextToSize(text, w);
+        lines.forEach((line: string, idx: number) => {
+          if (idx === lines.length - 1) doc.text(line, x, y + idx * 4.6);
+          else justifyLine(line, x, y + idx * 4.6, w);
+        });
+        return y + lines.length * 4.6;
+      };
+
+      const bullet = (text: string, x: number, y: number, w: number) => {
+        doc.setFontSize(9.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(...K);
+        doc.text('-', x + 0.5, y);
+        const bw = w - 4;
+        const lines: string[] = doc.splitTextToSize(text, bw);
+        lines.forEach((line: string, idx: number) => {
+          if (idx === lines.length - 1) doc.text(line, x + 3.5, y + idx * 4.6);
+          else justifyLine(line, x + 3.5, y + idx * 4.6, bw);
+        });
+        return y + lines.length * 4.6;
+      };
+
+      const checkMain = (need: number) => {
+        if (my + need > PH - 10) {
+          doc.addPage();
+          // no sidebar bg on new page
+          doc.setFillColor(...LG);
+          doc.rect(SB - 0.5, 0, 0.5, PH, 'F');
+          my = 14;
+        }
+      };
+
+      // ── SIDEBAR ──────────────────────────────────────────────────────────────
+
+      sy = sectionHeading('Contact', SML, sy, SMW);
+      ([
+        ['Email',    'mhrjan0@gmail.com'],
+        ['Location', 'Kathmandu, Nepal'],
+        ['GitHub',   'github.com/ramesh'],
+      ] as [string, string][]).forEach(([label, val]) => {
+        doc.setFontSize(8.5);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...GR);
+        doc.text(label, SML, sy);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(...K);
+        const lines = doc.splitTextToSize(val, SMW);
+        doc.text(lines, SML, sy + 3.8);
+        sy += lines.length * 3.8 + 4.5;
       });
-      
-      // Education & Certifications
-      yPos = checkNewPage(20);
-      doc.setFontSize(14);
+      sy += 3;
+
+      sy = sectionHeading('Technical Skills', SML, sy, SMW);
+      ([
+        { cat: 'Frontend',  items: 'Next.js, React, TypeScript, Tailwind CSS, JavaScript' },
+        { cat: 'Backend',   items: 'Node.js, PHP, Laravel, Java, Grails, Django, REST APIs' },
+        { cat: 'Database',  items: 'PostgreSQL, MariaDB, MySQL' },
+        { cat: 'Tools',     items: 'Git, CI/CD, Linux' },
+      ]).forEach(g => {
+        doc.setFontSize(8.5);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...GR);
+        doc.text(g.cat, SML, sy);
+        sy += 4;
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(...K);
+        const lines = doc.splitTextToSize(g.items, SMW);
+        doc.text(lines, SML, sy);
+        sy += lines.length * 4.2 + 2;
+      });
+      sy += 3;
+
+      sy = sectionHeading('Education', SML, sy, SMW);
+      doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text('EDUCATION & CERTIFICATIONS', margin, yPos);
-      doc.line(margin, yPos + 2, pageWidth - margin, yPos + 2);
-      
-      yPos += 8;
-      doc.setFontSize(10);
+      doc.setTextColor(...K);
+      doc.text('Bachelor of Computer', SML, sy);   sy += 4.2;
+      doc.text('Applications (BCA)', SML, sy);      sy += 4.2;
       doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0);
-      
-      const education = [
-        "Bachelor of Computer Applications (BCA) - Ongoing",
-        "Advanced Web Development Certification",
-        "Database Management Systems Certification",
-        "Agile Project Management Certification"
-      ];
-      
-      education.forEach(edu => {
-        doc.text(`• ${edu}`, margin, yPos);
-        yPos += 5;
+      doc.setTextColor(...GR);
+      doc.text('TU University', SML, sy);               sy += 9;
+
+      sy = sectionHeading('Languages', SML, sy, SMW);
+      ([['Nepali', 'Native'], ['English', 'Professional'], ['Hindi', 'Fluent']] as [string, string][])
+        .forEach(([lang, lvl]) => {
+          doc.setFontSize(8.5);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(...K);
+          doc.text(lang, SML, sy);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...GR);
+          doc.text(lvl, SML, sy + 3.8);
+          sy += 9;
+        });
+
+      // ── MAIN CONTENT ─────────────────────────────────────────────────────────
+
+      my = sectionHeading('Professional Summary', ML, my, MW);
+      const summaryText =
+        'Full-Stack Developer with 1+ year of hands-on experience building enterprise-grade web applications. ' +
+        'Delivered 6+ production projects spanning government portals, restaurant POS systems, and multi-language ' +
+        'consultancy platforms. Proficient across the full stack from React and Next.js UIs to Java/Grails and ' +
+        'Node.js backends with optimised relational databases.';
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...K);
+      const summaryLines: string[] = doc.splitTextToSize(summaryText, MW);
+      summaryLines.forEach((line: string, idx: number) => {
+        const isLast = idx === summaryLines.length - 1;
+        if (isLast) {
+          doc.text(line, ML, my);
+        } else {
+          const words = line.trim().split(' ');
+          if (words.length > 1) {
+            const totalWordWidth = words.reduce((sum: number, w: string) => sum + doc.getTextWidth(w), 0);
+            const gap = (MW - totalWordWidth) / (words.length - 1);
+            let cx = ML;
+            words.forEach((word: string, wi: number) => {
+              doc.text(word, cx, my);
+              cx += doc.getTextWidth(word) + (wi < words.length - 1 ? gap : 0);
+            });
+          } else {
+            doc.text(line, ML, my);
+          }
+        }
+        my += 4.6;
       });
-      
-      // Footer with professional details
-      const pageCount = doc.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        
-        // Footer line
-        doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.setLineWidth(0.3);
-        doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
-        
-        // Footer text
-        doc.setFontSize(7);
-        doc.setTextColor(150, 150, 150);
-        doc.text(`Ramesh Maharjan - Full-Stack Developer`, margin, pageHeight - 10);
-        doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
-        doc.text(`Generated on ${new Date().toLocaleDateString()}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
-      }
-      
-      // Save with professional filename
-      const timestamp = new Date().toISOString().split('T')[0];
-      doc.save(`Ramesh_Maharjan_CV_${timestamp}.pdf`);
-      
+      my += 5;
+
+      checkMain(50);
+      my = sectionHeading('Professional Experience', ML, my, MW);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(...K);
+      doc.text('Full-Stack Developer', ML, my);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...GR);
+      doc.text('2024 - Present', PW - MR, my, { align: 'right' });
+      my += 5;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...GR);
+      doc.text('NIRC Nepal - Nepal Incubation & Research Center', ML, my);
+      my += 6;
+
+      ([
+        'Architected and shipped 6+ production applications across diverse industry verticals.',
+        'Engineered a real-time restaurant POS reducing order-to-kitchen latency by 70%.',
+        'Built a multi-language consultancy platform (8 locales) expanding reach to 10+ countries.',
+        'Optimised query paths and frontend bundle sizes, improving performance by ~40%.',
+        'Introduced CI/CD pipelines cutting release cycles by 60%.',
+        'Developed a government portal digitising 50+ citizen-facing services using Java and Grails.',
+      ] as string[]).forEach(a => {
+        checkMain(8);
+        my = bullet(a, ML, my, MW) + 1;
+      });
+      my += 5;
+
+      checkMain(30);
+      my = sectionHeading('Key Projects', ML, my, MW);
+
+      ([
+        {
+          title: 'Ambience Infosys - Corporate Website',
+          stack: 'Next.js  Node.js  Tailwind CSS  MariaDB',
+          desc:  'Full-featured IT company site with service showcase, testimonials, and CMS. Drove 150% increase in client inquiries.',
+        },
+        {
+          title: 'Kansai Japanese Language Institute - LMS',
+          stack: 'Next.js  Node.js  MariaDB',
+          desc:  'Course management and student-enrollment platform serving 500+ learners with progress analytics.',
+        },
+        {
+          title: 'Rakmina Consultancy - Multi-language Platform',
+          stack: 'Next.js  MariaDB  i18n (8 locales)',
+          desc:  'Internationalised consultancy portal expanding reach across 10+ countries.',
+        },
+        {
+          title: 'Lucazsoft - Restaurant POS System',
+          stack: 'Next.js  Node.js  MariaDB  WebSockets',
+          desc:  'End-to-end POS with inventory tracking, live order updates, and financial reporting.',
+        },
+        {
+          title: 'GWP - Government Web Portal',
+          stack: 'Java  Grails  JavaScript  HTML  CSS',
+          desc:  'Secure, accessible portal consolidating 50+ government services for citizens.',
+        },
+      ]).forEach(p => {
+        checkMain(22);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(...K);
+        doc.text(p.title, ML, my);
+        my += 4.2;
+
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(9);
+        doc.setTextColor(...GR);
+        doc.text(p.stack, ML, my);
+        my += 4.5;
+
+        my = bodyText(p.desc, ML, my, MW) + 4;
+      });
+
+      // // footer
+      // const totalPages = doc.getNumberOfPages();
+      // for (let i = 1; i <= totalPages; i++) {
+      //   doc.setPage(i);
+      //   doc.setDrawColor(...LG);
+      //   doc.setLineWidth(0.2);
+      //   doc.line(ML, PH - 10, PW - MR, PH - 10);
+      //   doc.setFontSize(7.5);
+      //   doc.setTextColor(...LG);
+      //   doc.text('Ramesh Maharjan  |  Full-Stack Developer', ML, PH - 6);
+      //   doc.text(`${i} / ${totalPages}`, PW - MR, PH - 6, { align: 'right' });
+      // }
+
+      const date = new Date().toISOString().split('T')[0];
+      doc.save(`Ramesh_Maharjan_CV_${date}.pdf`);
+
       setCvGenerated(true);
       setIsGeneratingCV(false);
-      
-      // Reset success state after 3 seconds
       setTimeout(() => setCvGenerated(false), 3000);
-      
+
     } catch (error) {
-      console.error('Error generating CV:', error);
+      console.error('CV generation error:', error);
       setIsGeneratingCV(false);
-      // You could add a toast notification here
     }
   }, []);
 
@@ -332,7 +355,7 @@ const HeroSection = memo(function HeroSection() {
           transition={{ delay: 0.5, duration: 0.8 }}
           className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-light mb-6 sm:mb-8 leading-tight"
         >
-          Hi, I'm <span className="text-emerald-400 font-bold">Ramesh</span><br />
+          Hi, I&apos;m <span className="text-emerald-400 font-bold">Ramesh</span><br />
           <span className="bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
             Full-Stack Developer
           </span>
@@ -344,7 +367,7 @@ const HeroSection = memo(function HeroSection() {
           transition={{ delay: 0.8, duration: 0.8 }}
           className="text-gray-200 text-sm sm:text-base lg:text-lg leading-relaxed max-w-2xl mb-8 sm:mb-10 lg:mb-12"
         >
-          Full-stack developer at NIRC (Nepal Incubation & Research Center) specializing in React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript.
+          Full-stack developer at NIRC (Nepal Incubation &amp; Research Center) specializing in React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript.
           Delivering enterprise solutions including government portals, POS systems, and multi-language platforms. 
           1+ year of experience with 6+ major projects deployed and maintained.
         </motion.p>
@@ -355,10 +378,7 @@ const HeroSection = memo(function HeroSection() {
           transition={{ delay: 1, duration: 0.8 }}
           className="flex flex-col sm:flex-row gap-3 sm:gap-4"
         >
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button 
               onClick={generateCV} 
               disabled={isGeneratingCV}
@@ -394,11 +414,12 @@ const HeroSection = memo(function HeroSection() {
             </Button>
           </motion.div>
           
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Button onClick={handleViewProjects} variant="outline" className="text-white bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-400 hover:text-white rounded-full px-6 py-4 sm:px-8 sm:py-6 transition-all duration-300 shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] hover:shadow-[0_4px_16px_0_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:scale-95 text-sm sm:text-base">
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={handleViewProjects}
+              variant="outline"
+              className="text-white bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-400 hover:text-white rounded-full px-6 py-4 sm:px-8 sm:py-6 transition-all duration-300 shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] hover:shadow-[0_4px_16px_0_rgba(16,185,129,0.3)] hover:-translate-y-0.5 active:scale-95 text-sm sm:text-base"
+            >
               <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
               View Projects
             </Button>
