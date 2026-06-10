@@ -62,7 +62,11 @@ const HeroSection = memo(function HeroSection() {
 
       doc.setFontSize(8.5);
       doc.setTextColor(...LG);
-      doc.text('mhrjan0@gmail.com   |   Kathmandu, Nepal   |   github.com/ramesh', PW / 2, 40, { align: 'center' });
+      doc.text('mhrjan0@gmail.com   |   Kathmandu, Nepal   |   github.com/ramesh   |   linkedin.com/in/ramesh-mhr', PW / 2, 40, { align: 'center' });
+      const headerContactY = 40;
+      const headerContactText = 'mhrjan0@gmail.com   |   Kathmandu, Nepal   |   github.com/ramesh   |   linkedin.com/in/ramesh-mhr';
+      const hctw = doc.getTextWidth(headerContactText);
+      doc.link((PW - hctw) / 2, headerContactY - 3.5, hctw, 4.5, { url: 'mailto:mhrjan0@gmail.com' });
 
       // sidebar divider (starts after header)
       doc.setFillColor(...LG);
@@ -134,25 +138,34 @@ const HeroSection = memo(function HeroSection() {
 
       sy = sectionHeading('Contact', SML, sy, SMW);
       ([
-        ['Email',    'mhrjan0@gmail.com'],
-        ['Location', 'Kathmandu, Nepal'],
-        ['GitHub',   'github.com/ramesh'],
-      ] as [string, string][]).forEach(([label, val]) => {
+        { label: 'Email',    val: 'mhrjan0@gmail.com',                          url: 'mailto:mhrjan0@gmail.com' },
+        { label: 'Location', val: 'Kathmandu, Nepal',                            url: '' },
+        { label: 'GitHub',   val: 'github.com/ramesh',                           url: 'https://github.com/ramesh' },
+        { label: 'LinkedIn', val: 'linkedin.com/in/ramesh-mhr',                  url: 'https://www.linkedin.com/in/ramesh-mhr-1b0514337/' },
+      ]).forEach(({ label, val, url }) => {
         doc.setFontSize(8.5);
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(...GR);
         doc.text(label, SML, sy);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...K);
         const lines = doc.splitTextToSize(val, SMW);
-        doc.text(lines, SML, sy + 3.8);
+        const textY = sy + 3.8;
+        if (url) {
+          doc.setTextColor(0, 0, 200);
+          doc.text(lines, SML, textY);
+          const tw = doc.getTextWidth(lines[0]);
+          doc.link(SML, textY - 3.5, tw, 4.5, { url });
+        } else {
+          doc.setTextColor(...K);
+          doc.text(lines, SML, textY);
+        }
         sy += lines.length * 3.8 + 4.5;
       });
       sy += 3;
 
       sy = sectionHeading('Technical Skills', SML, sy, SMW);
       ([
-        { cat: 'Frontend',  items: 'Next.js, React, TypeScript, Tailwind CSS, JavaScript' },
+        { cat: 'Frontend',  items: 'Next.js, React, TypeScript, Tailwind CSS, JavaScript, Html, Css' },
         { cat: 'Backend',   items: 'Node.js, PHP, Laravel, Java, Grails, Django, REST APIs' },
         { cat: 'Database',  items: 'PostgreSQL, MariaDB, MySQL' },
         { cat: 'Tools',     items: 'Git, CI/CD, Linux' },
@@ -180,17 +193,14 @@ const HeroSection = memo(function HeroSection() {
       doc.setTextColor(...GR);
       doc.text('TU University', SML, sy);               sy += 9;
 
-      sy = sectionHeading('Languages', SML, sy, SMW);
-      ([['Nepali', 'Native'], ['English', 'Professional'], ['Hindi', 'Fluent']] as [string, string][])
-        .forEach(([lang, lvl]) => {
+      sy = sectionHeading('Programming Languages', SML, sy, SMW);
+      (['JavaScript', 'TypeScript', 'Python', 'Java', 'PHP'] as string[])
+        .forEach((lang: string) => {
           doc.setFontSize(8.5);
-          doc.setFont('helvetica', 'bold');
+          doc.setFont('helvetica', 'normal');
           doc.setTextColor(...K);
           doc.text(lang, SML, sy);
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor(...GR);
-          doc.text(lvl, SML, sy + 3.8);
-          sy += 9;
+          sy += 5.5;
         });
 
       // ── MAIN CONTENT ─────────────────────────────────────────────────────────
