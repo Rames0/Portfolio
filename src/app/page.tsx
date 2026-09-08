@@ -31,12 +31,12 @@ import { ErgonomicMobileDock } from "@/components/ErgonomicMobileDock";
 import { AnalogOscilloscope } from "@/components/AnalogOscilloscope";
 import { SpeakerCleaner } from "@/components/SpeakerCleaner";
 
-const navItems = ["Work", "Capabilities", "Principles", "Instruments", "Contact"];
+const navItems = ["Work", "About", "Capabilities", "Experience", "Lab", "Contact"];
 
 const expertise = [
   {
     title: "Frontend Engineering & Motion",
-    text: "Sub-20ms interactions, accessible design systems, fluid clamp layouts, and tactile WebGL / canvas integration.",
+    text: "Responsive interactions, accessible design systems, fluid clamp layouts, and tactile WebGL / canvas integration.",
     tools: "Next.js · React 19 · TypeScript · Tailwind · Framer Motion",
     icon: Layers3,
   },
@@ -303,10 +303,10 @@ function createResume() {
 
   ([
     "Architected and shipped 6+ production applications across diverse industry verticals.",
-    "Engineered a real-time restaurant POS reducing order-to-kitchen latency by 70%.",
+    "Engineered a real-time restaurant POS ensuring immediate order dispatch routing.",
     "Built a multi-language consultancy platform (8 locales) expanding reach to 10+ countries.",
-    "Optimised query paths and frontend bundle sizes, improving performance by ~40%.",
-    "Introduced CI/CD pipelines cutting release cycles by 60%.",
+    "Optimised query paths and frontend bundle sizes, improving client-side render speeds.",
+    "Introduced CI/CD pipelines automating testing and deployment workflows.",
     "Developed a government portal digitising 50+ citizen-facing services using Java and Grails.",
   ] as string[]).forEach((a) => {
     checkMain(8);
@@ -498,7 +498,7 @@ export default function Home() {
         <div className="flex items-center gap-2 sm:gap-3 justify-self-end">
           {/* Direct Clear Speaker Quick Launch Button */}
           <a
-            href="#instruments"
+            href="#lab"
             onClick={() => {
               soundEngine.modeSwitch();
               setActiveInstrument("speakerCleaner");
@@ -559,7 +559,7 @@ export default function Home() {
             </a>
           ))}
           <a
-            href="#instruments"
+            href="#lab"
             onClick={() => {
               soundEngine.modeSwitch();
               setActiveInstrument("speakerCleaner");
@@ -579,8 +579,7 @@ export default function Home() {
       </div>
 
       <main>
-        {/* ACT I: Asymmetric Hero / Telemetry Monolith */}
-        <section className="hero" id="top">
+<section className="hero" id="top">
           <div className="hero-index" aria-hidden="true">
             <span>OPERATIONAL</span>
             <span>2026</span>
@@ -664,8 +663,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-        {/* ACT III: The Interactive Specimen Matrix & Project X-Ray Console */}
-        <section className="work section" id="work">
+
+<section className="work section" id="work">
           <motion.div {...reveal} className="work-header">
             <div>
               <SectionLabel>Selected Work</SectionLabel>
@@ -683,8 +682,37 @@ export default function Home() {
           {/* Integrated Interactive Project X-Ray Console */}
           <ProjectXRayConsole />
         </section>
-        {/* ACT V: Technical Capabilities & Credentials */}
-        <section className="expertise section" id="capabilities">
+
+<section className="about section" id="about">
+          <motion.div {...reveal} className="section-heading">
+            <SectionLabel>Philosophy</SectionLabel>
+            <h2>Requirements are useless until they become reliable reality.</h2>
+          </motion.div>
+          <motion.div {...reveal} className="about-copy">
+            <p className="lead">
+              My engineering approach bridges architecture and human touch: understand the business domain, construct rigorous data schemas, and execute an interface that feels instant and mechanical.
+            </p>
+            <p>
+              At NIRC Nepal, I work across React, Next.js, Node.js, Laravel, Django, Java, and Grails projects. I treat database query plans, network serialization, and 60fps micro-animations with identical mechanical discipline.
+            </p>
+            <div className="signature-row">
+              <div>
+                <BriefcaseBusiness />
+                <span>
+                  <strong>NIRC Nepal</strong>Full-Stack Developer (2024 - Present)
+                </span>
+              </div>
+              <div>
+                <MapPin />
+                <span>
+                  <strong>Kathmandu, Nepal</strong>Available Globally & Remotely
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+
+<section className="expertise section" id="capabilities" style={{ paddingBottom: "40px" }}>
           <motion.div {...reveal} className="section-heading expertise-heading">
             <SectionLabel>Capabilities</SectionLabel>
             <h2>Comfortable across the entire application stack.</h2>
@@ -703,6 +731,9 @@ export default function Home() {
               );
             })}
           </div>
+        </section>
+
+        <section className="section pt-0" id="experience">
 
           <motion.div {...reveal} className="experience-row">
             <div>
@@ -718,58 +749,9 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <motion.div {...reveal} className="experience-row experience-row-secondary">
-            <div>
-              <SectionLabel>Education</SectionLabel>
-            </div>
-            <div className="experience-main">
-              <span>2020 — 2025</span>
-              <h3>Bachelor of Computer Applications</h3>
-              <p>Tribhuvan University</p>
-            </div>
-            <p>
-              In-depth study of computer science foundations, relational database management, data structures, and modern software architectures.
-            </p>
-          </motion.div>
-        </section>
-        {/* Kinetic Mechanical Tape */}
-        <div className="kinetic-band" aria-hidden="true">
-          <div className="kinetic-track">
-            <span>AUDIT SCHEMA</span>
-            <i>✦</i>
-            <span>STREAM RSC WIRES</span>
-            <i>✦</i>
-            <span>OPTIMIZE QUERY LATENCY</span>
-            <i>✦</i>
-            <span>DELIVER TACTILE PERFECTION</span>
-            <i>✦</i>
-            <span>AUDIT SCHEMA</span>
-            <i>✦</i>
-            <span>STREAM RSC WIRES</span>
-            <i>✦</i>
-            <span>OPTIMIZE QUERY LATENCY</span>
-            <i>✦</i>
-            <span>DELIVER TACTILE PERFECTION</span>
-            <i>✦</i>
-          </div>
-        </div>
-        {/* ACT IV: Anti-AI Architectural Manifesto */}
-        <section className="statement" id="principles" aria-label="Development approach">
-          <p>[ENGINEERING AXIOMS]</p>
-          <div className="statement-line">
-            <span>RESILIENT UNDERNEATH</span>
-            <i>and</i>
-            <strong>OBVIOUS IN HAND.</strong>
-          </div>
-          <div className="statement-meta">
-            <span>01 / PURPOSE-DRIVEN ARCHITECTURE</span>
-            <span>02 / STRICT SUB-20MS RESPONSIVENESS</span>
-            <span>03 / RELATIONAL NORMALIZATION</span>
-            <span>04 / HUMAN-CENTERED INTERFACES</span>
-          </div>
-        </section>
-        {/* ACT II.5: Interactive Hardware Signal Bench & Speaker Purge Utility */}
-        <section className="section bg-[#161714] text-[#F4F3EE] border-b border-[#2C2E29]" id="instruments">
+          </section>
+
+<section className="section bg-[#161714] text-[#F4F3EE] border-b border-[#2C2E29]" id="lab">
           <motion.div {...reveal} className="section-heading mb-8">
             <div className="section-label text-[#E3C849]">
               <span className="bg-[#E3C849] solid" />
@@ -834,37 +816,39 @@ export default function Home() {
             <SpeakerCleaner />
           )}
         </section>
-        {/* ACT II: Narrative Perspective & Engineering Foundation */}
-        <section className="about section" id="about">
-          <motion.div {...reveal} className="section-heading">
-            <SectionLabel>Philosophy</SectionLabel>
-            <h2>Requirements are useless until they become reliable reality.</h2>
-          </motion.div>
-          <motion.div {...reveal} className="about-copy">
-            <p className="lead">
-              My engineering approach bridges architecture and human touch: understand the business domain, construct rigorous data schemas, and execute an interface that feels instant and mechanical.
-            </p>
-            <p>
-              At NIRC Nepal, I work across React, Next.js, Node.js, Laravel, Django, Java, and Grails projects. I treat database query plans, network serialization, and 60fps micro-animations with identical mechanical discipline.
-            </p>
-            <div className="signature-row">
-              <div>
-                <BriefcaseBusiness />
-                <span>
-                  <strong>NIRC Nepal</strong>Full-Stack Developer (2024 - Present)
-                </span>
-              </div>
-              <div>
-                <MapPin />
-                <span>
-                  <strong>Kathmandu, Nepal</strong>Available Globally & Remotely
-                </span>
-              </div>
+
+<section className="statement" id="principles" aria-label="Development approach">
+          <p>[ENGINEERING AXIOMS]</p>
+          <div className="statement-line">
+            <span>RESILIENT UNDERNEATH</span>
+            <i>and</i>
+            <strong>OBVIOUS IN HAND.</strong>
+          </div>
+          <div className="statement-meta">
+            <span>01 / PURPOSE-DRIVEN ARCHITECTURE</span>
+            <span>02 / RESPONSIVE INTERACTION BY DEFAULT</span>
+            <span>03 / RELATIONAL NORMALIZATION</span>
+            <span>04 / HUMAN-CENTERED INTERFACES</span>
+          </div>
+        </section>
+
+<section className="section pt-0" id="education">
+          <motion.div {...reveal} className="experience-row experience-row-secondary">
+            <div>
+              <SectionLabel>Education</SectionLabel>
             </div>
+            <div className="experience-main">
+              <span>2020 — 2025</span>
+              <h3>Bachelor of Computer Applications</h3>
+              <p>Tribhuvan University</p>
+            </div>
+            <p>
+              In-depth study of computer science foundations, relational database management, data structures, and modern software architectures.
+            </p>
           </motion.div>
         </section>
-        {/* ACT VI: Dispatch Terminal / Direct Contact Channel */}
-        <section className="contact section" id="contact">
+
+<section className="contact section" id="contact">
           <div className="contact-copy">
             <SectionLabel>Transmission</SectionLabel>
             <h2>

@@ -7,7 +7,7 @@ import { GoogleAnalytics, MicrosoftClarity } from "./analytics";
 export const metadata: Metadata = {
     metadataBase: new URL('https://ramesh0.com.np'),
     title: {
-        default: "Ramesh Maharjan | Senior Full-Stack Engineer",
+        default: "Ramesh Maharjan | Full-Stack Engineer",
         template: "%s | Ramesh Maharjan"
     },
     description: "Ramesh Maharjan is a Full-Stack Engineer and Creative Technologist in Kathmandu, Nepal. Specializing in high-performance React, Next.js, Node.js, Laravel, and WebGL architectures.",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
         locale: "en_US",
         url: "https://ramesh0.com.np",
         siteName: "Ramesh Maharjan — Engineering Portfolio",
-        title: "Ramesh Maharjan | Senior Full-Stack Engineer",
+        title: "Ramesh Maharjan | Full-Stack Engineer",
         description: "Explore the technical portfolio of Ramesh Maharjan. Showcasing resilient systems, Next.js / React ecosystems, backend API design in Laravel/Java, and tactile web experiments.",
     },
     twitter: {
@@ -89,7 +89,7 @@ export default function RootLayout({
                                 "@type": "ProfilePage",
                                 "@id": "https://ramesh0.com.np/#webpage",
                                 "url": "https://ramesh0.com.np",
-                                "name": "Ramesh Maharjan | Senior Full-Stack Engineer",
+                                "name": "Ramesh Maharjan | Full-Stack Engineer",
                                 "description": "Portfolio of Ramesh Maharjan, a full-stack developer in Kathmandu specializing in Next.js, React, Laravel, and enterprise architecture.",
                                 "isPartOf": { "@id": "https://ramesh0.com.np/#website" },
                                 "about": { "@id": "https://ramesh0.com.np/#person" }
@@ -108,7 +108,7 @@ export default function RootLayout({
                                 "name": "Ramesh Maharjan",
                                 "alternateName": "ramesh0",
                                 "jobTitle": [
-                                    "Senior Full-Stack Engineer", 
+                                    "Full-Stack Engineer", 
                                     "Creative Technologist"
                                 ],
                                 "url": "https://ramesh0.com.np",

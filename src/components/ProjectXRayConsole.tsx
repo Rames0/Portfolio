@@ -67,7 +67,7 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     image: "/Lucaz.png",
     url: "https://lucazsoft.com/login",
     metrics: [
-      { label: "Dispatch Latency", value: "<16ms 99th pctl" },
+      { label: "Dispatch Latency", value: "Low-Latency Sync" },
       { label: "Architecture", value: "Event-Driven Sockets" },
       { label: "Database Isolation", value: "ACID Ledger" },
     ],
@@ -158,7 +158,7 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     image: "/Ambience.png",
     url: "https://ambienceinfosys.com.np/",
     metrics: [
-      { label: "Lighthouse Score", value: "99 / 100 Perf" },
+      { label: "Lighthouse Score", value: "Optimized Core Vitals" },
       { label: "Hydration Cost", value: "Zero Layout Shift" },
       { label: "Rendering", value: "RSC Streaming" },
     ],
@@ -215,7 +215,7 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
       {
         timestamp: "12:14:02.140",
         channel: "PERF_AUDIT",
-        message: "LCP recorded at 420ms; FID below measurable threshold",
+        message: "LCP rendering successful; FID in safe threshold",
         latency: "0.2ms",
         level: "info",
       },
@@ -233,7 +233,7 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     image: "/Kansai.png",
     url: "https://kansaijapaneselanguage.com.np/",
     metrics: [
-      { label: "Intake Throughput", value: "+140% Form Submissions" },
+      { label: "Intake Throughput", value: "Streamlined Lead Intake" },
       { label: "Stack", value: "Laravel / MariaDB" },
       { label: "Mobile Usability", value: "Thumb-Zone Ergonomics" },
     ],
@@ -308,7 +308,7 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     image: "/Rakmina.png",
     url: "https://rakmina.nirc.com.np/",
     metrics: [
-      { label: "Localization", value: "Zero-Latency String Swap" },
+      { label: "Localization", value: "Instant Translation" },
       { label: "Database", value: "PostgreSQL Full-Text" },
       { label: "Indexing", value: "Full Destination Schema" },
     ],

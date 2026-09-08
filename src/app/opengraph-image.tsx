@@ -78,7 +78,7 @@ export default async function Image() {
               marginTop: 20,
             }}
           >
-            Senior Full-Stack Engineer & Creative Technologist
+            Full-Stack Engineer & Creative Technologist
           </div>
         </div>
 
