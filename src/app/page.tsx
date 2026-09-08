@@ -30,13 +30,14 @@ import { TactileAudioToggle } from "@/components/TactileAudioToggle";
 import { ErgonomicMobileDock } from "@/components/ErgonomicMobileDock";
 import { AnalogOscilloscope } from "@/components/AnalogOscilloscope";
 import { SpeakerCleaner } from "@/components/SpeakerCleaner";
+import { WORK_STATUS } from "@/lib/config";
 
 const navItems = ["Work", "About", "Capabilities", "Experience", "Lab", "Contact"];
 
 const expertise = [
   {
     title: "Frontend Engineering & Motion",
-    text: "Responsive interactions, accessible design systems, fluid clamp layouts, and tactile WebGL / canvas integration.",
+    text: "Responsive interactions, accessible design systems, fluid clamp layouts, and tactile canvas-based visualizers.",
     tools: "Next.js · React 19 · TypeScript · Tailwind · Framer Motion",
     icon: Layers3,
   },
@@ -252,7 +253,7 @@ function createResume() {
   // ── MAIN CONTENT ───────────────────────────────────────────────────────
   my = sectionHeading("Professional Summary", ML, my, MW);
   const summaryText =
-    "Full-Stack Developer with 1+ year of hands-on experience building enterprise-grade web applications. " +
+    "Full-Stack Developer with 1+ year of hands-on experience building resilient web applications. " +
     "Delivered 6+ production projects spanning government portals, restaurant POS systems, and multi-language " +
     "consultancy platforms. Proficient across the full stack from React and Next.js UIs to Java/Grails and " +
     "Node.js backends with optimised relational databases.";
@@ -511,13 +512,15 @@ export default function Home() {
           </a>
 
           <TactileAudioToggle />
-          <a
-            className="availability desktop-only"
-            href="mailto:mhrjan0@gmail.com"
-            onClick={() => soundEngine.relayClick()}
-          >
-            <span /> Available for work
-          </a>
+          {WORK_STATUS.available && (
+  <a
+    className="availability desktop-only"
+    href="mailto:mhrjan0@gmail.com"
+    onClick={() => soundEngine.relayClick()}
+  >
+    <span style={{ backgroundColor: WORK_STATUS.color, boxShadow: `0 0 0 4px ${WORK_STATUS.color}22` }} /> {WORK_STATUS.label}
+  </a>
+)}
           <button
             className="menu-button"
             onClick={() => {
@@ -686,14 +689,14 @@ export default function Home() {
 <section className="about section" id="about">
           <motion.div {...reveal} className="section-heading">
             <SectionLabel>Philosophy</SectionLabel>
-            <h2>Requirements are useless until they become reliable reality.</h2>
+            <h2>Requirements matter when they become reliable systems.</h2>
           </motion.div>
           <motion.div {...reveal} className="about-copy">
             <p className="lead">
               My engineering approach bridges architecture and human touch: understand the business domain, construct rigorous data schemas, and execute an interface that feels instant and mechanical.
             </p>
             <p>
-              At NIRC Nepal, I work across React, Next.js, Node.js, Laravel, Django, Java, and Grails projects. I treat database query plans, network serialization, and 60fps micro-animations with identical mechanical discipline.
+              At NIRC Nepal, I work across React, Next.js, Node.js, Laravel, Django, Java, and Grails projects. I treat database query plans, network latency, and fluid micro-interactions with identical mechanical discipline.
             </p>
             <div className="signature-row">
               <div>
@@ -745,7 +748,7 @@ export default function Home() {
               <p>Nepal Incubation & Research Center (NIRC Nepal)</p>
             </div>
             <p>
-              Developing production applications including high-throughput restaurant point-of-sale software, multilingual advisory systems, corporate portals, and public-sector tools.
+              Developing production applications including real-time restaurant point-of-sale software, multilingual advisory systems, corporate portals, and public-sector tools.
             </p>
           </motion.div>
 
@@ -764,7 +767,7 @@ export default function Home() {
             </h2>
           </motion.div>
           <p className="font-mono text-xs text-[#A6A89F] max-w-2xl mb-6 leading-relaxed">
-            Directly test analog frequency response, database transaction spikes, and real-time audio synthesis — or engage super-powerful acoustic air jet pulses & haptic shocks to eject water and dust with active 110Hz subsonic hardware protection.
+            Experiment with real-time audio synthesis, frequency visualization, database transaction streams, and a focused 110 Hz speaker-clearing tone.
           </p>
 
           {/* Instrument Switcher Tabs */}

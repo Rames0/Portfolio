@@ -1,4 +1,5 @@
-import { ImageResponse } from 'next/og'
+import { ImageResponse } from 'next/og';
+import { WORK_STATUS } from '@/lib/config';
  
 export const runtime = 'edge'
 export const alt = 'Ramesh Maharjan - Full-Stack Engineer'
@@ -104,7 +105,7 @@ export default async function Image() {
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ color: '#666860', fontSize: 20, marginBottom: 8, textTransform: 'uppercase' }}>Status</span>
-            <span style={{ color: '#10B981', fontSize: 24, fontWeight: 'bold' }}>Available</span>
+            <span style={{ color: WORK_STATUS.colorHex, fontSize: 24, fontWeight: 'bold' }}>{WORK_STATUS.available ? 'Available' : 'Engaged'}</span>
           </div>
         </div>
       </div>

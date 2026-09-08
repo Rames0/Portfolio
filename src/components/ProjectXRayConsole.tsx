@@ -43,6 +43,7 @@ export interface SpecimenProject {
   client: string;
   stack: string[];
   description: string;
+  role?: string;
   image: string;
   url: string;
   metrics: { label: string; value: string }[];
@@ -63,13 +64,14 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     client: "Hospitality Industry",
     stack: ["Laravel", "MariaDB", "Node.js", "WebSockets"],
     description:
-      "Engineered point-of-sale operational architecture covering high-throughput order flow, split-second kitchen display syncing, and real-time inventory reconciliation under peak dining pressure.",
+      "Engineered point-of-sale operational architecture covering real-time order flow, split-second kitchen display syncing, and real-time inventory reconciliation under peak dining pressure.",
+    role: "Full-stack architecture, transactional workflows, KDS synchronization, inventory logic, and deployment.",
     image: "/Lucaz.png",
     url: "https://lucazsoft.com/login",
     metrics: [
       { label: "Dispatch Latency", value: "Low-Latency Sync" },
       { label: "Architecture", value: "Event-Driven Sockets" },
-      { label: "Database Isolation", value: "ACID Ledger" },
+      { label: "Database Isolation", value: "ACID Transactions" },
     ],
     architecture: {
       overview:
@@ -155,6 +157,7 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     stack: ["Next.js", "Node.js", "Tailwind CSS", "TypeScript"],
     description:
       "Architected and deployed the public platform for an established IT firm, transforming a dense services catalogue into an effortless, ultra-responsive editorial experience with sub-second page delivery.",
+    role: "Designed and implemented the corporate framework, SEO-optimized content workflows, and reliable server-side data fetching.",
     image: "/Ambience.png",
     url: "https://ambienceinfosys.com.np/",
     metrics: [
@@ -305,6 +308,7 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     stack: ["Laravel", "PostgreSQL", "Localization", "Tailwind CSS"],
     description:
       "Constructed a high-performance multilingual directory for students researching international universities, visa pathways, and country-specific scholarship qualification criteria.",
+    role: "Engineered the multi-language localization system and deployment pipelining across 8 targeted international regions.",
     image: "/Rakmina.png",
     url: "https://rakmina.nirc.com.np/",
     metrics: [
@@ -380,6 +384,7 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     stack: ["Java", "Grails", "JavaScript", "HTML", "CSS", "MariaDB"],
     description:
       "Secure, accessible portal consolidating 50+ government services for citizens. Features role-based access control, document verification pipelines, and high-availability public record queries.",
+    role: "Full-stack development of administrative workflows, document processing modules, reporting interfaces, and production integrations.",
     image: "/GWP.png",
     url: "https://github.com/Rames0",
     metrics: [
@@ -692,6 +697,12 @@ export function ProjectXRayConsole() {
                     <p className="text-white text-xs sm:text-sm leading-relaxed">
                       {project.description}
                     </p>
+                    {project.role && (
+                      <div className="mt-4 border-t border-[#161714]/20 pt-3">
+                        <span className="block font-bold text-[10px] uppercase text-[#666860] mb-1">My Role</span>
+                        <p className="m-0 text-sm text-white">{project.role}</p>
+                      </div>
+                    )}
                   </div>
 
                   <a

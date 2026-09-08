@@ -391,7 +391,7 @@ export function AnalogOscilloscope() {
         </div>
 
         <div className="absolute bottom-2 inset-x-2.5 pointer-events-none flex justify-between items-center font-mono text-[8px] sm:text-[9px] text-[#555]">
-          <span>CALIBRATED FOR PRODUCTION</span>
+          <span>SIGNAL CALIBRATED</span>
           <span className="hidden sm:inline">KATHMANDU LABORATORY SPECIMEN</span>
         </div>
       </div>
