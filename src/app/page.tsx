@@ -9,6 +9,7 @@ import {
   Code2,
   Database,
   Download,
+  Droplets,
   Github,
   Layers3,
   Linkedin,
@@ -28,6 +29,7 @@ import { ProjectXRayConsole } from "@/components/ProjectXRayConsole";
 import { TactileAudioToggle } from "@/components/TactileAudioToggle";
 import { ErgonomicMobileDock } from "@/components/ErgonomicMobileDock";
 import { AnalogOscilloscope } from "@/components/AnalogOscilloscope";
+import { SpeakerCleaner } from "@/components/SpeakerCleaner";
 
 const navItems = ["About", "Instruments", "Work", "Manifesto", "Capabilities", "Contact"];
 
@@ -179,7 +181,7 @@ function createResume() {
     }
   };
 
-  // ── SIDEBAR ──────────────────────────────────────────────────────────
+  // ── SIDEBAR ────────────────────────────────────────────────────────────
   sy = sectionHeading("Contact", SML, sy, SMW);
   ([
     { label: "Email",    val: "mhrjan0@gmail.com",                          url: "mailto:mhrjan0@gmail.com" },
@@ -247,7 +249,7 @@ function createResume() {
       sy += 5.5;
     });
 
-  // ── MAIN CONTENT ────────────────────────────────────────────────────
+  // ── MAIN CONTENT ───────────────────────────────────────────────────────
   my = sectionHeading("Professional Summary", ML, my, MW);
   const summaryText =
     "Full-Stack Developer with 1+ year of hands-on experience building enterprise-grade web applications. " +
@@ -367,6 +369,7 @@ export default function Home() {
   const [formStatus, setFormStatus] = useState("");
   const [sending, setSending] = useState(false);
   const [ktmTime, setKtmTime] = useState("");
+  const [activeInstrument, setActiveInstrument] = useState<"oscilloscope" | "speakerCleaner">("oscilloscope");
   const portraitRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -392,6 +395,18 @@ export default function Home() {
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Listen to hash to switch instrument tab if URL points to #speaker-cleaner
+  useEffect(() => {
+    const handleHash = () => {
+      if (typeof window !== "undefined" && window.location.hash === "#speaker-cleaner") {
+        setActiveInstrument("speakerCleaner");
+      }
+    };
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
   function movePortrait(event: PointerEvent<HTMLDivElement>) {
@@ -480,7 +495,21 @@ export default function Home() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3 justify-self-end">
+        <div className="flex items-center gap-2 sm:gap-3 justify-self-end">
+          {/* Direct Clear Speaker Quick Launch Button */}
+          <a
+            href="#instruments"
+            onClick={() => {
+              soundEngine.modeSwitch();
+              setActiveInstrument("speakerCleaner");
+            }}
+            className="hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 border border-[#161714] font-mono text-[10px] font-bold uppercase bg-[#38BDF8]/15 hover:bg-[#38BDF8]/30 text-[#161714] transition-all shadow-[1px_1px_0px_#161714]"
+            title="Clear Speaker Water & Dust with Sound and Vibration"
+          >
+            <Droplets size={12} className="text-[#0284C7]" />
+            <span>CLEAR SPEAKER [SAFE PURGE]</span>
+          </a>
+
           <TactileAudioToggle />
           <a
             className="availability desktop-only"
@@ -529,6 +558,17 @@ export default function Home() {
               {item}
             </a>
           ))}
+          <a
+            href="#instruments"
+            onClick={() => {
+              soundEngine.modeSwitch();
+              setActiveInstrument("speakerCleaner");
+              setMenuOpen(false);
+            }}
+            className="text-[#38BDF8] flex items-center gap-3 pt-2"
+          >
+            <Droplets size={26} /> Clear Speaker
+          </a>
         </nav>
         <div className="mt-auto space-y-3 font-mono text-xs">
           <p className="text-[#a9aba3]">Direct Dispatch Channel:</p>
@@ -677,7 +717,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ACT II.5: Interactive Hardware Signal Bench (Oscilloscope) */}
+        {/* ACT II.5: Interactive Hardware Signal Bench & Speaker Purge Utility */}
         <section className="section bg-[#161714] text-[#F4F3EE] border-b border-[#2C2E29]" id="instruments">
           <motion.div {...reveal} className="section-heading mb-8">
             <div className="section-label text-[#E3C849]">
@@ -685,16 +725,63 @@ export default function Home() {
               Field Instrumentation
             </div>
             <h2 className="text-white">
-              Signal & Concurrency
+              Signal Bench &
               <br />
-              Harmonic Bench.
+              Hardware Purge.
             </h2>
           </motion.div>
-          <p className="font-mono text-xs text-[#A6A89F] max-w-2xl mb-8 leading-relaxed">
-            Directly test analog frequency response, Lissajous relational convergence, database transaction spikes, and WebSocket socket bursts with interactive hardware dials and real-time audio synthesis.
+          <p className="font-mono text-xs text-[#A6A89F] max-w-2xl mb-6 leading-relaxed">
+            Directly test analog frequency response, database transaction spikes, and real-time audio synthesis — or engage super-powerful acoustic air jet pulses & haptic shocks to eject water and dust with active 110Hz subsonic hardware protection.
           </p>
 
-          <AnalogOscilloscope />
+          {/* Instrument Switcher Tabs */}
+          <div className="flex flex-wrap items-center gap-2 mb-6 border-b border-[#2C2E29] pb-4 font-mono text-xs">
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.modeSwitch();
+                setActiveInstrument("oscilloscope");
+              }}
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 border transition-all ${
+                activeInstrument === "oscilloscope"
+                  ? "bg-[#E3C849] text-[#161714] border-[#E3C849] font-bold shadow-[2px_2px_0px_#E3C849]"
+                  : "bg-[#1A1C16] text-[#A6A89F] border-[#2C2E29] hover:text-white hover:border-[#444]"
+              }`}
+            >
+              <span>01 //</span>
+              <span>HARMONIC OSCILLOSCOPE</span>
+            </button>
+
+            <button
+              type="button"
+              id="speaker-cleaner-tab"
+              onClick={() => {
+                soundEngine.modeSwitch();
+                setActiveInstrument("speakerCleaner");
+              }}
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 border transition-all ${
+                activeInstrument === "speakerCleaner"
+                  ? "bg-[#38BDF8] text-[#161714] border-[#38BDF8] font-bold shadow-[2px_2px_0px_#38BDF8]"
+                  : "bg-[#1A1C16] text-[#A6A89F] border-[#2C2E29] hover:text-white hover:border-[#444]"
+              }`}
+            >
+              <Droplets
+                size={14}
+                className={activeInstrument === "speakerCleaner" ? "text-[#161714]" : "text-[#38BDF8]"}
+              />
+              <span>02 //</span>
+              <span>CLEAR SPEAKER (WATER & DIRT EJECT)</span>
+              <span className="px-1.5 py-0.5 bg-[#FF5500] text-white text-[8px] font-black uppercase tracking-wider">
+                FULL POWER
+              </span>
+            </button>
+          </div>
+
+          {activeInstrument === "oscilloscope" ? (
+            <AnalogOscilloscope />
+          ) : (
+            <SpeakerCleaner />
+          )}
         </section>
 
         {/* ACT III: The Interactive Specimen Matrix & Project X-Ray Console */}

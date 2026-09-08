@@ -372,8 +372,99 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     ],
   },
   {
-    id: "sam-maharjan",
+    id: "gwp-portal",
     number: "05",
+    title: "GWP - Government Web Portal",
+    type: "Citizen Public Infrastructure",
+    client: "Public Administration",
+    stack: ["Java", "Grails", "JavaScript", "HTML", "CSS", "MariaDB"],
+    description:
+      "Secure, accessible portal consolidating 50+ government services for citizens. Features role-based access control, document verification pipelines, and high-availability public record queries.",
+    image: "/GWP.png",
+    url: "https://github.com/Rames0",
+    metrics: [
+      { label: "Consolidated Services", value: "50+ Government Portals" },
+      { label: "Backend Core", value: "Java / Grails GORM" },
+      { label: "Compliance", value: "WCAG & Strict RBAC" },
+    ],
+    architecture: {
+      overview:
+        "Enterprise Grails MVC runtime with Spring Security RBAC, Hibernate/GORM ORM abstraction, and accessible multi-tenant citizen services.",
+      nodes: [
+        {
+          id: "citizen-portal-ui",
+          label: "Citizen Web Interface",
+          type: "client",
+          detail: "WCAG 2.1 AA accessible semantic forms with client-side verification and multi-device usability",
+          protocol: "HTTPS / TLS 1.3",
+          latency: "1.2ms",
+        },
+        {
+          id: "security-guard",
+          label: "Spring Security & RBAC",
+          type: "edge",
+          detail: "Role-based access filter chain with CSRF prevention and departmental authorization checks",
+          protocol: "Spring Filter Chain",
+          latency: "2.8ms",
+        },
+        {
+          id: "grails-kernel",
+          label: "Grails MVC Engine",
+          type: "service",
+          detail: "Java/Groovy application service orchestrating workflow lifecycles and document status tracking",
+          protocol: "JVM Execution / REST",
+          latency: "16ms",
+        },
+        {
+          id: "gorm-ledger",
+          label: "MariaDB Relational Store",
+          type: "db",
+          detail: "ACID compliant relational schema with automated audit stamps and partitioned record tables",
+          protocol: "GORM / JDBC",
+          latency: "2.4ms",
+        },
+      ],
+      dataFlow: [
+        "Citizen inputs application or checks service docket status",
+        "Spring Security verifies role authorization and CSRF token integrity",
+        "Grails controllers execute business logic and validate document payloads",
+        "GORM commits state change to MariaDB and issues tamper-proof receipt",
+      ],
+    },
+    telemetryLogs: [
+      {
+        timestamp: "14:32:01.002",
+        channel: "ROUTER_INLET",
+        message: "Citizen portal dispatch verified: [SRV-CIVIC-48]",
+        latency: "1.2ms",
+        level: "ok",
+      },
+      {
+        timestamp: "14:32:01.018",
+        channel: "SPRING_RBAC",
+        message: "Role authorization cleared for administrative auditor",
+        latency: "2.8ms",
+        level: "ok",
+      },
+      {
+        timestamp: "14:32:01.034",
+        channel: "GORM_HIBERNATE",
+        message: "ACID transaction committed with immutable audit stamp",
+        latency: "14.5ms",
+        level: "ok",
+      },
+      {
+        timestamp: "14:32:01.050",
+        channel: "RECEIPT_ENGINE",
+        message: "Tamper-proof tracking docket generated for citizen",
+        latency: "1.9ms",
+        level: "info",
+      },
+    ],
+  },
+  {
+    id: "sam-maharjan",
+    number: "06",
     title: "Sam Maharjan Portfolio",
     type: "Creative Technologist Folio",
     client: "Personal Portfolio",
@@ -529,7 +620,7 @@ export function ProjectXRayConsole() {
       </div>
 
       {/* Project Selector Ribbon (Horizontal scroll on mobile, grid on desktop) */}
-      <div className="flex sm:grid sm:grid-cols-5 overflow-x-auto no-scrollbar border-b border-[#161714] bg-[#F4F3EE]">
+      <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-6 overflow-x-auto no-scrollbar border-b border-[#161714] bg-[#F4F3EE]">
         {ALL_SPECIMENS.map((specimen, idx) => {
           const isActive = idx === activeProjectIdx;
           return (
