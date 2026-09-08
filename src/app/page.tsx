@@ -1,571 +1,692 @@
 "use client";
 
-import { useState, useEffect, Suspense, memo, useCallback } from "react";
-import emailjs from '@emailjs/browser';
-import { Menu, Code, Briefcase, Rocket, Folder, MessageSquare, ExternalLink, Globe, Users, Server, Send, Mail, MapPin } from "lucide-react";
+import emailjs from "@emailjs/browser";
 import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
-import Card3D from "@/components/Card3D";
-import { SiNextdotjs, SiPostgresql, SiNodedotjs, SiTailwindcss, SiLaravel, SiMariadb, SiWordpress, SiReact, SiTypescript, SiMysql, SiPhp, SiJavascript } from "react-icons/si";
-import BackgroundAnimation from "@/components/BackgroundAnimation";
-import Sidebar from "@/components/Sidebar";
-import Navigation from "@/components/Navigation";
-import MobileNav from "@/components/MobileNav";
-import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import type { FormEvent } from "react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Code2,
+  Database,
+  Download,
+  Github,
+  Layers3,
+  Linkedin,
+  Mail,
+  MapPin,
+  Menu,
+  Send,
+  ServerCog,
+  X,
+} from "lucide-react";
+import Image from "next/image";
+import { FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
+import jsPDF from "jspdf";
+import profilePic from "../../public/Profile.jpeg";
+import { soundEngine } from "@/lib/haptics";
+import { ProjectXRayConsole } from "@/components/ProjectXRayConsole";
+import { TactileAudioToggle } from "@/components/TactileAudioToggle";
+import { ErgonomicMobileDock } from "@/components/ErgonomicMobileDock";
+import { AnalogOscilloscope } from "@/components/AnalogOscilloscope";
 
-const Scene3D = dynamic(() => import("@/components/Scene3D"), { ssr: false });
+const navItems = ["About", "Instruments", "Work", "Manifesto", "Capabilities", "Contact"];
 
-// Memoized data to prevent regeneration
-const skills = [
-    { name: "Next.js", icon: <SiNextdotjs className="w-6 h-6" />, level: 95, color: "text-white" },
-    { name: "React", icon: <SiReact className="w-6 h-6" />, level: 93, color: "text-cyan-400" },
-    { name: "Node.js", icon: <SiNodedotjs className="w-6 h-6" />, level: 90, color: "text-green-500" },
-    { name: "TypeScript", icon: <SiTypescript className="w-6 h-6" />, level: 92, color: "text-blue-500" },
-    { name: "Tailwind CSS", icon: <SiTailwindcss className="w-6 h-6" />, level: 95, color: "text-cyan-400" },
-    { name: "Laravel", icon: <SiLaravel className="w-6 h-6" />, level: 88, color: "text-red-500" },
-    { name: "PostgreSQL", icon: <SiPostgresql className="w-6 h-6" />, level: 92, color: "text-blue-400" },
-    { name: "MariaDB", icon: <SiMariadb className="w-6 h-6" />, level: 90, color: "text-blue-600" },
-    { name: "WordPress", icon: <SiWordpress className="w-6 h-6" />, level: 85, color: "text-blue-500" },
-    { name: "PHP", icon: <SiPhp className="w-6 h-6" />, level: 88, color: "text-purple-500" },
-    { name: "JavaScript", icon: <SiJavascript className="w-6 h-6" />, level: 94, color: "text-yellow-400" },
-    { name: "MySQL", icon: <SiMysql className="w-6 h-6" />, level: 90, color: "text-blue-500" }
+const expertise = [
+  {
+    title: "Frontend Engineering & Motion",
+    text: "Sub-20ms interactions, accessible design systems, fluid clamp layouts, and tactile WebGL / canvas integration.",
+    tools: "Next.js · React 19 · TypeScript · Tailwind · Framer Motion",
+    icon: Layers3,
+  },
+  {
+    title: "Resilient Backend Architecture",
+    text: "ACID transactional systems, WebSocket concurrency, REST / GraphQL APIs, and reliable job queuing.",
+    tools: "Node.js · Laravel · Django · Grails · Java",
+    icon: ServerCog,
+  },
+  {
+    title: "Data Integrity & Delivery",
+    text: "Normalized schema modeling, query optimization, indexing, edge CDN routing, and zero-downtime CI/CD deployment.",
+    tools: "PostgreSQL · MariaDB · MySQL · Docker · CI/CD",
+    icon: Database,
+  },
 ];
 
-const projects = [
-    { 
-        title: "Ambience Infosys", 
-        desc: "IT Company Website with modern design and service showcase", 
-        tech: "Next.js, Tailwind CSS, Node.js", 
-        url: "https://ambienceinfosys.com.np/",
-        type: "Corporate Website",
-        image: "/Ambience.png"
-    },
-    { 
-        title: "Kansai Japanese Language", 
-        desc: "Japanese Language Institute platform with course management", 
-        tech: "Laravel, MariaDB, Tailwind CSS", 
-        url: "https://kansaijapaneselanguage.com.np/",
-        type: "Educational Platform",
-        image: "/Kansai.png"
-    },
-    { 
-        title: "Rakmina Consultancy", 
-        desc: "Multi-language consultancy platform for abroad opportunities", 
-        tech: "Laravel, PostgreSQL, Multi-language", 
-        url: "https://rakmina.nirc.com.np/",
-        type: "Consultancy System",
-        image: "/Rakmina.png"
-    },
-    { 
-        title: "Lucazsoft POS", 
-        desc: "Fully-featured Restaurant POS system with inventory management", 
-        tech: "Laravel, MariaDB, Node.js", 
-        url: "https://lucazsoft.com/login",
-        type: "POS System",
-        image: "/Lucaz.png"
-    },
-    { 
-        title: "GWP Government Portal", 
-        desc: "Government web portal managing all government-related work", 
-        tech: "Laravel, PostgreSQL, Tailwind CSS", 
-        url: "",
-        type: "Government Portal",
-        image: "/placeholder.svg"
-    },
-    { 
-        title: "Sam Maharjan Portfolio",
-        desc: "Personal portfolio website with modern 3D design", 
-        tech: "Next.js, Tailwind CSS, Framer Motion", 
-        url: "https://sammaharjan.com.np/home/",
-        type: "Portfolio Website",
-        image: "/Sam.png"
-    }
-];
+const reveal = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-80px" },
+  transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] as const },
+};
 
-const experiences = [
-    { 
-        year: "2024 - Present",
-        role: "Full-Stack Developer", 
-        company: "NIRC Nepal (Incubation And Research Center)", 
-        desc: "Developing enterprise applications using React, Node.js, Python Django, Grails, HTML, CSS, and JavaScript. Delivering 6+ major projects including government portals, POS systems, and multi-language platforms."
-    }
-];
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="section-label">
+      <span />
+      {children}
+    </div>
+  );
+}
 
-const ContactForm = memo(function ContactForm() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [subject, setSubject] = useState("");
-    const [message, setMessage] = useState("");
-    const [status, setStatus] = useState("");
-    const [loading, setLoading] = useState(false);
+function createResume() {
+  soundEngine.relayClick();
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const left = 18;
+  const width = 174;
+  let y = 22;
+  doc.setTextColor(18, 18, 16);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(25);
+  doc.text("RAMESH MAHARJAN", left, y);
+  y += 8;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.setTextColor(80, 80, 74);
+  doc.text("Full-Stack Engineer & Creative Technologist · Kathmandu, Nepal", left, y);
+  y += 6;
+  doc.setFontSize(9);
+  doc.text(
+    "mhrjan0@gmail.com  ·  github.com/Rames0  ·  linkedin.com/in/ramesh-mhr-1b0514337",
+    left,
+    y
+  );
+  y += 10;
+  doc.setDrawColor(30, 30, 28);
+  doc.line(left, y, left + width, y);
 
-    const handleSubmit = useCallback(async (e: FormEvent) => {
-        e.preventDefault();
-        if (!name || !email || !message) {
-            setStatus("Please fill in all required fields");
-            return;
-        }
-        
-        setLoading(true);
-        setStatus("Sending...");
+  const heading = (label: string) => {
+    y += 10;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(18, 18, 16);
+    doc.text(label.toUpperCase(), left, y);
+    y += 6;
+  };
+  const paragraph = (copy: string) => {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(55, 55, 50);
+    const lines = doc.splitTextToSize(copy, width);
+    doc.text(lines, left, y);
+    y += lines.length * 4.7;
+  };
 
-        try {
-            await emailjs.send(
-                process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-                process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-                {
-                    name: name,
-                    email: email,
-                    phone: phone || 'Not provided',
-                    subject: subject || 'Portfolio Inquiry',
-                    message: message
-                },
-                process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
-            );
+  heading("Engineering Profile");
+  paragraph(
+    "Full-stack engineer and creative technologist focused on dependable web software with tactile interfaces and solid backend systems. Experienced across restaurant point-of-sale platforms, multilingual consultancy directories, enterprise IT solutions, and interactive 3D web applications."
+  );
 
-            setStatus("✓ Message sent successfully! I'll get back to you soon.");
-            setName("");
-            setEmail("");
-            setPhone("");
-            setSubject("");
-            setMessage("");
-        } catch (error) {
-            setStatus("Failed to send. Please try again.");
-        } finally {
-            setLoading(false);
-        }
-    }, [name, email, phone, subject, message]);
+  heading("Experience");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text("Full-Stack Developer", left, y);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.text("2024 - Present", left + width, y, { align: "right" });
+  y += 5;
+  doc.setTextColor(90, 90, 82);
+  doc.text("NIRC Nepal (Nepal Incubation & Research Center)", left, y);
+  y += 6;
+  paragraph(
+    "Develop and deliver production web applications using React, Next.js, Node.js, Laravel, Django, Java, Grails, and relational databases. Responsibilities span high-throughput order dispatch, database transactions, multilingual platforms, and performance tuning."
+  );
 
-    return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-                <Input 
-                    value={name} 
-                    onChange={(e) => setName(e.target.value)} 
-                    placeholder="Your Name *" 
-                    required
-                    className="bg-white/5 border border-white/10 rounded-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] !text-white placeholder:text-gray-400" 
-                />
-            </div>
-            <div>
-                <Input 
-                    value={email} 
-                    onChange={(e) => setEmail(e.target.value)} 
-                    type="email" 
-                    placeholder="Your Email *" 
-                    required
-                    className="bg-white/5 border border-white/10 rounded-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] !text-white placeholder:text-gray-400" 
-                />
-            </div>
-            <div>
-                <Input 
-                    value={phone} 
-                    onChange={(e) => setPhone(e.target.value)} 
-                    type="tel" 
-                    placeholder="Your Phone (Optional)" 
-                    className="bg-white/5 border border-white/10 rounded-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] !text-white placeholder:text-gray-400" 
-                />
-            </div>
-            <div>
-                <Input 
-                    value={subject} 
-                    onChange={(e) => setSubject(e.target.value)} 
-                    placeholder="Subject (Optional)" 
-                    className="bg-white/5 border border-white/10 rounded-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] !text-white placeholder:text-gray-400" 
-                />
-            </div>
-            <div>
-                <Textarea 
-                    value={message} 
-                    onChange={(e) => setMessage(e.target.value)} 
-                    placeholder="Your Message *" 
-                    rows={5} 
-                    required
-                    className="bg-white/5 border border-white/10 rounded-lg focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all shadow-[0_2px_8px_0_rgba(0,0,0,0.3)] !text-white placeholder:text-gray-400 resize-none" 
-                />
-            </div>
-            {status && <p className="text-sm text-emerald-400">{status}</p>}
-            <Button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-emerald-400 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-black font-semibold rounded-lg py-6 shadow-[0_4px_16px_0_rgba(16,185,129,0.4)] hover:shadow-[0_8px_24px_0_rgba(16,185,129,0.5)] transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95">
-                <Send className="w-4 h-4 mr-2" />
-                {loading ? "Sending..." : "Send Message"}
-            </Button>
-        </form>
-    );
-});
+  heading("Selected Shipped Projects");
+  const selected = [
+    { title: "Lucazsoft POS", stack: "Laravel · MariaDB · Node.js", desc: "High-throughput restaurant operating system with order dispatch and real-time inventory reconciliation." },
+    { title: "Ambience Infosys", stack: "Next.js · Node.js · Tailwind CSS", desc: "Public digital platform for an IT company, organizing complex catalogues into a fast editorial layout." },
+    { title: "Kansai Japanese Language", stack: "Laravel · MariaDB · Tailwind CSS", desc: "Education workflow portal structured around intake schedules, course requirements, and student applications." },
+    { title: "Rakmina Consultancy", stack: "Laravel · PostgreSQL · Localization", desc: "Multilingual study-abroad advisory directory with instant full-text search." },
+  ];
+
+  selected.forEach((p) => {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(18, 18, 16);
+    doc.text(p.title, left, y);
+    y += 4.5;
+    paragraph(`${p.desc} (${p.stack})`);
+    y += 2;
+  });
+
+  heading("Education & Credentials");
+  paragraph(
+    "Bachelor of Computer Applications, Tribhuvan University (2020 - 2025). Core expertise in React, Next.js, TypeScript, Node.js, Laravel, Django, PostgreSQL, MariaDB, MySQL, Git, and CI/CD pipelines."
+  );
+  doc.save("Ramesh-Maharjan-CV.pdf");
+}
 
 export default function Home() {
-    const [activeSection, setActiveSection] = useState('home');
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [showMobileHeader, setShowMobileHeader] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [formStatus, setFormStatus] = useState("");
+  const [sending, setSending] = useState(false);
+  const [ktmTime, setKtmTime] = useState("");
+  const portraitRef = useRef<HTMLDivElement>(null);
 
-    // Optimized scroll handler with throttling
-    useEffect(() => {
-        let ticking = false;
-        const handleScroll = () => {
-            if (!ticking) {
-                window.requestAnimationFrame(() => {
-                    const sections = ['home', 'about', 'skills', 'experience', 'services', 'projects', 'contact'];
-                    const current = sections.find(section => {
-                        const element = document.getElementById(section);
-                        if (element) {
-                            const rect = element.getBoundingClientRect();
-                            return rect.top <= 150 && rect.bottom >= 150;
-                        }
-                        return false;
-                    });
-                    if (current) setActiveSection(current);
-                    setShowMobileHeader(window.scrollY > 600);
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-        
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
-    const scrollToSection = useCallback((sectionId: string) => {
-        const element = document.getElementById(sectionId);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, []);
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setKtmTime(
+        now.toLocaleTimeString("en-US", {
+          timeZone: "Asia/Kathmandu",
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        })
+      );
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
+  function movePortrait(event: PointerEvent<HTMLDivElement>) {
+    if (!portraitRef.current) return;
+    const bounds = portraitRef.current.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    portraitRef.current.style.setProperty("--pointer-x", `${x * 12}px`);
+    portraitRef.current.style.setProperty("--pointer-y", `${y * 12}px`);
+  }
 
-    return (
-        <div className="min-h-screen bg-black text-white overflow-x-hidden relative smooth-scroll">
-            <BackgroundAnimation />
-            <Suspense fallback={null}>
-                <Scene3D />
-            </Suspense>
+  function resetPortrait() {
+    portraitRef.current?.style.setProperty("--pointer-x", "0px");
+    portraitRef.current?.style.setProperty("--pointer-y", "0px");
+  }
 
-            <div className="relative z-10" itemScope itemType="https://schema.org/Person">
-                <Sidebar />
-                <Navigation activeSection={activeSection} scrollToSection={scrollToSection} />
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    soundEngine.relayClick();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
-                {/* Mobile Header */}
-                <header className={`lg:hidden fixed top-0 left-0 right-0 z-40 bg-black/80 backdrop-blur-xl border-b border-zinc-800 transition-transform duration-300 safe-area-top ${
-                    showMobileHeader ? 'translate-y-0' : '-translate-y-full'
-                }`}>
-                    <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
-                        <span className="text-lg sm:text-xl font-bold text-emerald-400">RAMESH</span>
-                        <button onClick={() => setMobileMenuOpen(true)} className="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-zinc-800 flex items-center justify-center hover:border-emerald-400 transition-colors touch-target">
-                            <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </button>
-                    </div>
-                </header>
-                
-                <MobileNav isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} activeSection={activeSection} />
+    if (!serviceId || !templateId || !publicKey) {
+      window.location.href = `mailto:mhrjan0@gmail.com?subject=${encodeURIComponent(
+        String(data.get("subject") || "Engineering Inquiry")
+      )}&body=${encodeURIComponent(
+        `${data.get("message")}\n\nFrom: ${data.get("name")} (${data.get(
+          "email"
+        )})`
+      )}`;
+      return;
+    }
 
-                {/* Main Content */}
-                <main className="lg:ml-[400px] lg:mr-32 px-4 sm:px-6 lg:px-12">
-                    <HeroSection />
-                    <AboutSection />
+    setSending(true);
+    setFormStatus("Transmitting payload...");
+    try {
+      await emailjs.send(
+        serviceId,
+        templateId,
+        Object.fromEntries(data.entries()),
+        publicKey
+      );
+      setFormStatus("Transmission confirmed. I will review and reply shortly.");
+      form.reset();
+    } catch {
+      setFormStatus(
+        "Transmission error over socket. Please email directly to mhrjan0@gmail.com"
+      );
+    } finally {
+      setSending(false);
+    }
+  }
 
-                {/* Skills Section */}
-                <section id="skills" className="min-h-screen flex flex-col justify-center py-20" aria-label="Technical Skills">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-800 mb-8 bg-zinc-900/50 backdrop-blur">
-                            <Code className="w-4 h-4 text-emerald-400" />
-                            <span className="text-sm text-gray-400">SKILLS</span>
-                        </div>
-
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
-                            Technical <span className="text-emerald-400">Expertise</span>
-                        </h2>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
-                            {skills.map((skill, i) => (
-                                <Card3D key={i}>
-                                    <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                        <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-                                            <div className={`w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-zinc-800/80 to-zinc-900/80 flex items-center justify-center ${skill.color} shadow-[0_4px_16px_0_rgba(0,0,0,0.25)]`}>
-                                                <div className="w-5 h-5 sm:w-6 sm:h-6">{skill.icon}</div>
-                                            </div>
-                                            <div className="flex-1">
-                                                <h3 className="text-lg sm:text-xl font-semibold text-white">{skill.name}</h3>
-                                                <p className="text-xs sm:text-sm text-gray-300">{skill.level}% Proficiency</p>
-                                            </div>
-                                        </div>
-                                        <div className="w-full bg-zinc-800/50 rounded-full h-3 overflow-hidden shadow-[inset_0_2px_4px_0_rgba(0,0,0,0.3)]">
-                                            <motion.div 
-                                                initial={{ width: 0 }}
-                                                whileInView={{ width: `${skill.level}%` }}
-                                                viewport={{ once: true }}
-                                                transition={{ duration: 1, delay: i * 0.1 }}
-                                                className="bg-gradient-to-r from-emerald-400 to-blue-400 h-3 rounded-full shadow-[0_2px_8px_0_rgba(16,185,129,0.5)]"
-                                            />
-                                        </div>
-                                    </Card>
-                                </Card3D>
-                            ))}
-                        </div>
-                    </motion.div>
-                </section>
-
-                {/* Experience Section */}
-                <section id="experience" className="min-h-screen flex flex-col justify-center py-20" aria-label="Work Experience">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-800 mb-8 bg-zinc-900/50 backdrop-blur">
-                            <Briefcase className="w-4 h-4 text-emerald-400" />
-                            <span className="text-sm text-gray-400">EXPERIENCE</span>
-                        </div>
-
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
-                            Work & <span className="text-emerald-400">Education</span>
-                        </h2>
-
-                        <div className="space-y-6 sm:space-y-8 lg:space-y-10">
-                            <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                                        <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-blue-400/20 to-purple-400/20 border border-blue-400/30 rounded-full text-blue-400 font-semibold text-sm sm:text-base min-w-[120px] sm:min-w-[150px] text-center shadow-[0_4px_16px_0_rgba(59,130,246,0.2)]">2020 - 2025</div>
-                                        <div className="flex-1">
-                                            <h3 className="text-xl sm:text-2xl font-semibold mb-1 sm:mb-2 text-white">Bachelor in Computer Application</h3>
-                                            <p className="text-gray-300 mb-1 sm:mb-2 text-sm sm:text-base">Tribhuvan University</p>
-                                            <p className="text-gray-400 text-sm sm:text-base">Completed comprehensive computer science education with focus on software development, database management, and web technologies.</p>
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Card3D>
-                            {experiences.map((exp, i) => (
-                                <Card3D key={i}>
-                                    <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-                                            <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-emerald-400/20 to-blue-400/20 border border-emerald-400/30 rounded-full text-emerald-400 font-semibold text-sm sm:text-base min-w-[120px] sm:min-w-[150px] text-center shadow-[0_4px_16px_0_rgba(16,185,129,0.2)]">{exp.year}</div>
-                                            <div className="flex-1">
-                                                <h3 className="text-xl sm:text-2xl font-semibold mb-1 sm:mb-2 text-white">{exp.role}</h3>
-                                                <p className="text-gray-300 mb-1 sm:mb-2 text-sm sm:text-base">{exp.company}</p>
-                                                <p className="text-gray-400 text-sm sm:text-base">{exp.desc}</p>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </Card3D>
-                            ))}
-                        </div>
-                    </motion.div>
-                </section>
-
-                {/* Services Section */}
-                <section id="services" className="min-h-screen flex flex-col justify-center py-20" aria-label="Services Offered">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-800 mb-8 bg-zinc-900/50 backdrop-blur">
-                            <Rocket className="w-4 h-4 text-emerald-400" />
-                            <span className="text-sm text-gray-400">SERVICES</span>
-                        </div>
-
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
-                            What I <span className="text-emerald-400">Offer</span>
-                        </h2>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
-                            <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_8px_24px_0_rgba(16,185,129,0.4)]">
-                                        <Globe className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
-                                    </div>
-                                    <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-white">Web Development</h3>
-                                    <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">Full-stack web applications using Next.js, React, Laravel, and modern technologies</p>
-                                    <ul className="space-y-2 text-sm text-gray-400">
-                                        <li>• Responsive Design</li>
-                                        <li>• API Integration</li>
-                                        <li>• Database Design</li>
-                                    </ul>
-                                </Card>
-                            </Card3D>
-
-                            <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_8px_24px_0_rgba(59,130,246,0.4)]">
-                                        <Server className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
-                                    </div>
-                                    <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-white">Backend Systems</h3>
-                                    <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">Scalable backend solutions with Node.js, Laravel, and database optimization</p>
-                                    <ul className="space-y-2 text-sm text-gray-400">
-                                        <li>• RESTful APIs</li>
-                                        <li>• Authentication</li>
-                                        <li>• Performance Tuning</li>
-                                    </ul>
-                                </Card>
-                            </Card3D>
-
-                            <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1">
-                                    <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mb-4 sm:mb-6 shadow-[0_8px_24px_0_rgba(20,184,166,0.4)]">
-                                        <Users className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
-                                    </div>
-                                    <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-white">UI/UX Design</h3>
-                                    <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">Creating intuitive and visually appealing user interfaces with modern design principles</p>
-                                    <ul className="space-y-2 text-sm text-gray-400">
-                                        <li>• Responsive Design</li>
-                                        <li>• User Experience</li>
-                                        <li>• Prototyping</li>
-                                    </ul>
-                                </Card>
-                            </Card3D>
-                        </div>
-
-                        <div className="mt-8 sm:mt-10 lg:mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-10">
-                            <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-emerald-400/30 p-3 sm:p-4 lg:p-6 text-center rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(16,185,129,0.2)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.4)] transition-all duration-300">
-                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-400 mb-1 sm:mb-2">6+</div>
-                                    <p className="text-gray-300 text-xs sm:text-sm lg:text-base">Major Projects</p>
-                                </Card>
-                            </Card3D>
-                            <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-blue-400/30 p-3 sm:p-4 lg:p-6 text-center rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.2)] hover:shadow-[0_12px_48px_0_rgba(59,130,246,0.4)] transition-all duration-300">
-                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-400 mb-1 sm:mb-2">1+</div>
-                                    <p className="text-gray-300 text-xs sm:text-sm lg:text-base">Year Experience</p>
-                                </Card>
-                            </Card3D>
-                            <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-purple-400/30 p-3 sm:p-4 lg:p-6 text-center rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(168,85,247,0.2)] hover:shadow-[0_12px_48px_0_rgba(168,85,247,0.4)] transition-all duration-300">
-                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-400 mb-1 sm:mb-2">100%</div>
-                                    <p className="text-gray-300 text-xs sm:text-sm lg:text-base">Client Satisfaction</p>
-                                </Card>
-                            </Card3D>
-                            <Card3D>
-                                <Card className="bg-white/5 backdrop-blur-xl border border-pink-400/30 p-3 sm:p-4 lg:p-6 text-center rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(236,72,153,0.2)] hover:shadow-[0_12px_48px_0_rgba(236,72,153,0.4)] transition-all duration-300">
-                                    <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-400 mb-1 sm:mb-2">12+</div>
-                                    <p className="text-gray-300 text-xs sm:text-sm lg:text-base">Technologies</p>
-                                </Card>
-                            </Card3D>
-                        </div>
-                    </motion.div>
-                </section>
-
-                {/* Projects Section */}
-                <section id="projects" className="min-h-screen flex flex-col justify-center py-20" aria-label="Portfolio Projects">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-800 mb-8 bg-zinc-900/50 backdrop-blur">
-                            <Folder className="w-4 h-4 text-emerald-400" />
-                            <span className="text-sm text-gray-400">PROJECTS</span>
-                        </div>
-
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
-                            Featured <span className="text-emerald-400">Work</span>
-                        </h2>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
-                            {projects.map((project, i) => (
-                                <Card3D key={i}>
-                                    <Card className="bg-white/5 backdrop-blur-xl border border-white/10 overflow-hidden h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] hover:shadow-[0_12px_48px_0_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1 group">
-                                        <div className="relative w-full h-40 sm:h-48 overflow-hidden bg-zinc-800">
-                                            <img 
-                                                src={project.image} 
-                                                alt={`${project.title} - ${project.type} screenshot`}
-                                                loading="lazy"
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            />
-                                            <div className="absolute top-2 right-2 sm:top-4 sm:right-4">
-                                                <a href={project.url} target="_blank" rel="noopener noreferrer">
-                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/50 backdrop-blur-sm border border-emerald-400/30 flex items-center justify-center hover:bg-emerald-400/20 transition-all">
-                                                        <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="p-4 sm:p-6 lg:p-8">
-                                            <div className="mb-2 sm:mb-3">
-                                                <span className="px-2 py-1 sm:px-3 sm:py-1 bg-emerald-400/10 border border-emerald-400/30 rounded-full text-xs text-emerald-400 shadow-[0_2px_8px_0_rgba(16,185,129,0.2)]">
-                                                    {project.type}
-                                                </span>
-                                            </div>
-                                            <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 sm:mb-3 text-white">{project.title}</h3>
-                                            <p className="text-gray-300 mb-3 sm:mb-4 text-sm sm:text-base">{project.desc}</p>
-                                            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                                                {project.tech.split(", ").map((tech, j) => (
-                                                    <span key={j} className="px-2 py-0.5 sm:px-3 sm:py-1 bg-zinc-800/50 border border-zinc-600/50 rounded-full text-xs text-gray-300 shadow-[0_2px_8px_0_rgba(0,0,0,0.3)]">
-                                                        {tech}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </Card3D>
-                            ))}
-                        </div>
-                    </motion.div>
-                </section>
-
-                {/* Contact Section */}
-                <section id="contact" className="min-h-screen flex flex-col justify-center py-20" aria-label="Contact Information">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-800 mb-8 bg-zinc-900/50 backdrop-blur">
-                            <MessageSquare className="w-4 h-4 text-emerald-400" />
-                            <span className="text-sm text-gray-400">CONTACT</span>
-                        </div>
-
-                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light mb-8 sm:mb-12 lg:mb-16">
-                            Let's <span className="text-emerald-400">Connect</span>
-                        </h2>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
-                            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-                                <ContactForm />
-                            </Card>
-
-                            <Card className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 sm:p-6 lg:p-8 h-full rounded-xl sm:rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-                                    <h3 className="text-emerald-400 text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Contact Info</h3>
-                                    <div className="space-y-6 sm:space-y-8 lg:space-y-10">
-                                        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-zinc-900/50 border border-zinc-800">
-                                            <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_4px_16px_0_rgba(16,185,129,0.4)]">
-                                                <Mail className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs sm:text-sm text-gray-400">Email</p>
-                                                <p className="text-white font-medium text-sm sm:text-base">mhrjan0@gmail.com</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-zinc-900/50 border border-zinc-800">
-                                            <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-[0_4px_16px_0_rgba(59,130,246,0.4)]">
-                                                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs sm:text-sm text-gray-400">Location</p>
-                                                <p className="text-white font-medium text-sm sm:text-base">Kathmandu, Nepal</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                            </Card>
-                        </div>
-                    </motion.div>
-                </section>
-            </main>
-            </div>
+  return (
+    <div className="site-shell pb-16 md:pb-0">
+      {/* Editorial Top Instrument Bar */}
+      <header className="topbar">
+        <div className="flex items-center gap-4">
+          <a
+            className="brand"
+            href="#top"
+            onClick={() => soundEngine.tick()}
+            aria-label="Ramesh Maharjan, home"
+          >
+            RM<span>.</span>
+          </a>
+          <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-[#cecec6] font-mono text-[10px] text-[#666860]">
+            <span>27.7172° N, 85.3240° E</span>
+            <span>·</span>
+            <span>KTM {ktmTime || "19:45:00"}</span>
+          </div>
         </div>
-    );
+
+        <nav className="desktop-nav" aria-label="Primary navigation">
+          {navItems.map((item) => (
+            <a
+              href={`#${item.toLowerCase()}`}
+              key={item}
+              onClick={() => soundEngine.tick()}
+            >
+              {item}
+            </a>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-3 justify-self-end">
+          <TactileAudioToggle />
+          <a
+            className="availability desktop-only"
+            href="mailto:mhrjan0@gmail.com"
+            onClick={() => soundEngine.relayClick()}
+          >
+            <span /> Available for work
+          </a>
+          <button
+            className="menu-button"
+            onClick={() => {
+              soundEngine.relayClick();
+              setMenuOpen(true);
+            }}
+            aria-label="Open navigation menu"
+          >
+            <Menu size={21} />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Drawer Menu */}
+      <div
+        className={`mobile-menu ${menuOpen ? "is-open" : ""}`}
+        aria-hidden={!menuOpen}
+      >
+        <button
+          onClick={() => {
+            soundEngine.relayClick();
+            setMenuOpen(false);
+          }}
+          aria-label="Close navigation menu"
+        >
+          <X />
+        </button>
+        <nav>
+          {navItems.map((item) => (
+            <a
+              href={`#${item.toLowerCase()}`}
+              onClick={() => {
+                soundEngine.tick();
+                setMenuOpen(false);
+              }}
+              key={item}
+            >
+              {item}
+            </a>
+          ))}
+        </nav>
+        <div className="mt-auto space-y-3 font-mono text-xs">
+          <p className="text-[#a9aba3]">Direct Dispatch Channel:</p>
+          <a href="mailto:mhrjan0@gmail.com" className="text-white font-bold block">
+            mhrjan0@gmail.com
+          </a>
+        </div>
+      </div>
+
+      <main>
+        {/* ACT I: Asymmetric Hero / Telemetry Monolith */}
+        <section className="hero" id="top">
+          <div className="hero-index" aria-hidden="true">
+            <span>OPERATIONAL</span>
+            <span>2026</span>
+          </div>
+
+          <div className="hero-copy">
+            <motion.div {...reveal}>
+              <p className="eyebrow">
+                Ramesh Maharjan · Full-Stack Engineer & Creative Technologist
+              </p>
+              <h1>
+                Ramesh
+                <br />
+                Maharjan<span>.</span>
+              </h1>
+              <p className="hero-intro">
+                I build and maintain resilient web systems for institutions and product teams: from low-latency databases and transactional APIs through to tactile, high-craft user interfaces.
+              </p>
+              <div className="hero-actions">
+                <a
+                  className="button button-dark"
+                  href="#work"
+                  onClick={() => soundEngine.relayClick()}
+                >
+                  Inspect Selected Work <ArrowDownRight />
+                </a>
+                <button
+                  className="button button-text"
+                  onClick={createResume}
+                  type="button"
+                >
+                  <Download /> Download Curriculum Vitae
+                </button>
+              </div>
+            </motion.div>
+          </div>
+
+          <motion.div
+            ref={portraitRef}
+            onPointerMove={movePortrait}
+            onPointerLeave={resetPortrait}
+            className="hero-portrait"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9 }}
+          >
+            <div className="portrait-image">
+              <Image
+                src={profilePic}
+                alt="Ramesh Maharjan - Full-Stack Engineer"
+                fill
+                priority
+                sizes="(max-width: 900px) 100vw, 43vw"
+              />
+            </div>
+            <span className="portrait-coordinate coordinate-top">
+              27.7172° N
+            </span>
+            <span className="portrait-coordinate coordinate-bottom">
+              85.3240° E
+            </span>
+            <div className="portrait-note">
+              <Code2 /> Currently building at
+              <br />
+              NIRC Nepal
+            </div>
+          </motion.div>
+
+          <div className="hero-metrics">
+            <div>
+              <strong>Based</strong>
+              <span>Kathmandu, Nepal</span>
+            </div>
+            <div>
+              <strong>Focus</strong>
+              <span>Resilient Web & Tactile Systems</span>
+            </div>
+            <div>
+              <strong>Engagement</strong>
+              <span>Full-time Roles & Contracts</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ACT II: Narrative Perspective & Engineering Foundation */}
+        <section className="about section" id="about">
+          <motion.div {...reveal} className="section-heading">
+            <SectionLabel>Philosophy</SectionLabel>
+            <h2>Requirements are useless until they become reliable reality.</h2>
+          </motion.div>
+          <motion.div {...reveal} className="about-copy">
+            <p className="lead">
+              My engineering approach bridges architecture and human touch: understand the business domain, construct rigorous data schemas, and execute an interface that feels instant and mechanical.
+            </p>
+            <p>
+              At NIRC Nepal, I work across React, Next.js, Node.js, Laravel, Django, Java, and Grails projects. I treat database query plans, network serialization, and 60fps micro-animations with identical mechanical discipline.
+            </p>
+            <div className="signature-row">
+              <div>
+                <BriefcaseBusiness />
+                <span>
+                  <strong>NIRC Nepal</strong>Full-Stack Developer (2024 - Present)
+                </span>
+              </div>
+              <div>
+                <MapPin />
+                <span>
+                  <strong>Kathmandu, Nepal</strong>Available Globally & Remotely
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Kinetic Mechanical Tape */}
+        <div className="kinetic-band" aria-hidden="true">
+          <div className="kinetic-track">
+            <span>AUDIT SCHEMA</span>
+            <i>✦</i>
+            <span>STREAM RSC WIRES</span>
+            <i>✦</i>
+            <span>OPTIMIZE QUERY LATENCY</span>
+            <i>✦</i>
+            <span>DELIVER TACTILE PERFECTION</span>
+            <i>✦</i>
+            <span>AUDIT SCHEMA</span>
+            <i>✦</i>
+            <span>STREAM RSC WIRES</span>
+            <i>✦</i>
+            <span>OPTIMIZE QUERY LATENCY</span>
+            <i>✦</i>
+            <span>DELIVER TACTILE PERFECTION</span>
+            <i>✦</i>
+          </div>
+        </div>
+
+        {/* ACT II.5: Interactive Hardware Signal Bench (Oscilloscope) */}
+        <section className="section bg-[#161714] text-[#F4F3EE] border-b border-[#2C2E29]" id="instruments">
+          <motion.div {...reveal} className="section-heading mb-8">
+            <div className="section-label text-[#E3C849]">
+              <span className="bg-[#E3C849] solid" />
+              Field Instrumentation
+            </div>
+            <h2 className="text-white">
+              Signal & Concurrency
+              <br />
+              Harmonic Bench.
+            </h2>
+          </motion.div>
+          <p className="font-mono text-xs text-[#A6A89F] max-w-2xl mb-8 leading-relaxed">
+            Directly test analog frequency response, Lissajous relational convergence, database transaction spikes, and WebSocket socket bursts with interactive hardware dials and real-time audio synthesis.
+          </p>
+
+          <AnalogOscilloscope />
+        </section>
+
+        {/* ACT III: The Interactive Specimen Matrix & Project X-Ray Console */}
+        <section className="work section" id="work">
+          <motion.div {...reveal} className="work-header">
+            <div>
+              <SectionLabel>Selected Work</SectionLabel>
+              <h2>
+                Shipped Systems,
+                <br />
+                Audited Live.
+              </h2>
+            </div>
+            <p>
+              Switch views between the polished user interface, the live architectural topology flow, and real-time telemetry logs.
+            </p>
+          </motion.div>
+
+          {/* Integrated Interactive Project X-Ray Console */}
+          <ProjectXRayConsole />
+        </section>
+
+        {/* ACT IV: Anti-AI Architectural Manifesto */}
+        <section className="statement" id="manifesto" aria-label="Development approach">
+          <p>[ANTI-AI ARCHITECTURAL AXIOMS]</p>
+          <div className="statement-line">
+            <span>RESILIENT UNDERNEATH</span>
+            <i>and</i>
+            <strong>OBVIOUS IN HAND.</strong>
+          </div>
+          <div className="statement-meta">
+            <span>01 / ZERO GENERIC PURPLE GRADIENTS</span>
+            <span>02 / STRICT SUB-20MS RESPONSIVENESS</span>
+            <span>03 / RELATIONAL NORMALIZATION</span>
+            <span>04 / REAL HUMAN CRAFT</span>
+          </div>
+        </section>
+
+        {/* ACT V: Technical Capabilities & Credentials */}
+        <section className="expertise section" id="capabilities">
+          <motion.div {...reveal} className="section-heading expertise-heading">
+            <SectionLabel>Capabilities</SectionLabel>
+            <h2>Comfortable across the entire application stack.</h2>
+          </motion.div>
+          <div className="expertise-grid">
+            {expertise.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <article key={item.title}>
+                  <span>0{index + 1}</span>
+                  <Icon />
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                  <small>{item.tools}</small>
+                </article>
+              );
+            })}
+          </div>
+
+          <motion.div {...reveal} className="experience-row">
+            <div>
+              <SectionLabel>Experience</SectionLabel>
+            </div>
+            <div className="experience-main">
+              <span>2024 — Present</span>
+              <h3>Full-Stack Developer</h3>
+              <p>Nepal Incubation & Research Center (NIRC Nepal)</p>
+            </div>
+            <p>
+              Developing production applications including high-throughput restaurant point-of-sale software, multilingual advisory systems, corporate portals, and public-sector tools.
+            </p>
+          </motion.div>
+
+          <motion.div {...reveal} className="experience-row experience-row-secondary">
+            <div>
+              <SectionLabel>Education</SectionLabel>
+            </div>
+            <div className="experience-main">
+              <span>2020 — 2025</span>
+              <h3>Bachelor of Computer Applications</h3>
+              <p>Tribhuvan University</p>
+            </div>
+            <p>
+              In-depth study of computer science foundations, relational database management, data structures, and modern software architectures.
+            </p>
+          </motion.div>
+        </section>
+
+        {/* ACT VI: Dispatch Terminal / Direct Contact Channel */}
+        <section className="contact section" id="contact">
+          <div className="contact-copy">
+            <SectionLabel>Transmission</SectionLabel>
+            <h2>
+              Need an engineer
+              <br />
+              <span>who owns the system?</span>
+            </h2>
+            <p>
+              I am open to full-time engineering roles, creative technologist partnerships, and high-impact contract systems. Send your project parameters or challenges.
+            </p>
+            <a
+              href="mailto:mhrjan0@gmail.com"
+              onClick={() => soundEngine.relayClick()}
+            >
+              <Mail /> mhrjan0@gmail.com
+            </a>
+          </div>
+
+          <form onSubmit={handleSubmit}>
+            <div className="field-grid">
+              <label>
+                Name
+                <input name="name" required placeholder="Jane Doe" />
+              </label>
+              <label>
+                Email
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="jane@company.com"
+                />
+              </label>
+            </div>
+            <label>
+              Subject
+              <input
+                name="subject"
+                placeholder="What engineering problem are we solving?"
+              />
+            </label>
+            <label>
+              Message
+              <textarea
+                name="message"
+                required
+                rows={5}
+                placeholder="System requirements, scope, architecture constraints, and timeline..."
+              />
+            </label>
+            <div className="form-footer">
+              <p aria-live="polite">{formStatus}</p>
+              <button
+                className="button button-light"
+                disabled={sending}
+                type="submit"
+              >
+                {sending ? "Transmitting" : "Dispatch Message"}{" "}
+                {sending ? <span className="sending-dot" /> : <Send />}
+              </button>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      {/* Ergonomic Mobile Dock for Thumb Navigation */}
+      <ErgonomicMobileDock onDownloadCV={createResume} />
+
+      {/* Analog Colophon / Footer */}
+      <footer>
+        <a
+          className="brand"
+          href="#top"
+          onClick={() => soundEngine.tick()}
+        >
+          RM<span>.</span>
+        </a>
+        <p>
+          © {new Date().getFullYear()} Ramesh Maharjan · 27.7172° N, 85.3240° E · Kathmandu
+        </p>
+        <div>
+          <a
+            href="https://github.com/Rames0"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="GitHub Profile"
+            onClick={() => soundEngine.tick()}
+          >
+            <Github />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/ramesh-mhr-1b0514337"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="LinkedIn Profile"
+            onClick={() => soundEngine.tick()}
+          >
+            <Linkedin />
+          </a>
+          <a
+            href="#top"
+            aria-label="Back to top of dossier"
+            onClick={() => soundEngine.relayClick()}
+          >
+            <ArrowUpRight />
+          </a>
+        </div>
+      </footer>
+    </div>
+  );
 }
