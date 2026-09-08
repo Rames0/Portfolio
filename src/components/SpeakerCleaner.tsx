@@ -73,6 +73,7 @@ export function SpeakerCleaner() {
   const audioCtxRef = useRef<AudioContext | null>(null);
   const oscRef = useRef<OscillatorNode | null>(null);
   const subOscRef = useRef<OscillatorNode | null>(null);
+  const tremoloGainRef = useRef<GainNode | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const lfoRef = useRef<OscillatorNode | null>(null);
   const lfoGainRef = useRef<GainNode | null>(null);
@@ -84,6 +85,7 @@ export function SpeakerCleaner() {
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const vibrationIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const sweepIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const stopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
   // Particles for canvas physics
@@ -108,10 +110,13 @@ export function SpeakerCleaner() {
   }, []);
 
   // Safe Audio Ramp-Down & Hardware Stop
-  const stopCleaning = useCallback(() => {
+  const stopCleaning = useCallback((resetRemaining: boolean = true) => {
     setIsActive(false);
     setVibrationActive(false);
     setAudioThrust(0);
+    if (resetRemaining) {
+      setRemainingTime(duration === 0 ? 999 : duration);
+    }
 
     // Cancel timers
     if (timerIntervalRef.current) {
@@ -134,39 +139,86 @@ export function SpeakerCleaner() {
       } catch {}
     }
 
-    // Anti-pop de-clicking soft stop (voice coil protection)
-    if (masterGainRef.current && audioCtxRef.current) {
-      try {
-        const ctx = audioCtxRef.current;
-        const now = ctx.currentTime;
-        masterGainRef.current.gain.cancelScheduledValues(now);
-        masterGainRef.current.gain.setValueAtTime(masterGainRef.current.gain.value, now);
-        masterGainRef.current.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+    // Cancel any pending stop timeout
+    if (stopTimeoutRef.current) {
+      clearTimeout(stopTimeoutRef.current);
+      stopTimeoutRef.current = null;
+    }
 
-        setTimeout(() => {
-          try {
-            oscRef.current?.stop();
-            oscRef.current?.disconnect();
-            subOscRef.current?.stop();
-            subOscRef.current?.disconnect();
-            lfoRef.current?.stop();
-            lfoRef.current?.disconnect();
-            lfoGainRef.current?.disconnect();
-            highPassFilterRef.current?.disconnect();
-            peakFilterRef.current?.disconnect();
-            lowPassFilterRef.current?.disconnect();
-          } catch {}
-          oscRef.current = null;
-          subOscRef.current = null;
-          lfoRef.current = null;
-          lfoGainRef.current = null;
-          highPassFilterRef.current = null;
-          peakFilterRef.current = null;
-          lowPassFilterRef.current = null;
-        }, 90);
+    // Capture current nodes into local closure variables so this shutdown
+    // ONLY affects the session being stopped, never any subsequent session!
+    const oscToStop = oscRef.current;
+    const subOscToStop = subOscRef.current;
+    const lfoToStop = lfoRef.current;
+    const tremoloGainToStop = tremoloGainRef.current;
+    const masterGainToStop = masterGainRef.current;
+    const lfoGainToStop = lfoGainRef.current;
+    const hpfToStop = highPassFilterRef.current;
+    const peakFilterToStop = peakFilterRef.current;
+    const lpfToStop = lowPassFilterRef.current;
+    const compressorToStop = compressorRef.current;
+
+    // Immediately null out all module refs so a new start will never collide
+    oscRef.current = null;
+    subOscRef.current = null;
+    lfoRef.current = null;
+    tremoloGainRef.current = null;
+    masterGainRef.current = null;
+    lfoGainRef.current = null;
+    highPassFilterRef.current = null;
+    peakFilterRef.current = null;
+    lowPassFilterRef.current = null;
+    compressorRef.current = null;
+
+    // Soft-stop ramp down (anti-pop de-clicking envelope to protect voice coil)
+    if (masterGainToStop && audioCtxRef.current && audioCtxRef.current.state === "running") {
+      try {
+        const now = audioCtxRef.current.currentTime;
+        masterGainToStop.gain.cancelScheduledValues(now);
+        masterGainToStop.gain.setValueAtTime(masterGainToStop.gain.value, now);
+        masterGainToStop.gain.linearRampToValueAtTime(0, now + 0.04);
       } catch {}
     }
-  }, []);
+
+    // Clean disconnection of the captured nodes after the soft ramp
+    stopTimeoutRef.current = setTimeout(() => {
+      try {
+        oscToStop?.stop();
+        oscToStop?.disconnect();
+      } catch {}
+      try {
+        subOscToStop?.stop();
+        subOscToStop?.disconnect();
+      } catch {}
+      try {
+        lfoToStop?.stop();
+        lfoToStop?.disconnect();
+      } catch {}
+      try {
+        tremoloGainToStop?.disconnect();
+      } catch {}
+      try {
+        masterGainToStop?.disconnect();
+      } catch {}
+      try {
+        lfoGainToStop?.disconnect();
+      } catch {}
+      try {
+        hpfToStop?.disconnect();
+      } catch {}
+      try {
+        peakFilterToStop?.disconnect();
+      } catch {}
+      try {
+        lpfToStop?.disconnect();
+      } catch {}
+      try {
+        compressorToStop?.disconnect();
+      } catch {}
+
+      stopTimeoutRef.current = null;
+    }, 45);
+  }, [duration]);
 
   // High-Torque Multi-Cadence Vibration Engine
   const startHardwareVibration = useCallback(() => {
@@ -192,7 +244,7 @@ export function SpeakerCleaner() {
   }, [powerProfile]);
 
   // Super Powerful Acoustic Engine With 4-Tier Hardware Protection
-  const startAudioEjection = useCallback(() => {
+  const startAudioEjection = useCallback(async () => {
     try {
       const AudioContextClass =
         window.AudioContext ||
@@ -204,7 +256,7 @@ export function SpeakerCleaner() {
       }
       const ctx = audioCtxRef.current;
       if (ctx.state === "suspended") {
-        ctx.resume();
+        await ctx.resume();
       }
 
       const now = ctx.currentTime;
@@ -257,39 +309,44 @@ export function SpeakerCleaner() {
       peakFilterRef.current = peakFilter;
 
       // ─────────────────────────────────────────────────────────────
-      // SAFETY TIER 4: Anti-Pop Master Gain with Smooth Soft-Start Envelope
+      // SAFETY TIER 4: Master Gain with Anti-Pop Soft-Start Envelope
       // ─────────────────────────────────────────────────────────────
       const masterGain = ctx.createGain();
       const targetGain = powerProfile === "ultra" ? 0.98 : 0.85;
       masterGain.gain.setValueAtTime(0.001, now);
-      masterGain.gain.exponentialRampToValueAtTime(targetGain, now + 0.05); // 50ms soft ramp
+      masterGain.gain.linearRampToValueAtTime(targetGain, now + 0.05); // 50ms soft ramp
       masterGainRef.current = masterGain;
 
-      // Connect Signal Chain:
-      // Sources -> MasterGain -> HPF (Subsonic cut) -> Peak (Resonant jet) -> LPF (Heat cut) -> Brickwall Limiter -> Output
-      masterGain.connect(hpf);
-      hpf.connect(peakFilter);
-      peakFilter.connect(lpf);
-      lpf.connect(compressor);
-
       // ─────────────────────────────────────────────────────────────
-      // KINETIC AIR PUMP: Low-Frequency Modulation (LFO)
+      // KINETIC AIR PUMP: Dedicated Tremolo Gain + LFO Modulation
+      // Independent stage avoids AudioParam ramp conflicts on masterGain.
       // Pulsing air velocity dislodges droplets via acceleration (impulse = F*dt).
       // Micro duty-cycle pauses keep voice coil thermally cool!
       // ─────────────────────────────────────────────────────────────
+      const tremoloGain = ctx.createGain();
+      const lfoDepth = powerProfile === "ultra" ? 0.45 : 0.30;
+      tremoloGain.gain.setValueAtTime(1.0 - lfoDepth, now);
+      tremoloGainRef.current = tremoloGain;
+
       const lfo = ctx.createOscillator();
       const lfoGain = ctx.createGain();
       const pulseRate = mode === "water" ? 7.2 : mode === "dirt" ? 9.5 : 8.0; // Pulses per second
       lfo.type = "sine";
       lfo.frequency.setValueAtTime(pulseRate, now);
-
-      const lfoDepth = powerProfile === "ultra" ? 0.55 : 0.40;
       lfoGain.gain.setValueAtTime(lfoDepth, now);
       lfo.connect(lfoGain);
-      lfoGain.connect(masterGain.gain);
+      lfoGain.connect(tremoloGain.gain);
       lfo.start(now);
       lfoRef.current = lfo;
       lfoGainRef.current = lfoGain;
+
+      // Complete Audio Graph Chain:
+      // Sources -> TremoloGain -> MasterGain -> HPF (Subsonic cut) -> Peak (Resonant jet) -> LPF (Heat cut) -> Brickwall Limiter -> Destination
+      tremoloGain.connect(masterGain);
+      masterGain.connect(hpf);
+      hpf.connect(peakFilter);
+      peakFilter.connect(lpf);
+      lpf.connect(compressor);
 
       // ─────────────────────────────────────────────────────────────
       // PRIMARY RESONANT OSCILLATOR (Kinetic Driver)
@@ -297,7 +354,7 @@ export function SpeakerCleaner() {
       const primaryOsc = ctx.createOscillator();
       primaryOsc.type = mode === "dirt" ? "triangle" : "sine";
       primaryOsc.frequency.setValueAtTime(frequency, now);
-      primaryOsc.connect(masterGain);
+      primaryOsc.connect(tremoloGain);
       primaryOsc.start(now);
       oscRef.current = primaryOsc;
 
@@ -311,12 +368,16 @@ export function SpeakerCleaner() {
         const subGain = ctx.createGain();
         subGain.gain.setValueAtTime(powerProfile === "ultra" ? 0.35 : 0.22, now);
         subOsc.connect(subGain);
-        subGain.connect(masterGain);
+        subGain.connect(tremoloGain);
         subOsc.start(now);
         subOscRef.current = subOsc;
       }
 
       // Dynamic Frequency Sweep for Dirt / Particulate Dislodgement
+      if (sweepIntervalRef.current) {
+        clearInterval(sweepIntervalRef.current);
+        sweepIntervalRef.current = null;
+      }
       if (mode === "dirt" || mode === "full_purge") {
         let currentSweep = frequency;
         let direction = 1;
@@ -340,23 +401,56 @@ export function SpeakerCleaner() {
           } catch {}
         }, 110);
       }
-    } catch {
-      // Audio fallback
+    } catch (err) {
+      console.error("Speaker Cleaner audio engine error:", err);
     }
   }, [mode, frequency, powerProfile]);
 
   // Start Session
-  const startCleaning = () => {
+  const startCleaning = async () => {
     soundEngine.relayClick();
-    stopCleaning();
+
+    // If there is any lingering stop timeout, cancel it immediately
+    if (stopTimeoutRef.current) {
+      clearTimeout(stopTimeoutRef.current);
+      stopTimeoutRef.current = null;
+    }
+
+    // Force disconnect any lingering nodes from a previous session immediately
+    try {
+      oscRef.current?.stop();
+      oscRef.current?.disconnect();
+    } catch {}
+    try {
+      subOscRef.current?.stop();
+      subOscRef.current?.disconnect();
+    } catch {}
+    try {
+      lfoRef.current?.stop();
+      lfoRef.current?.disconnect();
+    } catch {}
+    try {
+      tremoloGainRef.current?.disconnect();
+      masterGainRef.current?.disconnect();
+    } catch {}
+
+    oscRef.current = null;
+    subOscRef.current = null;
+    lfoRef.current = null;
+    tremoloGainRef.current = null;
+    masterGainRef.current = null;
 
     setIsActive(true);
     setRemainingTime(duration === 0 ? 999 : duration);
 
-    startAudioEjection();
+    await startAudioEjection();
     startHardwareVibration();
 
     // Countdown interval
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
     if (duration > 0) {
       let t = duration;
       timerIntervalRef.current = setInterval(() => {
@@ -406,7 +500,7 @@ export function SpeakerCleaner() {
     }
   };
 
-  // Teardown
+  // Teardown on unmount
   useEffect(() => {
     return () => {
       stopCleaning();
@@ -577,7 +671,7 @@ export function SpeakerCleaner() {
         <div className="flex flex-wrap items-center gap-2">
           {/* Active Safe Guard Badge */}
           <div className="flex items-center gap-1.5 px-2.5 py-1 font-mono text-[9px] uppercase border border-[#10B981]/50 bg-[#10B981]/10 text-[#10B981]">
-            <ShieldCheck size={12} className="text-[#10B981]" />
+            <ShieldCheck size={12} className="text-[#10B981] " />
             <span>HARDWARE SAFEGUARD: ACTIVE</span>
           </div>
 
@@ -856,7 +950,7 @@ export function SpeakerCleaner() {
               <button
                 type="button"
                 onClick={startCleaning}
-                className="w-full py-4 px-5 bg-[#E3C849] hover:bg-[#ebd567] text-[#121310] font-mono font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-transform active:scale-[0.99] shadow-[0_4px_20px_rgba(227,200,73,0.35)]"
+                className="w-full py-4 px-5 bg-[#E3C849] hover:bg-[#ebd567] text-[#121310] font-mono font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-transform active:scale-[0.99] shadow-[0_4px_20px_rgba(227,200,73,0.35)] cursor-pointer"
               >
                 <Play size={16} fill="currentColor" />
                 ENGAGE SUPER POWER PURGE (SOUND + VIBRATION)
@@ -868,7 +962,7 @@ export function SpeakerCleaner() {
                   soundEngine.relayClick();
                   stopCleaning();
                 }}
-                className="w-full py-4 px-5 bg-[#FF5500] hover:bg-[#ff6a20] text-white font-mono font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-transform active:scale-[0.99] shadow-[0_4px_20px_rgba(255,85,0,0.35)] animate-pulse"
+                className="w-full py-4 px-5 bg-[#FF5500] hover:bg-[#ff6a20] text-white font-mono font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-transform active:scale-[0.99] shadow-[0_4px_20px_rgba(255,85,0,0.35)] animate-pulse cursor-pointer"
               >
                 <Square size={16} fill="currentColor" />
                 HALT PURGE CYCLE [{remainingTime}s]
