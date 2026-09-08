@@ -22,7 +22,7 @@ import {
 import Image from "next/image";
 import { FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
 import jsPDF from "jspdf";
-import profilePic from "../../public/Profile_subtle_smile.jpg";
+import profilePic from "../../public/Profile.jpeg";
 import { soundEngine } from "@/lib/haptics";
 import { ProjectXRayConsole } from "@/components/ProjectXRayConsole";
 import { TactileAudioToggle } from "@/components/TactileAudioToggle";
