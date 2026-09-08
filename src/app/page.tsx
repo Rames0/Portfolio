@@ -31,7 +31,7 @@ import { ErgonomicMobileDock } from "@/components/ErgonomicMobileDock";
 import { AnalogOscilloscope } from "@/components/AnalogOscilloscope";
 import { SpeakerCleaner } from "@/components/SpeakerCleaner";
 
-const navItems = ["About", "Instruments", "Work", "Manifesto", "Capabilities", "Contact"];
+const navItems = ["Work", "Capabilities", "Principles", "Instruments", "Contact"];
 
 const expertise = [
   {
@@ -321,7 +321,7 @@ function createResume() {
     {
       title: "Ambience Infosys - Corporate Website",
       stack: "Next.js  Node.js  Tailwind CSS  MariaDB",
-      desc:  "Full-featured IT company site with service showcase, testimonials, and CMS. Drove 150% increase in client inquiries.",
+      desc:  "Full-featured IT company site with service showcase, testimonials, and CMS. Drove modern brand presence and optimized SEO CMS.",
     },
     {
       title: "Kansai Japanese Language Institute - LMS",
@@ -664,37 +664,74 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        {/* ACT II: Narrative Perspective & Engineering Foundation */}
-        <section className="about section" id="about">
-          <motion.div {...reveal} className="section-heading">
-            <SectionLabel>Philosophy</SectionLabel>
-            <h2>Requirements are useless until they become reliable reality.</h2>
-          </motion.div>
-          <motion.div {...reveal} className="about-copy">
-            <p className="lead">
-              My engineering approach bridges architecture and human touch: understand the business domain, construct rigorous data schemas, and execute an interface that feels instant and mechanical.
-            </p>
-            <p>
-              At NIRC Nepal, I work across React, Next.js, Node.js, Laravel, Django, Java, and Grails projects. I treat database query plans, network serialization, and 60fps micro-animations with identical mechanical discipline.
-            </p>
-            <div className="signature-row">
-              <div>
-                <BriefcaseBusiness />
-                <span>
-                  <strong>NIRC Nepal</strong>Full-Stack Developer (2024 - Present)
-                </span>
-              </div>
-              <div>
-                <MapPin />
-                <span>
-                  <strong>Kathmandu, Nepal</strong>Available Globally & Remotely
-                </span>
-              </div>
+        {/* ACT III: The Interactive Specimen Matrix & Project X-Ray Console */}
+        <section className="work section" id="work">
+          <motion.div {...reveal} className="work-header">
+            <div>
+              <SectionLabel>Selected Work</SectionLabel>
+              <h2>
+                Shipped Systems,
+                <br />
+                Audited Live.
+              </h2>
             </div>
+            <p>
+              Switch views between the polished user interface, the live architectural topology flow, and real-time telemetry logs.
+            </p>
+          </motion.div>
+
+          {/* Integrated Interactive Project X-Ray Console */}
+          <ProjectXRayConsole />
+        </section>
+        {/* ACT V: Technical Capabilities & Credentials */}
+        <section className="expertise section" id="capabilities">
+          <motion.div {...reveal} className="section-heading expertise-heading">
+            <SectionLabel>Capabilities</SectionLabel>
+            <h2>Comfortable across the entire application stack.</h2>
+          </motion.div>
+          <div className="expertise-grid">
+            {expertise.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <article key={item.title}>
+                  <span>0{index + 1}</span>
+                  <Icon />
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                  <small>{item.tools}</small>
+                </article>
+              );
+            })}
+          </div>
+
+          <motion.div {...reveal} className="experience-row">
+            <div>
+              <SectionLabel>Experience</SectionLabel>
+            </div>
+            <div className="experience-main">
+              <span>2024 — Present</span>
+              <h3>Full-Stack Developer</h3>
+              <p>Nepal Incubation & Research Center (NIRC Nepal)</p>
+            </div>
+            <p>
+              Developing production applications including high-throughput restaurant point-of-sale software, multilingual advisory systems, corporate portals, and public-sector tools.
+            </p>
+          </motion.div>
+
+          <motion.div {...reveal} className="experience-row experience-row-secondary">
+            <div>
+              <SectionLabel>Education</SectionLabel>
+            </div>
+            <div className="experience-main">
+              <span>2020 — 2025</span>
+              <h3>Bachelor of Computer Applications</h3>
+              <p>Tribhuvan University</p>
+            </div>
+            <p>
+              In-depth study of computer science foundations, relational database management, data structures, and modern software architectures.
+            </p>
           </motion.div>
         </section>
-
         {/* Kinetic Mechanical Tape */}
         <div className="kinetic-band" aria-hidden="true">
           <div className="kinetic-track">
@@ -716,7 +753,21 @@ export default function Home() {
             <i>✦</i>
           </div>
         </div>
-
+        {/* ACT IV: Anti-AI Architectural Manifesto */}
+        <section className="statement" id="principles" aria-label="Development approach">
+          <p>[ENGINEERING AXIOMS]</p>
+          <div className="statement-line">
+            <span>RESILIENT UNDERNEATH</span>
+            <i>and</i>
+            <strong>OBVIOUS IN HAND.</strong>
+          </div>
+          <div className="statement-meta">
+            <span>01 / PURPOSE-DRIVEN ARCHITECTURE</span>
+            <span>02 / STRICT SUB-20MS RESPONSIVENESS</span>
+            <span>03 / RELATIONAL NORMALIZATION</span>
+            <span>04 / HUMAN-CENTERED INTERFACES</span>
+          </div>
+        </section>
         {/* ACT II.5: Interactive Hardware Signal Bench & Speaker Purge Utility */}
         <section className="section bg-[#161714] text-[#F4F3EE] border-b border-[#2C2E29]" id="instruments">
           <motion.div {...reveal} className="section-heading mb-8">
@@ -783,93 +834,35 @@ export default function Home() {
             <SpeakerCleaner />
           )}
         </section>
-
-        {/* ACT III: The Interactive Specimen Matrix & Project X-Ray Console */}
-        <section className="work section" id="work">
-          <motion.div {...reveal} className="work-header">
-            <div>
-              <SectionLabel>Selected Work</SectionLabel>
-              <h2>
-                Shipped Systems,
-                <br />
-                Audited Live.
-              </h2>
-            </div>
-            <p>
-              Switch views between the polished user interface, the live architectural topology flow, and real-time telemetry logs.
-            </p>
+        {/* ACT II: Narrative Perspective & Engineering Foundation */}
+        <section className="about section" id="about">
+          <motion.div {...reveal} className="section-heading">
+            <SectionLabel>Philosophy</SectionLabel>
+            <h2>Requirements are useless until they become reliable reality.</h2>
           </motion.div>
-
-          {/* Integrated Interactive Project X-Ray Console */}
-          <ProjectXRayConsole />
-        </section>
-
-        {/* ACT IV: Anti-AI Architectural Manifesto */}
-        <section className="statement" id="manifesto" aria-label="Development approach">
-          <p>[ANTI-AI ARCHITECTURAL AXIOMS]</p>
-          <div className="statement-line">
-            <span>RESILIENT UNDERNEATH</span>
-            <i>and</i>
-            <strong>OBVIOUS IN HAND.</strong>
-          </div>
-          <div className="statement-meta">
-            <span>01 / ZERO GENERIC PURPLE GRADIENTS</span>
-            <span>02 / STRICT SUB-20MS RESPONSIVENESS</span>
-            <span>03 / RELATIONAL NORMALIZATION</span>
-            <span>04 / REAL HUMAN CRAFT</span>
-          </div>
-        </section>
-
-        {/* ACT V: Technical Capabilities & Credentials */}
-        <section className="expertise section" id="capabilities">
-          <motion.div {...reveal} className="section-heading expertise-heading">
-            <SectionLabel>Capabilities</SectionLabel>
-            <h2>Comfortable across the entire application stack.</h2>
-          </motion.div>
-          <div className="expertise-grid">
-            {expertise.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <article key={item.title}>
-                  <span>0{index + 1}</span>
-                  <Icon />
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                  <small>{item.tools}</small>
-                </article>
-              );
-            })}
-          </div>
-
-          <motion.div {...reveal} className="experience-row">
-            <div>
-              <SectionLabel>Experience</SectionLabel>
-            </div>
-            <div className="experience-main">
-              <span>2024 — Present</span>
-              <h3>Full-Stack Developer</h3>
-              <p>Nepal Incubation & Research Center (NIRC Nepal)</p>
-            </div>
-            <p>
-              Developing production applications including high-throughput restaurant point-of-sale software, multilingual advisory systems, corporate portals, and public-sector tools.
+          <motion.div {...reveal} className="about-copy">
+            <p className="lead">
+              My engineering approach bridges architecture and human touch: understand the business domain, construct rigorous data schemas, and execute an interface that feels instant and mechanical.
             </p>
-          </motion.div>
-
-          <motion.div {...reveal} className="experience-row experience-row-secondary">
-            <div>
-              <SectionLabel>Education</SectionLabel>
-            </div>
-            <div className="experience-main">
-              <span>2020 — 2025</span>
-              <h3>Bachelor of Computer Applications</h3>
-              <p>Tribhuvan University</p>
-            </div>
             <p>
-              In-depth study of computer science foundations, relational database management, data structures, and modern software architectures.
+              At NIRC Nepal, I work across React, Next.js, Node.js, Laravel, Django, Java, and Grails projects. I treat database query plans, network serialization, and 60fps micro-animations with identical mechanical discipline.
             </p>
+            <div className="signature-row">
+              <div>
+                <BriefcaseBusiness />
+                <span>
+                  <strong>NIRC Nepal</strong>Full-Stack Developer (2024 - Present)
+                </span>
+              </div>
+              <div>
+                <MapPin />
+                <span>
+                  <strong>Kathmandu, Nepal</strong>Available Globally & Remotely
+                </span>
+              </div>
+            </div>
           </motion.div>
         </section>
-
         {/* ACT VI: Dispatch Terminal / Direct Contact Channel */}
         <section className="contact section" id="contact">
           <div className="contact-copy">
@@ -935,7 +928,7 @@ export default function Home() {
             </div>
           </form>
         </section>
-      </main>
+</main>
 
       {/* Ergonomic Mobile Dock for Thumb Navigation */}
       <ErgonomicMobileDock onDownloadCV={createResume} />

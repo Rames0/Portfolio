@@ -7,7 +7,7 @@ import { GoogleAnalytics, MicrosoftClarity } from "./analytics";
 export const metadata: Metadata = {
     metadataBase: new URL('https://ramesh0.com.np'),
     title: {
-        default: "Ramesh Maharjan | Senior Full-Stack Engineer & Generative UI Developer",
+        default: "Ramesh Maharjan | Senior Full-Stack Engineer",
         template: "%s | Ramesh Maharjan"
     },
     description: "Ramesh Maharjan is a Full-Stack Engineer and Creative Technologist in Kathmandu, Nepal. Specializing in high-performance React, Next.js, Node.js, Laravel, and WebGL architectures.",
@@ -44,15 +44,6 @@ export const metadata: Metadata = {
         siteName: "Ramesh Maharjan — Engineering Portfolio",
         title: "Ramesh Maharjan | Senior Full-Stack Engineer",
         description: "Explore the technical portfolio of Ramesh Maharjan. Showcasing resilient systems, Next.js / React ecosystems, backend API design in Laravel/Java, and tactile web experiments.",
-        images: [
-            {
-                url: "/Profile.jpeg",
-                width: 1200,
-                height: 630,
-                alt: "Ramesh Maharjan - Senior Full-Stack Engineer",
-                type: "image/jpeg",
-            },
-        ],
     },
     twitter: {
         card: "summary_large_image",
@@ -60,7 +51,6 @@ export const metadata: Metadata = {
         creator: "@rameshdev",
         title: "Ramesh Maharjan | Generative UI & Full-Stack Engineer",
         description: "Explore my interactive developer portfolio covering resilient backends (Laravel/Django) and tactile web frontends (Next.js/React).",
-        images: ["/Profile.jpeg"],
     },
     alternates: {
         canonical: "https://ramesh0.com.np",
