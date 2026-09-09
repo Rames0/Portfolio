@@ -65,6 +65,7 @@ export const viewport = {
     width: "device-width",
     initialScale: 1,
     maximumScale: 5,
+    themeColor: "#f4f3ee",
 };
 
 export default function RootLayout({
@@ -76,7 +77,7 @@ export default function RootLayout({
         <html lang="en">
         <head>
             <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-            <meta name="theme-color" content="#10b981" />
+            
             <Script
                 id="schema-org"
                 type="application/ld+json"
