@@ -37,7 +37,7 @@ export function ErgonomicMobileDock({ onDownloadCV }: ErgonomicMobileDockProps) 
       </a>
 
       <a
-        href="#instruments"
+        href="#lab"
         onClick={() => soundEngine.tick()}
         className="flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded text-[#CCC] active:text-[#E3C849] active:scale-95 transition-transform"
       >

@@ -633,7 +633,7 @@ export function ProjectXRayConsole() {
               key={specimen.id}
               type="button"
               onClick={() => handleSelectProject(idx)}
-              className={`p-2.5 sm:p-3 text-left border-r last:border-r-0 border-[#161714] min-w-[140px] sm:min-w-0 shrink-0 transition-all font-mono ${
+              className={`premium-hover-card p-2.5 sm:p-3 text-left border-r last:border-r-0 border-[#161714] min-w-[140px] sm:min-w-0 shrink-0 transition-all font-mono ${
                 isActive
                   ? "bg-[#161714] text-[#F4F3EE]"
                   : "bg-transparent text-[#161714] hover:bg-[#EAE8DF]"
