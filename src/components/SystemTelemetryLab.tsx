@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { MOTION } from "@/lib/motion";
-import { soundEngine } from "@/lib/haptics";
 import { Terminal, Database, Webhook, ShieldAlert, Cpu, Server, Activity, Users, Rss } from "lucide-react";
 
 type NodeId =
@@ -147,7 +146,6 @@ export function SystemTelemetryLab() {
     setActiveStep(0);
     setIsRunning(true);
     processStep(selectedMode, 0);
-    soundEngine.modeSwitch();
     addLog(`INITIALIZING [${selectedMode}] FLOW =========`, "info");
   };
 
@@ -164,9 +162,7 @@ export function SystemTelemetryLab() {
     setActiveStep(stepIndex);
     
     if (step.status === "error") {
-      soundEngine.modeSwitch();
     } else {
-      soundEngine.tick();
     }
 
     addLog(step.log, step.status);
@@ -272,7 +268,6 @@ export function SystemTelemetryLab() {
                 onBlur={() => setInspectedNode(null)}
                 onClick={() => setInspectedNode(inspectedNode === node.id ? null : node.id)}
                 onMouseEnter={() => {
-                  soundEngine.tick();
                   setInspectedNode(node.id);
                 }}
                 onMouseLeave={() => setInspectedNode(null)}

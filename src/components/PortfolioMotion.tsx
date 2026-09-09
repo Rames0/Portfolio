@@ -2,7 +2,6 @@
 
 import { useLayoutEffect, useRef, useState, useEffect } from "react";
 import { MOTION } from "@/lib/motion";
-import { soundEngine } from "@/lib/haptics";
 
 const SESSION_KEY = "rm-entry-v2";
 
@@ -128,7 +127,6 @@ export function PortfolioMotion() {
   const handleInitialize = () => {
     if (initializing) return;
     setInitializing(true);
-    soundEngine.relayClick();
 
     const root = document.querySelector<HTMLElement>(".site-shell");
     const intro = introRef.current;
@@ -229,7 +227,7 @@ export function PortfolioMotion() {
               Initialize Portfolio
             </button>
             <p className="font-mono text-[#666860] text-[9px] uppercase tracking-wide">
-              Audio & WebGL Enabled
+              Interactive Session Ready
             </p>
           </div>
         )}

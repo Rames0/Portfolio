@@ -1,27 +1,12 @@
 "use client";
 
-import { Compass, FileText, Mail, Volume2, VolumeX, Wrench } from "lucide-react";
-import { useEffect, useState } from "react";
-import { soundEngine } from "@/lib/haptics";
+import { Compass, FileText, Mail, Wrench } from "lucide-react";
 
 interface ErgonomicMobileDockProps {
   onDownloadCV: () => void;
 }
 
 export function ErgonomicMobileDock({ onDownloadCV }: ErgonomicMobileDockProps) {
-  const [soundOn, setSoundOn] = useState(false);
-
-  useEffect(() => {
-    setSoundOn(soundEngine.isSoundEnabled());
-  }, []);
-
-  const toggleSound = () => {
-    const next = !soundOn;
-    setSoundOn(next);
-    soundEngine.setSoundEnabled(next);
-    if (next) soundEngine.relayClick();
-  };
-
   return (
     <nav
       aria-label="Mobile thumb navigation"
@@ -29,7 +14,6 @@ export function ErgonomicMobileDock({ onDownloadCV }: ErgonomicMobileDockProps) 
     >
       <a
         href="#top"
-        onClick={() => soundEngine.tick()}
         className="flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded text-[#CCC] active:text-[#E3C849] active:scale-95 transition-transform"
       >
         <Compass size={16} />
@@ -38,7 +22,6 @@ export function ErgonomicMobileDock({ onDownloadCV }: ErgonomicMobileDockProps) 
 
       <a
         href="#lab"
-        onClick={() => soundEngine.tick()}
         className="flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded text-[#CCC] active:text-[#E3C849] active:scale-95 transition-transform"
       >
         <Wrench size={16} />
@@ -48,7 +31,6 @@ export function ErgonomicMobileDock({ onDownloadCV }: ErgonomicMobileDockProps) 
       <button
         type="button"
         onClick={() => {
-          soundEngine.relayClick();
           onDownloadCV();
         }}
         className="flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded text-[#CCC] active:text-[#E3C849] active:scale-95 transition-transform"
@@ -57,20 +39,8 @@ export function ErgonomicMobileDock({ onDownloadCV }: ErgonomicMobileDockProps) 
         <span>CV PDF</span>
       </button>
 
-      <button
-        type="button"
-        onClick={toggleSound}
-        className={`flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded active:scale-95 transition-all ${
-          soundOn ? "text-[#E3C849]" : "text-[#888]"
-        }`}
-      >
-        {soundOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
-        <span>{soundOn ? "AUDIO ON" : "MUTED"}</span>
-      </button>
-
       <a
         href="#contact"
-        onClick={() => soundEngine.relayClick()}
         className="flex flex-col items-center justify-center min-w-[58px] min-h-[44px] gap-1 px-2 bg-[#E3C849] text-[#161714] font-bold active:scale-95 transition-transform"
       >
         <Mail size={16} />

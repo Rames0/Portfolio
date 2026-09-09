@@ -22,9 +22,7 @@ import {
 import Image from "next/image";
 import {FormEvent, PointerEvent, useEffect, useRef, useState} from "react";
 import profilePic from "../../public/Profile.jpeg";
-import {soundEngine} from "@/lib/haptics";
 import {ProjectXRayConsole} from "@/components/ProjectXRayConsole";
-import {TactileAudioToggle} from "@/components/TactileAudioToggle";
 import {ErgonomicMobileDock} from "@/components/ErgonomicMobileDock";
 
 
@@ -67,7 +65,6 @@ function SectionLabel({children}: { children: React.ReactNode }) {
 }
 
 async function createResume() {
-    soundEngine.relayClick();
     const {default: jsPDF} = await import("jspdf");
     const doc = new jsPDF({unit: "mm", format: "a4"});
 
@@ -453,7 +450,6 @@ export default function Home() {
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        soundEngine.relayClick();
         const form = event.currentTarget;
         const data = new FormData(form);
         const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
@@ -502,7 +498,7 @@ export default function Home() {
                         <a
                             className="brand"
                             href="#top"
-                            onClick={() => soundEngine.tick()}
+                            
                             aria-label="Ramesh Maharjan, home"
                         >
                             RM<span>.</span>
@@ -521,7 +517,7 @@ export default function Home() {
                                 href={`#${item.toLowerCase()}`}
                                 key={item}
                                 aria-current={activeSection === item.toLowerCase() ? "location" : undefined}
-                                onClick={() => soundEngine.tick()}
+                                
                             >
                                 {item}
                             </a>
@@ -530,12 +526,12 @@ export default function Home() {
 
                     <div className="flex items-center gap-2 sm:gap-3 justify-self-end">
 
-                        <TactileAudioToggle/>
+                        
                         {WORK_STATUS.available && (
                             <a
                                 className="availability desktop-only"
                                 href="mailto:mhrjan0@gmail.com"
-                                onClick={() => soundEngine.relayClick()}
+                                
                             >
                                 <span style={{
                                     backgroundColor: WORK_STATUS.color,
@@ -547,7 +543,6 @@ export default function Home() {
                             ref={menuButtonRef}
                             className="menu-button"
                             onClick={() => {
-                                soundEngine.relayClick();
                                 setMenuOpen(true);
                             }}
                             aria-label="Open navigation menu"
@@ -572,7 +567,6 @@ export default function Home() {
                 >
                     <button
                         onClick={() => {
-                            soundEngine.relayClick();
                             setMenuOpen(false);
                         }}
                         aria-label="Close navigation menu"
@@ -584,7 +578,6 @@ export default function Home() {
                             <a
                                 href={`#${item.toLowerCase()}`}
                                 onClick={() => {
-                                    soundEngine.tick();
                                     setMenuOpen(false);
                                 }}
                                 key={item}
@@ -630,7 +623,7 @@ export default function Home() {
                                     <a
                                         className="button button-dark"
                                         href="#work"
-                                        onClick={() => soundEngine.relayClick()}
+                                        
                                     >
                                         Inspect Selected Work <ArrowDownRight/>
                                     </a>
@@ -854,7 +847,7 @@ export default function Home() {
                             </p>
                             <a
                                 href="mailto:mhrjan0@gmail.com"
-                                onClick={() => soundEngine.relayClick()}
+                                
                             >
                                 <Mail/> mhrjan0@gmail.com
                             </a>
@@ -915,7 +908,7 @@ export default function Home() {
                     <a
                         className="brand"
                         href="#top"
-                        onClick={() => soundEngine.tick()}
+                        
                     >
                         RM<span>.</span>
                     </a>
@@ -928,7 +921,7 @@ export default function Home() {
                             target="_blank"
                             rel="noreferrer"
                             aria-label="GitHub Profile"
-                            onClick={() => soundEngine.tick()}
+                            
                         >
                             <Github/>
                         </a>
@@ -937,14 +930,14 @@ export default function Home() {
                             target="_blank"
                             rel="noreferrer"
                             aria-label="LinkedIn Profile"
-                            onClick={() => soundEngine.tick()}
+                            
                         >
                             <Linkedin/>
                         </a>
                         <a
                             href="#top"
                             aria-label="Back to top of dossier"
-                            onClick={() => soundEngine.relayClick()}
+                            
                         >
                             <ArrowUpRight/>
                         </a>

@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { soundEngine } from "@/lib/haptics";
 
 export type ProjectViewMode = "surface" | "architecture" | "kernel";
 
@@ -552,13 +551,11 @@ export function ProjectXRayConsole() {
   const project = ALL_SPECIMENS[activeProjectIdx];
 
   const handleSelectProject = (idx: number) => {
-    soundEngine.relayClick();
     setActiveProjectIdx(idx);
     setSelectedNodeId(null);
   };
 
   const handleModeChange = (nextMode: ProjectViewMode) => {
-    soundEngine.modeSwitch();
     setMode(nextMode);
   };
 
@@ -760,7 +757,6 @@ export function ProjectXRayConsole() {
                         key={node.id}
                         type="button"
                         onClick={() => {
-                          soundEngine.relayClick();
                           setSelectedNodeId(node.id);
                         }}
                         className={`p-2.5 sm:p-3.5 border text-left transition-all relative ${
