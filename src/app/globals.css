@@ -1312,15 +1312,3 @@ section[id] { scroll-margin-top: 84px; }
   transform: scaleX(1);
   transform-origin: bottom left;
 }
-
-/* Premium Hover Interactions */
-.premium-hover-card {
-  transition: transform var(--motion-normal) var(--motion-ease), box-shadow var(--motion-normal) var(--motion-ease);
-}
-.premium-hover-card:hover {
-  transform: translateY(-4px) translateZ(10px);
-  box-shadow: 0 12px 24px -10px rgba(0,0,0,0.2);
-}
-.premium-hover-card:active {
-  transform: translateY(0px);
-}

@@ -146,12 +146,18 @@ export default function RootLayout({
                                     "Python Django",
                                     "PostgreSQL",
                                     "MariaDB",
+                                    "Web Audio API",
+                                    "Hardware-level Interaction"
                                 ]
                             },
                             {
                                 "@type": "SoftwareApplication",
+                                "@id": "https://ramesh0.com.np/#speaker-cleaner",
+                                "name": "Zero-Harm Acoustic Speaker Cleaner Engine",
+                                "applicationCategory": "MultimediaApplication",
                                 "creator": { "@id": "https://ramesh0.com.np/#person" },
                                 "operatingSystem": "Web",
+                                "description": "A hardware-safe web utility utilizing Web Audio API algorithms, Butterworth filters, and Helmholtz resonance to eject water and particulate debris from mobile speakers."
                             },
                             {
                                 "@type": "CreativeWork",

@@ -9,9 +9,7 @@ import {
     Code2,
     Database,
     Download,
-    Github,
     Layers3,
-    Linkedin,
     Mail,
     MapPin,
     Menu,
@@ -21,6 +19,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import {FormEvent, PointerEvent, useEffect, useRef, useState} from "react";
+import { FiGithub as Github, FiLinkedin as Linkedin } from "react-icons/fi";
 import profilePic from "../../public/Profile.jpeg";
 import {ProjectXRayConsole} from "@/components/ProjectXRayConsole";
 import {ErgonomicMobileDock} from "@/components/ErgonomicMobileDock";
@@ -30,7 +29,6 @@ import {WORK_STATUS} from "@/lib/config";
 import {SystemTelemetryLab} from "@/components/SystemTelemetryLab";
 import {PortfolioMotion} from "@/components/PortfolioMotion";
 import {HeroGrid} from "@/components/HeroGrid";
-import {TechnicalSeparator} from "@/components/TechnicalSeparator";
 
 const navItems = ["Work", "About", "Capabilities", "Experience", "Lab", "Contact"];
 
@@ -450,7 +448,7 @@ export default function Home() {
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        const form = event.currentTarget;
+            const form = event.currentTarget;
         const data = new FormData(form);
         const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
         const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
@@ -498,7 +496,6 @@ export default function Home() {
                         <a
                             className="brand"
                             href="#top"
-                            
                             aria-label="Ramesh Maharjan, home"
                         >
                             RM<span>.</span>
@@ -517,7 +514,6 @@ export default function Home() {
                                 href={`#${item.toLowerCase()}`}
                                 key={item}
                                 aria-current={activeSection === item.toLowerCase() ? "location" : undefined}
-                                
                             >
                                 {item}
                             </a>
@@ -526,12 +522,10 @@ export default function Home() {
 
                     <div className="flex items-center gap-2 sm:gap-3 justify-self-end">
 
-                        
                         {WORK_STATUS.available && (
                             <a
                                 className="availability desktop-only"
                                 href="mailto:mhrjan0@gmail.com"
-                                
                             >
                                 <span style={{
                                     backgroundColor: WORK_STATUS.color,
@@ -543,7 +537,7 @@ export default function Home() {
                             ref={menuButtonRef}
                             className="menu-button"
                             onClick={() => {
-                                setMenuOpen(true);
+                                                            setMenuOpen(true);
                             }}
                             aria-label="Open navigation menu"
                             aria-expanded={menuOpen}
@@ -567,7 +561,7 @@ export default function Home() {
                 >
                     <button
                         onClick={() => {
-                            setMenuOpen(false);
+                                                    setMenuOpen(false);
                         }}
                         aria-label="Close navigation menu"
                     >
@@ -623,7 +617,6 @@ export default function Home() {
                                     <a
                                         className="button button-dark"
                                         href="#work"
-                                        
                                     >
                                         Inspect Selected Work <ArrowDownRight/>
                                     </a>
@@ -682,7 +675,6 @@ export default function Home() {
                             </div>
                         </div>
                     </section>
-<TechnicalSeparator />
 
                     <section className="work section" id="work">
                         <div className="work-header">
@@ -703,7 +695,6 @@ export default function Home() {
                         {/* Integrated Interactive Project X-Ray Console */}
                         <ProjectXRayConsole/>
                     </section>
-<TechnicalSeparator />
 
                     <section className="about section" id="about">
                         <div className="section-heading">
@@ -737,7 +728,6 @@ export default function Home() {
                             </div>
                         </div>
                     </section>
-<TechnicalSeparator />
 
                     <section className="expertise section" id="capabilities" style={{paddingBottom: "40px"}}>
                         <div className="section-heading expertise-heading">
@@ -759,7 +749,6 @@ export default function Home() {
                             })}
                         </div>
                     </section>
-<TechnicalSeparator />
 
                     <section className="section pt-0" id="experience">
 
@@ -779,7 +768,6 @@ export default function Home() {
                         </div>
 
                     </section>
-<TechnicalSeparator />
 
 
                     <section className="section bg-[#161714] text-[#F4F3EE] border-b border-[#2C2E29]" id="lab">
@@ -847,7 +835,6 @@ export default function Home() {
                             </p>
                             <a
                                 href="mailto:mhrjan0@gmail.com"
-                                
                             >
                                 <Mail/> mhrjan0@gmail.com
                             </a>
@@ -908,7 +895,6 @@ export default function Home() {
                     <a
                         className="brand"
                         href="#top"
-                        
                     >
                         RM<span>.</span>
                     </a>
@@ -921,7 +907,6 @@ export default function Home() {
                             target="_blank"
                             rel="noreferrer"
                             aria-label="GitHub Profile"
-                            
                         >
                             <Github/>
                         </a>
@@ -930,14 +915,12 @@ export default function Home() {
                             target="_blank"
                             rel="noreferrer"
                             aria-label="LinkedIn Profile"
-                            
                         >
                             <Linkedin/>
                         </a>
                         <a
                             href="#top"
                             aria-label="Back to top of dossier"
-                            
                         >
                             <ArrowUpRight/>
                         </a>

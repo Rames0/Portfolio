@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { useAnimate, useReducedMotion } from "framer-motion";
 import {
   Activity,
   ArrowUpRight,
@@ -13,7 +13,10 @@ import {
   Zap,
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import { soundEngine } from "@/lib/haptics";
+import { MOTION } from "@/lib/motion";
 
 export type ProjectViewMode = "surface" | "architecture" | "kernel";
 
@@ -478,9 +481,9 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
     image: "/Sam.png",
     url: "https://sammaharjan.com.np/home/",
     metrics: [
-      { label: "Frame Rate", value: "Strict 60fps WebGL" },
-      { label: "Bundle Impact", value: "Dynamic Shader Loading" },
-      { label: "WebGL Footprint", value: "<18MB GPU Memory" },
+      { label: "Rendering", value: "Three.js / WebGL" },
+      { label: "Motion", value: "Framer Motion" },
+      { label: "Framework", value: "Next.js" },
     ],
     architecture: {
       overview:
@@ -544,6 +547,25 @@ export const ALL_SPECIMENS: SpecimenProject[] = [
 ];
 
 export function ProjectXRayConsole() {
+  const reducedMotion = useReducedMotion();
+  const [scope, animate] = useAnimate();
+  const revision = useRef(0);
+  useEffect(() => () => { revision.current += 1; }, []);
+  useEffect(() => {
+    if (reducedMotion) {
+      revision.current += 1;
+      void animate(".project-stage", { opacity: 1 }, { duration: 0 });
+    }
+  }, [reducedMotion, animate]);
+
+  const transitionTo = async (commit: () => void) => {
+    const current = ++revision.current;
+    if (reducedMotion) { commit(); return; }
+    await animate(".project-stage", { opacity: 0.55 }, { duration: 0.1 });
+    if (current !== revision.current) return;
+    flushSync(commit);
+    await animate(".project-stage", { opacity: 1 }, { duration: MOTION.normal, ease: MOTION.curve });
+  };
   const [activeProjectIdx, setActiveProjectIdx] = useState(0);
   const [mode, setMode] = useState<ProjectViewMode>("surface");
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -551,12 +573,16 @@ export function ProjectXRayConsole() {
   const project = ALL_SPECIMENS[activeProjectIdx];
 
   const handleSelectProject = (idx: number) => {
-    setActiveProjectIdx(idx);
-    setSelectedNodeId(null);
+    soundEngine.relayClick();
+    void transitionTo(() => {
+      setActiveProjectIdx(idx);
+      setSelectedNodeId(null);
+    });
   };
 
   const handleModeChange = (nextMode: ProjectViewMode) => {
-    setMode(nextMode);
+    soundEngine.modeSwitch();
+    void transitionTo(() => setMode(nextMode));
   };
 
   const selectedNode =
@@ -564,7 +590,7 @@ export function ProjectXRayConsole() {
     project.architecture.nodes[0];
 
   return (
-    <div className="w-full my-8 sm:my-12 border border-[#161714] bg-[#F4F3EE] shadow-[4px_4px_0px_#161714] sm:shadow-[8px_8px_0px_#161714]">
+    <div ref={scope} className="project-console w-full my-8 sm:my-12 border border-[#161714] bg-[#F4F3EE]">
       {/* Top Console Instrument Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between border-b border-[#161714] bg-[#EAE8DF] px-3 sm:px-4 py-2.5 sm:py-3 gap-2">
         <div className="flex items-center gap-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#161714]">
@@ -630,14 +656,15 @@ export function ProjectXRayConsole() {
               key={specimen.id}
               type="button"
               onClick={() => handleSelectProject(idx)}
-              className={`premium-hover-card p-2.5 sm:p-3 text-left border-r last:border-r-0 border-[#161714] min-w-[140px] sm:min-w-0 shrink-0 transition-all font-mono ${
+              aria-pressed={isActive}
+              className={`p-2.5 sm:p-3 text-left border-r last:border-r-0 border-[#161714] min-w-[140px] sm:min-w-0 shrink-0 transition-all font-mono ${
                 isActive
                   ? "bg-[#161714] text-[#F4F3EE]"
                   : "bg-transparent text-[#161714] hover:bg-[#EAE8DF]"
               }`}
             >
               <div className="flex items-center justify-between text-[9px] mb-1 opacity-70">
-                <span>// {specimen.number}</span>
+                <span>{`// ${specimen.number}`}</span>
                 {isActive && (
                   <span className="h-1.5 w-1.5 rounded-full bg-[#E3C849]" />
                 )}
@@ -649,18 +676,12 @@ export function ProjectXRayConsole() {
       </div>
 
       {/* Stage Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 bg-[#121310] text-[#F4F3EE]">
+      <div className="project-stage grid grid-cols-1 lg:grid-cols-12 bg-[#121310] text-[#F4F3EE]">
         {/* The Viewport Stage */}
         <div className="relative lg:col-span-8 min-h-[360px] sm:min-h-[480px] border-b lg:border-b-0 lg:border-r border-[#2C2E29] flex flex-col justify-between overflow-hidden">
-          <AnimatePresence mode="wait">
             {/* LENS 1: SURFACE MODE */}
             {mode === "surface" && (
-              <motion.div
-                key={`surface-${project.id}`}
-                initial={{ opacity: 0, scale: 0.99 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              <div
                 className="relative w-full h-full min-h-[360px] sm:min-h-[480px] flex flex-col justify-between group"
               >
                 <div className="absolute inset-0">
@@ -669,7 +690,7 @@ export function ProjectXRayConsole() {
                     alt={`${project.title} Interface`}
                     fill
                     sizes="(max-width: 900px) 100vw, 60vw"
-                    className="object-cover object-top filter grayscale contrast-105 group-hover:grayscale-0 group-hover:scale-102 transition-all duration-700"
+                    className="object-cover object-top group-hover:scale-[1.015]"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#121310] via-transparent to-transparent opacity-90" />
                 </div>
@@ -680,7 +701,7 @@ export function ProjectXRayConsole() {
                     UI-SPECIMEN // {project.number}
                   </span>
                   <span className="font-mono text-[9px] bg-[#121310]/85 px-2 py-1 border border-[#3C3E37] text-[#A6A89F]">
-                    CLS: 0.00
+                    INTERFACE PREVIEW
                   </span>
                 </div>
 
@@ -712,17 +733,12 @@ export function ProjectXRayConsole() {
                     <ArrowUpRight size={15} />
                   </a>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* LENS 2: X-RAY ARCHITECTURE TOPOLOGY */}
             {mode === "architecture" && (
-              <motion.div
-                key={`arch-${project.id}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
+              <div
                 className="relative w-full h-full min-h-[360px] sm:min-h-[480px] p-4 sm:p-8 flex flex-col justify-between bg-[#0F100D] font-mono"
               >
                 <div
@@ -756,7 +772,9 @@ export function ProjectXRayConsole() {
                       <button
                         key={node.id}
                         type="button"
+                        aria-pressed={isSelected}
                         onClick={() => {
+                          soundEngine.relayClick();
                           setSelectedNodeId(node.id);
                         }}
                         className={`p-2.5 sm:p-3.5 border text-left transition-all relative ${
@@ -795,7 +813,7 @@ export function ProjectXRayConsole() {
                       AUDIT: {selectedNode.label}
                     </div>
                     <div className="text-[9px] sm:text-[10px] text-[#8C8E86]">
-                      LAT: {selectedNode.latency}
+                      DESIGN OVERVIEW
                     </div>
                   </div>
                   <p className="text-[#CCC] text-[11px] sm:text-xs leading-relaxed mb-2 sm:mb-3">
@@ -810,26 +828,21 @@ export function ProjectXRayConsole() {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* LENS 3: KERNEL TRACE STREAM */}
             {mode === "kernel" && (
-              <motion.div
-                key={`kernel-${project.id}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
+              <div
                 className="relative w-full h-full min-h-[360px] sm:min-h-[480px] p-4 sm:p-6 bg-black font-mono text-[10px] sm:text-[11px] flex flex-col justify-between overflow-y-auto"
               >
                 <div className="flex items-center justify-between pb-2 sm:pb-3 border-b border-[#222] text-[#666]">
                   <span className="flex items-center gap-2 text-[10px] sm:text-[11px]">
                     <span className="h-2 w-2 rounded-full bg-[#2BA84A] animate-ping" />
-                    LIVE RUNTIME TELEMETRY
+                    ILLUSTRATIVE REQUEST TRACE
                   </span>
                   <span className="text-[#2BA84A] flex items-center gap-1 text-[9px] sm:text-[10px]">
-                    <Activity size={11} /> CONNECTED
+                    <Activity size={11} /> SAMPLE
                   </span>
                 </div>
 
@@ -840,31 +853,27 @@ export function ProjectXRayConsole() {
                       className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 p-2 bg-[#0A0A0A] border-l-2 border-[#E3C849] font-mono"
                     >
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[#555] text-[9px]">{log.timestamp}</span>
+                        <span className="text-[#999] text-[9px]">0{idx + 1}</span>
                         <span className="text-[#E3C849] font-bold">[{log.channel}]</span>
                       </div>
                       <span className="text-[#BBB] flex-1 text-[10px] sm:text-[11px]">{log.message}</span>
-                      <span className="text-[#2BA84A] shrink-0 font-semibold text-[9px] sm:text-[10px]">
-                        {log.latency}
-                      </span>
                     </div>
                   ))}
                 </div>
 
                 <div className="p-2.5 sm:p-3 bg-[#111] border border-[#222] text-[#888] flex flex-wrap justify-between items-center text-[9px] sm:text-[10px] gap-1">
-                  <span>SYS_MEM: 18.4MB // NODE LTS</span>
-                  <span className="text-[#E3C849]">STATUS: 100% HEALTHY</span>
+                  <span>Illustrative flow, not production telemetry.</span>
+                  <span className="text-[#E3C849]">REFERENCE</span>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
 
         {/* Specimen Metadata Panel */}
-        <div className="lg:col-span-4 p-5 sm:p-8 flex flex-col justify-between bg-[#161714] text-[#F4F3EE]">
+        <div className="project-metadata lg:col-span-4 p-5 sm:p-8 flex flex-col justify-between bg-[#161714] text-[#F4F3EE]">
           <div>
             <div className="font-mono text-[9px] sm:text-[10px] text-[#8C8E86] tracking-widest uppercase mb-1.5 flex items-center gap-2">
-              <span>METRICS & SPECIFICATIONS</span>
+              <span>PROJECT & SPECIFICATIONS</span>
               <span className="h-px bg-[#2E3029] flex-1" />
             </div>
 
@@ -892,7 +901,7 @@ export function ProjectXRayConsole() {
               {project.metrics.map((m) => (
                 <div
                   key={m.label}
-                  className="flex justify-between items-baseline"
+                  className="project-specification flex justify-between items-baseline"
                 >
                   <span className="font-mono text-[10px] sm:text-xs text-[#8C8E86] uppercase">
                     {m.label}

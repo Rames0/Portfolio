@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangle, ArrowLeft } from "lucide-react";
+import { soundEngine } from "@/lib/haptics";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -8,6 +9,7 @@ export default function NotFound() {
   const [dots, setDots] = useState("");
 
   useEffect(() => {
+    soundEngine.tick();
     const interval = setInterval(() => {
       setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
     }, 400);
@@ -52,7 +54,7 @@ export default function NotFound() {
         <div className="mt-8">
           <Link
             href="/"
-            
+            onClick={() => soundEngine.relayClick()}
             className="flex items-center justify-center gap-2 w-full py-3.5 bg-[#E3C849] hover:bg-[#ebd567] text-[#121310] font-black uppercase text-xs transition-transform active:scale-[0.99] shadow-[0_4px_20px_rgba(227,200,73,0.2)]"
           >
             <ArrowLeft size={16} />
