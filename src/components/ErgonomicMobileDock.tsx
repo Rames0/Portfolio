@@ -1,49 +1,54 @@
 "use client";
 
-import { Compass, FileText, Mail, Volume2, VolumeX, Wrench } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Compass, FileText, Layers, Mail, Moon, Sun } from "lucide-react";
 import { soundEngine } from "@/lib/haptics";
+import { useTheme } from "@/lib/theme";
 
 interface ErgonomicMobileDockProps {
   onDownloadCV: () => void;
 }
 
-export function ErgonomicMobileDock({ onDownloadCV }: ErgonomicMobileDockProps) {
-  const [soundOn, setSoundOn] = useState(false);
-
-  useEffect(() => {
-    setSoundOn(soundEngine.isSoundEnabled());
-  }, []);
-
-  const toggleSound = () => {
-    const next = !soundOn;
-    setSoundOn(next);
-    soundEngine.setSoundEnabled(next);
-    if (next) soundEngine.relayClick();
-  };
+export function ErgonomicMobileDock({
+  onDownloadCV,
+}: ErgonomicMobileDockProps) {
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
     <nav
-      aria-label="Mobile thumb navigation"
-      className="md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-3 z-50 bg-[#161714]/95 backdrop-blur-md border border-[#3C3E37] py-2 px-1 flex items-center justify-around shadow-[0_8px_32px_rgba(0,0,0,0.5)] text-[#F4F3EE] font-mono text-[9px]"
+      aria-label="Mobile navigation dock"
+      className="md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-4 z-50 bg-[var(--bg-secondary)]/95 backdrop-blur-md border border-[var(--surface-border)] rounded-2xl py-1.5 px-3 flex items-center justify-around shadow-[var(--card-shadow)] text-[var(--text-primary)] font-mono text-[10px]"
     >
       <a
-        href="#top"
+        href="#hero"
         onClick={() => soundEngine.tick()}
-        className="flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded text-[#CCC] active:text-[#E3C849] active:scale-95 transition-transform"
+        className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] gap-1 rounded text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
       >
-        <Compass size={16} />
-        <span>TOP</span>
+        <Compass size={16} className="text-[var(--accent-primary)]" />
+        <span>Top</span>
       </a>
 
       <a
-        href="#lab"
+        href="#work"
         onClick={() => soundEngine.tick()}
-        className="flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded text-[#CCC] active:text-[#E3C849] active:scale-95 transition-transform"
+        className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] gap-1 rounded text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
       >
-        <Wrench size={16} />
-        <span>BENCH</span>
+        <Layers size={16} />
+        <span>Projects</span>
       </a>
+
+      <button
+        type="button"
+        onClick={() => {
+          soundEngine.tick();
+          toggleTheme();
+        }}
+        aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] gap-1 rounded text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
+      >
+        {isDark ? <Sun size={16} /> : <Moon size={16} />}
+        <span>{isDark ? "Light" : "Dark"}</span>
+      </button>
 
       <button
         type="button"
@@ -51,30 +56,20 @@ export function ErgonomicMobileDock({ onDownloadCV }: ErgonomicMobileDockProps) 
           soundEngine.relayClick();
           onDownloadCV();
         }}
-        className="flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded text-[#CCC] active:text-[#E3C849] active:scale-95 transition-transform"
+        aria-label="Download Curriculum Vitae"
+        className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] gap-1 rounded text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
       >
         <FileText size={16} />
-        <span>CV PDF</span>
-      </button>
-
-      <button
-        type="button"
-        onClick={toggleSound}
-        className={`flex flex-col items-center justify-center min-w-[50px] min-h-[44px] gap-1 rounded active:scale-95 transition-all ${
-          soundOn ? "text-[#E3C849]" : "text-[#888]"
-        }`}
-      >
-        {soundOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
-        <span>{soundOn ? "AUDIO ON" : "MUTED"}</span>
+        <span>CV</span>
       </button>
 
       <a
         href="#contact"
         onClick={() => soundEngine.relayClick()}
-        className="flex flex-col items-center justify-center min-w-[58px] min-h-[44px] gap-1 px-2 bg-[#E3C849] text-[#161714] font-bold active:scale-95 transition-transform"
+        className="flex flex-col items-center justify-center min-w-[56px] min-h-[42px] gap-1 px-2.5 bg-[var(--accent-primary)] text-[var(--bg-primary)] font-bold rounded-xl transition-transform active:scale-95"
       >
-        <Mail size={16} />
-        <span>DISPATCH</span>
+        <Mail size={14} />
+        <span>Contact</span>
       </a>
     </nav>
   );

@@ -3,5 +3,5 @@ export const WORK_STATUS = {
   label: "Available for work",
   detail: "Full-time Roles & Contracts",
   color: "#2ba84a",
-  colorHex: "#10B981"
+  colorHex: "#10B981",
 };

@@ -1,5 +1,5 @@
 // Tactile Web Audio API Sound Engine
-// Synthesizes analog mechanical clicks, mode switches, terminal ticks, and continuous tone scrubbing.
+// Synthesizes analog mechanical clicks, mode switches, terminal ticks, continuous tone scrubbing, and subtle designer acoustic harmonics.
 
 class TactileSoundEngine {
   private ctx: AudioContext | null = null;
@@ -11,7 +11,8 @@ class TactileSoundEngine {
     if (!this.ctx && typeof window !== "undefined") {
       const AudioCtx =
         window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
       if (AudioCtx) {
         this.ctx = new AudioCtx();
       }
@@ -46,10 +47,16 @@ class TactileSoundEngine {
 
       osc.type = "triangle";
       osc.frequency.setValueAtTime(140, this.ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(32, this.ctx.currentTime + 0.035);
+      osc.frequency.exponentialRampToValueAtTime(
+        32,
+        this.ctx.currentTime + 0.035,
+      );
 
       gain.gain.setValueAtTime(0.24, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.035);
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.ctx.currentTime + 0.035,
+      );
 
       osc.connect(gain);
       gain.connect(this.ctx.destination);
@@ -112,7 +119,10 @@ class TactileSoundEngine {
       osc.type = "square";
       osc.frequency.setValueAtTime(1100, this.ctx.currentTime);
       gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        this.ctx.currentTime + 0.01,
+      );
       osc.connect(gain);
       gain.connect(this.ctx.destination);
       osc.start();
@@ -122,7 +132,44 @@ class TactileSoundEngine {
     }
   }
 
-  // Continuous Analog Signal Synthesizer (for the oscilloscope)
+  // All Blue / Ocean Harmonic Acoustic Chime (Refined Designer Resonance)
+  public oceanHarmonic() {
+    if (!this.enabled) return;
+    this.initContext();
+    if (!this.ctx) return;
+
+    try {
+      const now = this.ctx.currentTime;
+      // Synthesize a lush, tranquil acoustic triad (Eb - Bb - Eb - G)
+      const freqs = [311.13, 466.16, 622.25, 783.99];
+
+      freqs.forEach((freq, idx) => {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.04);
+
+        gain.gain.setValueAtTime(0.001, now + idx * 0.04);
+        gain.gain.linearRampToValueAtTime(0.08, now + idx * 0.04 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now + idx * 0.04);
+        osc.stop(now + 1.25);
+      });
+    } catch {
+      // Ignore audio synthesis errors in restricted contexts
+    }
+  }
+
+  public hakiBurst() {
+    this.oceanHarmonic();
+  }
+
+  // Continuous Analog Signal Synthesizer
   public startContinuousTone(frequency: number, type: OscillatorType = "sine") {
     if (!this.enabled) return;
     this.initContext();
@@ -141,7 +188,10 @@ class TactileSoundEngine {
       this.activeOsc.frequency.setValueAtTime(frequency, this.ctx.currentTime);
 
       this.activeGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
-      this.activeGain.gain.exponentialRampToValueAtTime(0.08, this.ctx.currentTime + 0.03);
+      this.activeGain.gain.exponentialRampToValueAtTime(
+        0.08,
+        this.ctx.currentTime + 0.03,
+      );
 
       this.activeOsc.connect(this.activeGain);
       this.activeGain.connect(this.ctx.destination);
@@ -155,15 +205,25 @@ class TactileSoundEngine {
   public updateToneFrequency(frequency: number) {
     if (!this.enabled || !this.ctx || !this.activeOsc) return;
     try {
-      this.activeOsc.frequency.setTargetAtTime(frequency, this.ctx.currentTime, 0.03);
+      this.activeOsc.frequency.setTargetAtTime(
+        frequency,
+        this.ctx.currentTime,
+        0.03,
+      );
     } catch {}
   }
 
   public stopContinuousTone() {
     if (!this.ctx || !this.activeOsc || !this.activeGain) return;
     try {
-      this.activeGain.gain.setValueAtTime(this.activeGain.gain.value, this.ctx.currentTime);
-      this.activeGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+      this.activeGain.gain.setValueAtTime(
+        this.activeGain.gain.value,
+        this.ctx.currentTime,
+      );
+      this.activeGain.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.ctx.currentTime + 0.04,
+      );
       const osc = this.activeOsc;
       setTimeout(() => {
         try {

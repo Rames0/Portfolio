@@ -4,7 +4,13 @@ import { Volume2, VolumeX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { soundEngine } from "@/lib/haptics";
 
-export function TactileAudioToggle() {
+export function TactileAudioToggle({
+  className = "",
+  showLabel = true,
+}: {
+  className?: string;
+  showLabel?: boolean;
+}) {
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
@@ -24,18 +30,25 @@ export function TactileAudioToggle() {
     <button
       type="button"
       onClick={handleToggle}
-      aria-label={enabled ? "Mute physical audio cues" : "Enable physical audio cues"}
+      aria-label={
+        enabled ? "Mute physical audio cues" : "Enable physical audio cues"
+      }
       aria-pressed={enabled}
-      className={`flex items-center gap-2 px-3 py-1.5 border border-[#161714] font-mono text-[10px] font-bold uppercase transition-all ${
+      title={
+        enabled ? "Mute physical audio cues" : "Enable physical audio cues"
+      }
+      className={`flex items-center gap-2 px-3 py-1.5 border font-mono text-[10px] font-bold uppercase transition-all duration-200 cursor-pointer ${
         enabled
-          ? "bg-[#E3C849] text-[#161714] shadow-[2px_2px_0px_#161714]"
-          : "bg-[#F4F3EE] text-[#555650] hover:bg-[#EAE8DF] hover:text-[#161714]"
-      }`}
+          ? "bg-[var(--accent-gold)] text-[#090a0f] border-[var(--accent-gold)] shadow-[0_2px_10px_rgba(251,191,36,0.25)]"
+          : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--surface-border)] hover:border-[var(--accent-gold)] hover:text-[var(--text-primary)]"
+      } ${className}`}
     >
       {enabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
-      <span className="hidden sm:inline">
-        {enabled ? "HAPTICS: ON" : "HAPTICS: OFF"}
-      </span>
+      {showLabel && (
+        <span className="hidden sm:inline tracking-wider">
+          {enabled ? "HAPTICS: ON" : "HAPTICS: OFF"}
+        </span>
+      )}
     </button>
   );
 }

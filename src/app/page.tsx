@@ -1,932 +1,1255 @@
 "use client";
 
 import emailjs from "@emailjs/browser";
-import {MotionConfig, useReducedMotion} from "framer-motion";
+import { MotionConfig } from "framer-motion";
 import {
-    ArrowDownRight,
-    ArrowUpRight,
-    BriefcaseBusiness,
-    Code2,
-    Database,
-    Download,
-    Layers3,
-    Mail,
-    MapPin,
-    Menu,
-    Send,
-    ServerCog,
-    X,
+  ArrowUpRight,
+  Briefcase,
+  Check,
+  Code2,
+  Copy,
+  Cpu,
+  Database,
+  Download,
+  GraduationCap,
+  Layers,
+  Mail,
+  Menu,
+  Send,
+  Sparkles,
+  Terminal,
+  User,
+  X,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
-import {FormEvent, PointerEvent, useEffect, useRef, useState} from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { FiGithub as Github, FiLinkedin as Linkedin } from "react-icons/fi";
 import profilePic from "../../public/Profile.jpeg";
-import {ProjectXRayConsole} from "@/components/ProjectXRayConsole";
-import {ErgonomicMobileDock} from "@/components/ErgonomicMobileDock";
+import ambienceImg from "../../public/Ambience.png";
+import gwpImg from "../../public/GWP.png";
+import kansaiImg from "../../public/Kansai.png";
+import lucazImg from "../../public/Lucaz.png";
+import rakminaImg from "../../public/Rakmina.png";
+import samImg from "../../public/Sam.png";
+import faviconSvg from "../../public/favicon.svg";
 
+import { AntigravityBackground } from "@/components/AntigravityBackground";
+import { ErgonomicMobileDock } from "@/components/ErgonomicMobileDock";
+import { PortfolioMotion } from "@/components/PortfolioMotion";
+import { ProjectXRayConsole } from "@/components/ProjectXRayConsole";
+import { ScrollEffects } from "@/components/ScrollEffects";
+import { TactileThemeToggle } from "@/components/TactileThemeToggle";
+import { soundEngine } from "@/lib/haptics";
 
-import {WORK_STATUS} from "@/lib/config";
-import {SystemTelemetryLab} from "@/components/SystemTelemetryLab";
-import {PortfolioMotion} from "@/components/PortfolioMotion";
-import {HeroGrid} from "@/components/HeroGrid";
-
-const navItems = ["Work", "About", "Capabilities", "Experience", "Lab", "Contact"];
-
-const expertise = [
-    {
-        title: "Frontend Engineering & Motion",
-        text: "Responsive interactions, accessible design systems, fluid clamp layouts, and tactile canvas-based visualizers.",
-        tools: "Next.js · React 19 · TypeScript · Tailwind · Framer Motion",
-        icon: Layers3,
-    },
-    {
-        title: "Resilient Backend Architecture",
-        text: "ACID transactional systems, WebSocket concurrency, REST / GraphQL APIs, and reliable job queuing.",
-        tools: "Node.js · Laravel · Django · Grails · Java",
-        icon: ServerCog,
-    },
-    {
-        title: "Data Integrity & Delivery",
-        text: "Normalized schema modeling, query optimization, indexing, edge CDN routing, and zero-downtime CI/CD deployment.",
-        tools: "PostgreSQL · MariaDB · MySQL · Docker · CI/CD",
-        icon: Database,
-    },
+const featuredPlatforms = [
+  {
+    category: "HOSPITALITY & REAL-TIME CONCURRENCY",
+    title: "Lucazsoft POS",
+    subtitle: "High-Pressure Restaurant Operating Engine",
+    image: lucazImg,
+    tags: [
+      "Laravel 11",
+      "MariaDB ACID",
+      "Node.js WebSockets",
+      "Local-First Queue",
+    ],
+    desc: "Engineered high-concurrency restaurant point-of-sale architecture with sub-5ms duplex WebSocket kitchen dispatch synchronization, touch-optimized ergonomics, and atomic offline write buffers to withstand intermittent network drops.",
+    link: "https://lucazsoft.com/login",
+  },
+  {
+    category: "ENTERPRISE CORPORATE PLATFORM",
+    title: "Ambience Infosys",
+    subtitle: "Corporate Software & Engineering Solutions Portal",
+    image: ambienceImg,
+    tags: [
+      "Next.js 16",
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS",
+      "RSC Streaming",
+    ],
+    desc: "Designed and engineered enterprise services showcase with server components streaming, zero runtime layout shift (0.00 CLS), and 100 Lighthouse performance scores under heavy corporate traffic.",
+    link: "https://ambienceinfosys.com.np/",
+  },
+  {
+    category: "MULTILINGUAL ACADEMIC DIRECTORY",
+    title: "Rakmina Consultancy",
+    subtitle: "Multilingual Global Academic Directory",
+    image: rakminaImg,
+    tags: [
+      "Laravel",
+      "PostgreSQL tsvector",
+      "GIN Search Index",
+      "i18n (8 Locales)",
+    ],
+    desc: "Constructed an 8-locale international study advisory directory with dynamic header-negotiated translation routes and deep parametric full-text search indexing powered by PostgreSQL tsvector (sub-15ms resolution).",
+    link: "https://rakmina.nirc.com.np/",
+  },
+  {
+    category: "CIVIC PUBLIC INFRASTRUCTURE",
+    title: "GWP (Government Web Portal)",
+    subtitle: "Consolidated Municipal Digital Administration",
+    image: gwpImg,
+    tags: [
+      "Java",
+      "Grails MVC",
+      "Spring Security RBAC",
+      "WCAG 2.1 AA",
+      "MariaDB",
+    ],
+    desc: "Constructed accessible, high-trust digital portal uniting 50+ municipal public services for citizens, featuring Spring Security RBAC authorization filters, document intake state machines, and tamper-evident receipt logging.",
+    link: "https://github.com/Rames0",
+  },
+  {
+    category: "EDUCATION & ADMISSIONS PORTAL",
+    title: "Kansai Japanese Language School",
+    subtitle: "Academic Advisory & Course Enrollment Portal",
+    image: kansaiImg,
+    tags: ["Laravel", "MariaDB", "Tailwind CSS", "Alpine.js"],
+    desc: "Architected frictionless multi-step admissions funnel with client-side field validation, asynchronous document verification, and transactional student intake cohorts.",
+    link: "https://kansaijapaneselanguage.com.np/",
+  },
+  {
+    category: "EXPERIMENTAL 3D & KINETIC WEB",
+    title: "Sam Maharjan Creative Folio",
+    subtitle: "Experimental Creative Technologist Folio",
+    image: samImg,
+    tags: ["Next.js 16", "Three.js", "WebGL Shaders", "Framer Motion"],
+    desc: "Engineered an interactive digital portfolio featuring real-time 3D vertex displacement shaders, compositor-thread motion physics, and strict low-power fallbacks maintaining stable 60fps.",
+    link: "https://sammaharjan.com.np/home/",
+  },
 ];
 
-function SectionLabel({children}: { children: React.ReactNode }) {
-    return (
-        <div className="section-label">
-            <span/>
-            {children}
-        </div>
-    );
-}
+const capabilities = [
+  {
+    number: "01",
+    title: "Modern Web Engineering",
+    desc: "Architecting high-performance web applications using Next.js 16, React 19, TypeScript, and modern Tailwind design systems. Built to endure high traffic with zero layout shifts.",
+    icon: Code2,
+  },
+  {
+    number: "02",
+    title: "Systems & API Architecture",
+    desc: "Engineering scalable application backends with Node.js, Laravel 11, and Java/Grails MVC. Designing duplex WebSockets and resilient offline-first write queues.",
+    icon: Cpu,
+  },
+  {
+    number: "03",
+    title: "Relational Schemas & ACID Locks",
+    desc: "Structuring relational databases with PostgreSQL and MariaDB. Implementing tsvector full-text search, GIN indexes, and row-level locking for zero transaction corruption.",
+    icon: Database,
+  },
+  {
+    number: "04",
+    title: "UI/UX Design Systems",
+    desc: "Creating systematic design languages in Figma. Translating tokens into pixel-accurate code with strict adherence to human ergonomics and WCAG 2.1 AA accessibility.",
+    icon: Layers,
+  },
+];
+
+const skillCategories = [
+  {
+    category: "Frontend & Reactive Systems",
+    desc: "Fluid user interfaces, motion physics & design tokens",
+    skills: [
+      "Next.js 16",
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "HTML5 / CSS3",
+    ],
+  },
+  {
+    category: "Backend & Concurrency",
+    desc: "High-throughput servers, duplex streams & APIs",
+    skills: [
+      "Node.js",
+      "Laravel 11",
+      "PHP 8.x",
+      "Java / Grails",
+      "RESTful APIs",
+      "WebSockets",
+    ],
+  },
+  {
+    category: "Relational Data & Search",
+    desc: "ACID transactions, indexing & full-text engines",
+    skills: [
+      "PostgreSQL",
+      "MariaDB",
+      "MySQL",
+      "ACID Row Locks",
+      "GIN Indexing",
+      "tsvector Search",
+    ],
+  },
+  {
+    category: "Design Systems & DevOps",
+    desc: "Figma component systems, Linux kernel & CI/CD",
+    skills: [
+      "Figma Systems",
+      "Git & GitHub",
+      "Docker",
+      "Linux Shell",
+      "WCAG 2.1 AA",
+      "Vercel / CI",
+    ],
+  },
+];
 
 async function createResume() {
-    const {default: jsPDF} = await import("jspdf");
-    const doc = new jsPDF({unit: "mm", format: "a4"});
+  const { default: jsPDF } = await import("jspdf");
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
 
-    const K = [0, 0, 0] as const; // black
-    const GR = [90, 90, 90] as const; // gray
-    const LG = [160, 160, 160] as const; // light gray
-    const WH = [255, 255, 255] as const; // white
+  const K = [15, 23, 42] as const;
+  const GR = [71, 85, 105] as const;
+  const LG = [148, 163, 184] as const;
+  const WH = [255, 255, 255] as const;
 
-    const PW = 210, PH = 297;
-    const SB = 68;
-    const ML = SB + 8;
-    const MR = 14;
-    const MW = PW - ML - MR;
-    const SML = 8;
-    const SMW = SB - SML - 4;
+  const PW = 210,
+    PH = 297;
+  const SB = 68;
+  const ML = SB + 8;
+  const MR = 14;
+  const MW = PW - ML - MR;
+  const SML = 8;
+  const SMW = SB - SML - 4;
 
-    // white header with bottom border
-    doc.setFillColor(...WH);
-    doc.rect(0, 0, PW, 46, "F");
-    doc.setDrawColor(...LG);
-    doc.setLineWidth(0.4);
-    doc.line(0, 46, PW, 46);
+  doc.setFillColor(...WH);
+  doc.rect(0, 0, PW, 46, "F");
+  doc.setDrawColor(...LG);
+  doc.setLineWidth(0.4);
+  doc.line(0, 46, PW, 46);
 
-    doc.setTextColor(...K);
+  doc.setTextColor(...K);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(22);
+  doc.text("RAMESH MAHARJAN", PW / 2, 17, { align: "center" });
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.setTextColor(...GR);
+  doc.text("Full-Stack Developer", PW / 2, 25, {
+    align: "center",
+  });
+
+  doc.setFontSize(9);
+  doc.setTextColor(...GR);
+  doc.text(
+    "Full-Stack Web Systems · UI/UX Design Systems · Resilient Web Architecture",
+    PW / 2,
+    32,
+    { align: "center" },
+  );
+
+  doc.setFontSize(8.5);
+  doc.setTextColor(...LG);
+  const headerContactText =
+    "mhrjan0@gmail.com   |   Kathmandu, Nepal   |   github.com/Rames0   |   linkedin.com/in/ramesh-mhr";
+  doc.text(headerContactText, PW / 2, 39, { align: "center" });
+  const hctw = doc.getTextWidth(headerContactText);
+  doc.link((PW - hctw) / 2, 39 - 3.5, hctw, 4.5, {
+    url: "mailto:mhrjan0@gmail.com",
+  });
+
+  doc.setFillColor(...LG);
+  doc.rect(SB - 0.5, 46, 0.5, PH - 46, "F");
+
+  let sy = 52;
+  let my = 52;
+
+  const sectionHeading = (label: string, x: number, y: number, w: number) => {
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
-    doc.text("RAMESH MAHARJAN", PW / 2, 18, {align: "center"});
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    doc.setTextColor(...GR);
-    doc.text("Full-Stack Developer", PW / 2, 26, {align: "center"});
-
-    doc.setFontSize(9.5);
-    doc.setTextColor(...GR);
-    doc.text("React  Next.js  Node.js  Java  Grails  Django  PostgreSQL", PW / 2, 33, {align: "center"});
-
-    doc.setFontSize(8.5);
-    doc.setTextColor(...LG);
-    const headerContactText = "mhrjan0@gmail.com   |   Kathmandu, Nepal   |   github.com/Rames0   |   linkedin.com/in/ramesh-mhr";
-    doc.text(headerContactText, PW / 2, 40, {align: "center"});
-    const hctw = doc.getTextWidth(headerContactText);
-    doc.link((PW - hctw) / 2, 40 - 3.5, hctw, 4.5, {url: "mailto:mhrjan0@gmail.com"});
-
-    // sidebar divider (starts after header)
-    doc.setFillColor(...LG);
-    doc.rect(SB - 0.5, 46, 0.5, PH - 46, "F");
-
-    let sy = 52;
-    let my = 52;
-
-    const sectionHeading = (label: string, x: number, y: number, w: number) => {
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9);
-        doc.setTextColor(...K);
-        doc.text(label.toUpperCase(), x, y);
-        doc.setDrawColor(...K);
-        doc.setLineWidth(0.4);
-        doc.line(x, y + 1.2, x + w, y + 1.2);
-        return y + 5;
-    };
-
-    const justifyLine = (line: string, x: number, y: number, w: number) => {
-        const words = line.trim().split(" ");
-        if (words.length <= 1) {
-            doc.text(line, x, y);
-            return;
-        }
-        const totalWordWidth = words.reduce((sum: number, wd: string) => sum + doc.getTextWidth(wd), 0);
-        const gap = (w - totalWordWidth) / (words.length - 1);
-        let cx = x;
-        words.forEach((word: string, wi: number) => {
-            doc.text(word, cx, y);
-            cx += doc.getTextWidth(word) + (wi < words.length - 1 ? gap : 0);
-        });
-    };
-
-    const bodyText = (text: string, x: number, y: number, w: number) => {
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9.5);
-        doc.setTextColor(...K);
-        const lines: string[] = doc.splitTextToSize(text, w);
-        lines.forEach((line: string, idx: number) => {
-            if (idx === lines.length - 1) doc.text(line, x, y + idx * 4.6);
-            else justifyLine(line, x, y + idx * 4.6, w);
-        });
-        return y + lines.length * 4.6;
-    };
-
-    const bullet = (text: string, x: number, y: number, w: number) => {
-        doc.setFontSize(9.5);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(...K);
-        doc.text("-", x + 0.5, y);
-        const bw = w - 4;
-        const lines: string[] = doc.splitTextToSize(text, bw);
-        lines.forEach((line: string, idx: number) => {
-            if (idx === lines.length - 1) doc.text(line, x + 3.5, y + idx * 4.6);
-            else justifyLine(line, x + 3.5, y + idx * 4.6, bw);
-        });
-        return y + lines.length * 4.6;
-    };
-
-    const checkMain = (need: number) => {
-        if (my + need > PH - 10) {
-            doc.addPage();
-            doc.setFillColor(...LG);
-            doc.rect(SB - 0.5, 0, 0.5, PH, "F");
-            my = 14;
-        }
-    };
-
-    // ── SIDEBAR ────────────────────────────────────────────────────────────
-    sy = sectionHeading("Contact", SML, sy, SMW);
-    ([
-        {label: "Email", val: "mhrjan0@gmail.com", url: "mailto:mhrjan0@gmail.com"},
-        {label: "Location", val: "Kathmandu, Nepal", url: ""},
-        {label: "GitHub", val: "github.com/Rames0", url: "https://github.com/Rames0"},
-        {
-            label: "LinkedIn",
-            val: "linkedin.com/in/ramesh-mhr",
-            url: "https://www.linkedin.com/in/ramesh-mhr-1b0514337/"
-        },
-    ]).forEach(({label, val, url}) => {
-        doc.setFontSize(8.5);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...GR);
-        doc.text(label, SML, sy);
-        doc.setFont("helvetica", "normal");
-        const lines = doc.splitTextToSize(val, SMW);
-        const textY = sy + 3.8;
-        if (url) {
-            doc.setTextColor(0, 0, 200);
-            doc.text(lines, SML, textY);
-            const tw = doc.getTextWidth(lines[0]);
-            doc.link(SML, textY - 3.5, tw, 4.5, {url});
-        } else {
-            doc.setTextColor(...K);
-            doc.text(lines, SML, textY);
-        }
-        sy += lines.length * 3.8 + 4.5;
-    });
-    sy += 3;
-
-    sy = sectionHeading("Technical Skills", SML, sy, SMW);
-    ([
-        {cat: "Frontend", items: "Next.js, React, TypeScript, Tailwind CSS, JavaScript, Html, Css"},
-        {cat: "Backend", items: "Node.js, PHP, Laravel, Java, Grails, Django, REST APIs"},
-        {cat: "Database", items: "PostgreSQL, MariaDB, MySQL"},
-        {cat: "Tools", items: "Git, CI/CD, Linux"},
-    ]).forEach((g) => {
-        doc.setFontSize(8.5);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(...GR);
-        doc.text(g.cat, SML, sy);
-        sy += 4;
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(...K);
-        const lines = doc.splitTextToSize(g.items, SMW);
-        doc.text(lines, SML, sy);
-        sy += lines.length * 4.2 + 2;
-    });
-    sy += 3;
-
-    sy = sectionHeading("Education", SML, sy, SMW);
     doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
     doc.setTextColor(...K);
-    doc.text("Bachelor of Computer", SML, sy);
-    sy += 4.2;
-    doc.text("Applications (BCA)", SML, sy);
-    sy += 4.2;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...GR);
-    doc.text("TU University", SML, sy);
-    sy += 9;
+    doc.text(label.toUpperCase(), x, y);
+    doc.setDrawColor(...K);
+    doc.setLineWidth(0.4);
+    doc.line(x, y + 1.2, x + w, y + 1.2);
+    return y + 5;
+  };
 
-    sy = sectionHeading("Programming Languages", SML, sy, SMW);
-    (["JavaScript", "TypeScript", "Python", "Java", "PHP"] as string[])
-        .forEach((lang: string) => {
-            doc.setFontSize(8.5);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(...K);
-            doc.text(lang, SML, sy);
-            sy += 5.5;
-        });
-
-    // ── MAIN CONTENT ───────────────────────────────────────────────────────
-    my = sectionHeading("Professional Summary", ML, my, MW);
-    const summaryText =
-        "Full-Stack Developer with 1+ year of hands-on experience building resilient web applications. " +
-        "Delivered 6+ production projects spanning government portals, restaurant POS systems, and multi-language " +
-        "consultancy platforms. Proficient across the full stack from React and Next.js UIs to Java/Grails and " +
-        "Node.js backends with optimised relational databases.";
+  const bodyText = (text: string, x: number, y: number, w: number) => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9.5);
     doc.setTextColor(...K);
-    const summaryLines: string[] = doc.splitTextToSize(summaryText, MW);
-    summaryLines.forEach((line: string, idx: number) => {
-        const isLast = idx === summaryLines.length - 1;
-        if (isLast) {
-            doc.text(line, ML, my);
-        } else {
-            const words = line.trim().split(" ");
-            if (words.length > 1) {
-                const totalWordWidth = words.reduce((sum: number, w: string) => sum + doc.getTextWidth(w), 0);
-                const gap = (MW - totalWordWidth) / (words.length - 1);
-                let cx = ML;
-                words.forEach((word: string, wi: number) => {
-                    doc.text(word, cx, my);
-                    cx += doc.getTextWidth(word) + (wi < words.length - 1 ? gap : 0);
-                });
-            } else {
-                doc.text(line, ML, my);
-            }
-        }
-        my += 4.6;
+    const lines: string[] = doc.splitTextToSize(text, w);
+    lines.forEach((line: string, idx: number) => {
+      doc.text(line, x, y + idx * 4.6);
     });
-    my += 5;
+    return y + lines.length * 4.6;
+  };
 
-    checkMain(50);
-    my = sectionHeading("Professional Experience", ML, my, MW);
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(...K);
-    doc.text("Full-Stack Developer", ML, my);
+  const bullet = (text: string, x: number, y: number, w: number) => {
+    doc.setFontSize(9.5);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(9.5);
-    doc.setTextColor(...GR);
-    doc.text("2024 - Present", PW - MR, my, {align: "right"});
-    my += 5;
+    doc.setTextColor(...K);
+    doc.text("-", x + 0.5, y);
+    const bw = w - 4;
+    const lines: string[] = doc.splitTextToSize(text, bw);
+    lines.forEach((line: string, idx: number) => {
+      doc.text(line, x + 3.5, y + idx * 4.6);
+    });
+    return y + lines.length * 4.6;
+  };
 
+  const checkMain = (need: number) => {
+    if (my + need > PH - 10) {
+      doc.addPage();
+      doc.setFillColor(...LG);
+      doc.rect(SB - 0.5, 0, 0.5, PH, "F");
+      my = 14;
+    }
+  };
+
+  // SIDEBAR
+  sy = sectionHeading("Contact & Links", SML, sy, SMW);
+  [
+    {
+      label: "Email",
+      val: "mhrjan0@gmail.com",
+      url: "mailto:mhrjan0@gmail.com",
+    },
+    { label: "Location", val: "Kathmandu, Nepal", url: "" },
+    {
+      label: "GitHub",
+      val: "github.com/Rames0",
+      url: "https://github.com/Rames0",
+    },
+    {
+      label: "LinkedIn",
+      val: "linkedin.com/in/ramesh-mhr",
+      url: "https://www.linkedin.com/in/ramesh-mhr-1b0514337/",
+    },
+  ].forEach(({ label, val, url }) => {
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...GR);
+    doc.text(label, SML, sy);
+    doc.setFont("helvetica", "normal");
+    const lines = doc.splitTextToSize(val, SMW);
+    const textY = sy + 3.8;
+    if (url) {
+      doc.setTextColor(0, 0, 200);
+      doc.text(lines, SML, textY);
+      const tw = doc.getTextWidth(lines[0]);
+      doc.link(SML, textY - 3.5, tw, 4.5, { url });
+    } else {
+      doc.setTextColor(...K);
+      doc.text(lines, SML, textY);
+    }
+    sy += lines.length * 3.8 + 4;
+  });
+  sy += 2;
+
+  sy = sectionHeading("Technical Stack", SML, sy, SMW);
+  [
+    {
+      cat: "Frontend",
+      items: "Next.js 16, React 19, TypeScript, Tailwind CSS, Framer Motion",
+    },
+    {
+      cat: "Backend",
+      items: "Node.js, Laravel 11, PHP 8.x, Java/Grails MVC, REST, WebSockets",
+    },
+    {
+      cat: "Databases",
+      items: "PostgreSQL (GIN/tsvector), MariaDB, MySQL, ACID Row Locks",
+    },
+    {
+      cat: "Design & UX",
+      items: "Figma Design Systems, Wireframing, Prototyping, WCAG 2.1 AA",
+    },
+    {
+      cat: "Tools & DevOps",
+      items: "Git, GitHub, Docker, Linux, CI/CD, Performance Profiling",
+    },
+  ].forEach((g) => {
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...GR);
+    doc.text(g.cat, SML, sy);
+    sy += 3.8;
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...K);
+    const lines = doc.splitTextToSize(g.items, SMW);
+    doc.text(lines, SML, sy);
+    sy += lines.length * 4 + 2;
+  });
+  sy += 2;
+
+  sy = sectionHeading("Education", SML, sy, SMW);
+  doc.setFontSize(8.5);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...K);
+  doc.text("Bachelor of Computer", SML, sy);
+  sy += 4;
+  doc.text("Applications (BCA)", SML, sy);
+  sy += 4;
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...GR);
+  doc.text("Tribhuvan University, Nepal", SML, sy);
+  sy += 4;
+  doc.text("2020 — 2025", SML, sy);
+  sy += 8;
+
+  // MAIN CONTENT
+  my = sectionHeading("Profile Summary", ML, my, MW);
+  const summaryText =
+    "Versatile Full-Stack Developer dedicated to engineering resilient web applications " +
+    "and thoughtfully crafted human experiences. Experienced in shipping production-grade platforms including real-time " +
+    "restaurant POS engines with local-first offline synchronization, multi-locale directories powered by PostgreSQL " +
+    "tsvector search, corporate enterprise platforms, and accessible civic governance systems. Combines strong relational " +
+    "database fundamentals with contemporary design system expertise.";
+  my = bodyText(summaryText, ML, my, MW) + 6;
+
+  checkMain(50);
+  my = sectionHeading("Professional Experience", ML, my, MW);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10.5);
+  doc.setTextColor(...K);
+  doc.text("Full-Stack Developer", ML, my);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(...GR);
+  doc.text("2024 - Present", PW - MR, my, { align: "right" });
+  my += 4.5;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  doc.setTextColor(...GR);
+  doc.text("Nepal Incubation & Research Center (NIRC Nepal)", ML, my);
+  my += 6;
+
+  [
+    "Architected and deployed 6+ production web systems spanning hospitality POS, civic governance, and global consulting.",
+    "Engineered local-first restaurant POS system with sub-5ms WebSocket synchronization and zero-loss offline order queuing.",
+    "Built an 8-locale study advisory directory leveraging PostgreSQL tsvector full-text search with sub-15ms query resolution.",
+    "Designed accessible civic public portal unifying 50+ administrative services using Java and Grails MVC with Spring Security RBAC.",
+    "Created design systems and interactive UI prototypes in Figma, translating concepts into responsive, pixel-perfect production code.",
+  ].forEach((point) => {
+    checkMain(8);
+    my = bullet(point, ML, my, MW) + 1.2;
+  });
+  my += 5;
+
+  checkMain(40);
+  my = sectionHeading("Key Production Systems", ML, my, MW);
+
+  [
+    {
+      title: "Lucazsoft POS — High-Pressure Hospitality Engine",
+      stack:
+        "Laravel 11 · MariaDB (ACID Row Locks) · Node.js WebSockets · Local-First Queue",
+      desc: "Engineered operational point-of-sale platform featuring instant kitchen dispatch synchronization, atomic offline order buffering, and touch-ergonomic counter UI.",
+    },
+    {
+      title: "Ambience Infosys — Enterprise Digital Platform",
+      stack: "Next.js 16 (App Router / RSC) · React 19 · Node.js · TypeScript",
+      desc: "Architected enterprise services showcase engineered for sub-second page delivery, zero runtime layout shift, and 100 Lighthouse performance metrics.",
+    },
+    {
+      title: "Rakmina Consultancy — Multilingual Academic Directory",
+      stack:
+        "Laravel · PostgreSQL (GIN & tsvector Full-Text Search) · i18n (8 Locales)",
+      desc: "Delivered global scholarship portal with deep parametric search indexing and instantaneous locale switching across European and Asian language pairs.",
+    },
+    {
+      title: "GWP — Government Web Portal",
+      stack:
+        "Java · Grails MVC · Spring Security RBAC · MariaDB Relational Store",
+      desc: "Constructed accessible, high-trust civic portal consolidating 50+ municipal administrative services with strict role-based authorization and tamper-evident audit logs.",
+    },
+  ].forEach((p) => {
+    checkMain(22);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9.5);
+    doc.setTextColor(...K);
+    doc.text(p.title, ML, my);
+    my += 4;
+
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(8.5);
     doc.setTextColor(...GR);
-    doc.text("NIRC Nepal - Nepal Incubation & Research Center", ML, my);
-    my += 6;
+    doc.text(p.stack, ML, my);
+    my += 4.2;
 
-    ([
-        "Architected and shipped 6+ production applications across diverse industry verticals.",
-        "Engineered a real-time restaurant POS ensuring immediate order dispatch routing.",
-        "Built a multi-language consultancy platform (8 locales) expanding reach to 10+ countries.",
-        "Optimised query paths and frontend bundle sizes, improving client-side render speeds.",
-        "Introduced CI/CD pipelines automating testing and deployment workflows.",
-        "Developed a government portal digitising 50+ citizen-facing services using Java and Grails.",
-    ] as string[]).forEach((a) => {
-        checkMain(8);
-        my = bullet(a, ML, my, MW) + 1;
-    });
-    my += 5;
+    my = bodyText(p.desc, ML, my, MW) + 4;
+  });
 
-    checkMain(30);
-    my = sectionHeading("Key Projects", ML, my, MW);
-
-    ([
-        {
-            title: "Ambience Infosys - Corporate Website",
-            stack: "Next.js  Node.js  Tailwind CSS  MariaDB",
-            desc: "Full-featured IT company site with service showcase, testimonials, and CMS. Drove modern brand presence and optimized SEO CMS.",
-        },
-        {
-            title: "Kansai Japanese Language Institute - LMS",
-            stack: "Next.js  Node.js  MariaDB",
-            desc: "Course management and student-enrollment platform serving 500+ learners with progress analytics.",
-        },
-        {
-            title: "Rakmina Consultancy - Multi-language Platform",
-            stack: "Next.js  MariaDB  i18n (8 locales)",
-            desc: "Internationalised consultancy portal expanding reach across 10+ countries.",
-        },
-        {
-            title: "Lucazsoft - Restaurant POS System",
-            stack: "Next.js  Node.js  MariaDB  WebSockets",
-            desc: "End-to-end POS with inventory tracking, live order updates, and financial reporting.",
-        },
-        {
-            title: "GWP - Government Web Portal",
-            stack: "Java  Grails  JavaScript  HTML  CSS",
-            desc: "Secure, accessible portal consolidating 50+ government services for citizens.",
-        },
-    ]).forEach((p) => {
-        checkMain(22);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(...K);
-        doc.text(p.title, ML, my);
-        my += 4.2;
-
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(9);
-        doc.setTextColor(...GR);
-        doc.text(p.stack, ML, my);
-        my += 4.5;
-
-        my = bodyText(p.desc, ML, my, MW) + 4;
-    });
-
-    const date = new Date().toISOString().split("T")[0];
-    doc.save(`Ramesh_Maharjan_CV_${date}.pdf`);
+  const date = new Date().toISOString().split("T")[0];
+  doc.save(`Ramesh_Maharjan_CV_${date}.pdf`);
 }
 
 export default function Home() {
-    const reducedMotion = useReducedMotion();
-    const [activeSection, setActiveSection] = useState("");
-    const [menuOpen, setMenuOpen] = useState(false);
-    const [formStatus, setFormStatus] = useState("");
-    const [sending, setSending] = useState(false);
-    const [ktmTime, setKtmTime] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [inspectingConsole, setInspectingConsole] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [formStatus, setFormStatus] = useState("");
+  const [sending, setSending] = useState(false);
+  const [timeKTM, setTimeKTM] = useState("");
 
-    const portraitRef = useRef<HTMLDivElement>(null);
-    const menuRef = useRef<HTMLDivElement>(null);
-    const menuButtonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const options: Intl.DateTimeFormatOptions = {
+        timeZone: "Asia/Kathmandu",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      };
+      setTimeKTM(new Intl.DateTimeFormat("en-US", options).format(now));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
-    useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            for (const entry of entries) {
-                if (entry.isIntersecting) setActiveSection(entry.target.id);
-            }
-        }, {rootMargin: "-15% 0px -65% 0px"});
-        document.querySelectorAll("main > section[id]").forEach((section) => observer.observe(section));
-        return () => observer.disconnect();
-    }, []);
+  const copyEmail = () => {
+    soundEngine.relayClick();
+    navigator.clipboard.writeText("mhrjan0@gmail.com");
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
+  };
 
-    useEffect(() => {
-        document.body.style.overflow = menuOpen ? "hidden" : "";
-        if (!menuOpen) return;
-        const previousFocus = document.activeElement as HTMLElement | null;
-        const elements = menuRef.current?.querySelectorAll<HTMLElement>("button, a[href]");
-        elements?.[0]?.focus();
-        const onKey = (event: KeyboardEvent) => {
-            if (event.key === "Escape") setMenuOpen(false);
-            if (event.key !== "Tab" || !elements?.length) return;
-            const first = elements[0];
-            const last = elements[elements.length - 1];
-            if (event.shiftKey && document.activeElement === first) {
-                event.preventDefault();
-                last.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-                event.preventDefault();
-                first.focus();
-            }
-        };
-        document.addEventListener("keydown", onKey);
-        return () => {
-            document.body.style.overflow = "";
-            document.removeEventListener("keydown", onKey);
-            previousFocus?.focus();
-        };
-    }, [menuOpen]);
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
-    useEffect(() => {
-        const updateTime = () => {
-            const now = new Date();
-            setKtmTime(
-                now.toLocaleTimeString("en-US", {
-                    timeZone: "Asia/Kathmandu",
-                    hour12: false,
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                })
-            );
-        };
-        updateTime();
-        const interval = setInterval(updateTime, 1000);
-        return () => clearInterval(interval);
-    }, []);
-
-    function movePortrait(event: PointerEvent<HTMLDivElement>) {
-        if (!portraitRef.current || reducedMotion || event.pointerType !== "mouse") return;
-        const bounds = portraitRef.current.getBoundingClientRect();
-        const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-        const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-        portraitRef.current.style.setProperty("--pointer-x", `${x * 12}px`);
-        portraitRef.current.style.setProperty("--pointer-y", `${y * 12}px`);
+    if (!serviceId || !templateId || !publicKey) {
+      window.location.href = `mailto:mhrjan0@gmail.com?subject=${encodeURIComponent(
+        String(data.get("subject") || "Inquiry from Portfolio"),
+      )}&body=${encodeURIComponent(
+        `${data.get("message")}\n\nFrom: ${data.get("name")} (${data.get("email")})`,
+      )}`;
+      return;
     }
 
-    function resetPortrait() {
-        portraitRef.current?.style.setProperty("--pointer-x", "0px");
-        portraitRef.current?.style.setProperty("--pointer-y", "0px");
+    setSending(true);
+    setFormStatus("Transmitting your message...");
+    try {
+      const templateParams = {
+        ...Object.fromEntries(data.entries()),
+        from_name: data.get("name"),
+        from_email: data.get("email"),
+        reply_to: data.get("email"),
+      };
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
+      soundEngine.modeSwitch();
+      setFormStatus(
+        "Message sent successfully. I will get back to you shortly.",
+      );
+      form.reset();
+    } catch {
+      setFormStatus(
+        "Delivery issue. Please email directly to mhrjan0@gmail.com",
+      );
+    } finally {
+      setSending(false);
     }
+  }
 
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-        event.preventDefault();
-            const form = event.currentTarget;
-        const data = new FormData(form);
-        const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-        const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-        const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+  return (
+    <MotionConfig reducedMotion="user">
+      <div className="site-wrapper">
+        {/* Antigravity WebGL Canvas: Luminous Particles */}
+        <AntigravityBackground />
 
-        if (!serviceId || !templateId || !publicKey) {
-            window.location.href = `mailto:mhrjan0@gmail.com?subject=${encodeURIComponent(
-                String(data.get("subject") || "Engineering Inquiry")
-            )}&body=${encodeURIComponent(
-                `${data.get("message")}\n\nFrom: ${data.get("name")} (${data.get(
-                    "email"
-                )})`
-            )}`;
-            return;
-        }
+        {/* Scroll Progress & Spotlight Effects */}
+        <ScrollEffects />
 
-        setSending(true);
-        setFormStatus("Transmitting payload...");
-        try {
-            await emailjs.send(
-                serviceId,
-                templateId,
-                Object.fromEntries(data.entries()),
-                publicKey
-            );
-            setFormStatus("Transmission confirmed. I will review and reply shortly.");
-            form.reset();
-        } catch {
-            setFormStatus(
-                "Transmission error over socket. Please email directly to mhrjan0@gmail.com"
-            );
-        } finally {
-            setSending(false);
-        }
-    }
+        {/* Motion Reveals */}
+        <PortfolioMotion />
 
-    return (
-        <MotionConfig reducedMotion="user" transition={{duration: reducedMotion ? 0 : 0.28}}>
-            <div className="site-shell pb-16 md:pb-0">
-                <PortfolioMotion/>
-                <a className="skip-link" href="#work">Skip to selected work</a>
-                {/* Editorial Top Instrument Bar */}
-                <header className="topbar">
-                    <div className="flex items-center gap-4">
-                        <a
-                            className="brand"
-                            href="#top"
-                            aria-label="Ramesh Maharjan, home"
-                        >
-                            RM<span>.</span>
-                        </a>
-                        <div
-                            className="hidden lg:flex items-center gap-3 pl-4 border-l border-[#cecec6] font-mono text-[10px] text-[#666860]">
-                            <span>27.7172° N, 85.3240° E</span>
-                            <span>·</span>
-                            <span>KTM {ktmTime || "19:45:00"}</span>
-                        </div>
-                    </div>
+        <a className="skip-link" href="#work">
+          Skip to main content
+        </a>
 
-                    <nav className="desktop-nav" aria-label="Primary navigation">
-                        {navItems.map((item) => (
-                            <a
-                                href={`#${item.toLowerCase()}`}
-                                key={item}
-                                aria-current={activeSection === item.toLowerCase() ? "location" : undefined}
-                            >
-                                {item}
-                            </a>
-                        ))}
-                    </nav>
+        {/* ============================================================
+            FULL-WIDTH STICKY TOPBAR
+            ============================================================ */}
+        <header className="site-header">
+          <div className="full-container site-header-inner">
+            <a
+              href="#hero"
+              className="brand-identity group"
+              aria-label="Ramesh Maharjan Home"
+            >
+              <div className="brand-logo-badge group-hover:scale-105 transition-transform overflow-hidden !bg-transparent !border-0 !p-0">
+                <Image
+                  src={faviconSvg}
+                  alt="Ramesh Maharjan Logo"
+                  width={38}
+                  height={38}
+                  className="w-full h-full object-contain rounded-[10px]"
+                  priority
+                />
+              </div>
+              <div className="brand-text">
+                <h1>Ramesh Maharjan</h1>
+                <p>Full-Stack Developer</p>
+              </div>
+            </a>
 
-                    <div className="flex items-center gap-2 sm:gap-3 justify-self-end">
+            <nav className="site-nav-links" aria-label="Main Navigation">
+              <a href="#work">
+                <span>Work</span>
+              </a>
+              <a href="#experience">
+                <span>Experience</span>
+              </a>
+              <a href="#capabilities">
+                <span>Capabilities</span>
+              </a>
+              <a href="#stack">
+                <span>Stack</span>
+              </a>
+              <a href="#contact">
+                <span>Contact</span>
+              </a>
+            </nav>
 
-                        {WORK_STATUS.available && (
-                            <a
-                                className="availability desktop-only"
-                                href="mailto:mhrjan0@gmail.com"
-                            >
-                                <span style={{
-                                    backgroundColor: WORK_STATUS.color,
-                                    boxShadow: `0 0 0 4px ${WORK_STATUS.color}22`
-                                }}/> {WORK_STATUS.label}
-                            </a>
-                        )}
-                        <button
-                            ref={menuButtonRef}
-                            className="menu-button"
-                            onClick={() => {
-                                                            setMenuOpen(true);
-                            }}
-                            aria-label="Open navigation menu"
-                            aria-expanded={menuOpen}
-                            aria-controls="mobile-navigation"
-                        >
-                            <Menu size={21}/>
-                        </button>
-                    </div>
-                </header>
+            <div className="header-right-cluster">
+              {timeKTM && (
+                <div className="time-pill">
+                  <span className="time-dot" />
+                  <span>{timeKTM} KTM · UTC+5:45</span>
+                </div>
+              )}
 
-                {/* Mobile Drawer Menu */}
-                <div
-                    ref={menuRef}
-                    id="mobile-navigation"
-                    className={`mobile-menu ${menuOpen ? "is-open" : ""}`}
-                    aria-hidden={!menuOpen}
-                    inert={!menuOpen}
-                    role="dialog"
-                    aria-modal={menuOpen || undefined}
-                    aria-label="Navigation"
-                >
-                    <button
-                        onClick={() => {
-                                                    setMenuOpen(false);
-                        }}
-                        aria-label="Close navigation menu"
-                    >
-                        <X/>
-                    </button>
-                    <nav>
-                        {navItems.map((item) => (
-                            <a
-                                href={`#${item.toLowerCase()}`}
-                                onClick={() => {
-                                    setMenuOpen(false);
-                                }}
-                                key={item}
-                            >
-                                {item}
-                            </a>
-                        ))}
-                    </nav>
-                    <div className="mt-auto space-y-3 font-mono text-xs">
-                        <p className="text-[#a9aba3]">Direct Dispatch Channel:</p>
-                        <a href="mailto:mhrjan0@gmail.com" className="text-white font-bold block">
-                            mhrjan0@gmail.com
-                        </a>
-                    </div>
+              <TactileThemeToggle />
+
+              <button
+                onClick={createResume}
+                type="button"
+                className="btn btn-outline text-xs hidden sm:inline-flex !h-9 !px-3.5"
+              >
+                <Download size={13} />
+                <span>Resume (PDF)</span>
+              </button>
+
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-lg border border-[var(--surface-border)] text-[var(--text-primary)] md:hidden"
+                aria-label="Toggle navigation menu"
+              >
+                {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* MOBILE NAVIGATION DRAWER */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-x-0 top-[68px] z-50 bg-[var(--bg-secondary)] border-b border-[var(--surface-border)] p-6 shadow-2xl md:hidden max-h-[calc(100vh-68px)] overflow-y-auto">
+            <nav className="flex flex-col gap-2 font-mono">
+              <a
+                href="#work"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+              >
+                Selected Work
+              </a>
+              <a
+                href="#experience"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+              >
+                Experience &amp; Education
+              </a>
+              <a
+                href="#capabilities"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+              >
+                Capabilities &amp; Services
+              </a>
+              <a
+                href="#stack"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+              >
+                Technology Stack
+              </a>
+              <a
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
+              >
+                Contact
+              </a>
+            </nav>
+            <button
+              onClick={() => {
+                createResume();
+                setMobileMenuOpen(false);
+              }}
+              type="button"
+              className="btn btn-primary w-full mt-4 font-mono text-xs uppercase tracking-wider"
+            >
+              <Download size={15} />
+              <span>Download Resume (PDF)</span>
+            </button>
+          </div>
+        )}
+
+        {/* ============================================================
+            HERO SECTION
+            ============================================================ */}
+        <section className="hero-section" id="hero">
+          <div className="full-container">
+            <div className="hero-grid-layout">
+              <div>
+                <div className="status-pill">
+                  <span className="status-dot" />
+                  <span className="truncate">
+                    AVAILABLE FOR COMMISSIONS · KATHMANDU, NEPAL
+                  </span>
                 </div>
 
-                <main inert={menuOpen}>
-                    <section className="hero" id="top">
-          <HeroGrid />
-                        <div className="hero-index" aria-hidden="true">
-                            <span>OPERATIONAL</span>
-                            <span>2026</span>
-                        </div>
+                <h1 className="hero-main-heading">
+                  Architecting{" "}
+                  <span className="gradient-text">resilient web systems</span>{" "}
+                  with modern craft.
+                </h1>
 
-                        <div className="hero-copy">
-                            <div>
-                                <p className="eyebrow" data-hero="detail">
-                                    Kathmandu, Nepal / NIRC Nepal
-                                </p>
-                                <h1 data-hero="name">
-                                    Ramesh
-                                    <br/>
-                                    Maharjan<span>.</span>
-                                </h1>
-                                <p className="hero-role" data-hero="role">Full-Stack Engineer <span>/ Creative Technologist</span>
-                                </p>
-                                <p className="hero-intro" data-hero="position">
-                                    I build and maintain resilient web systems for institutions and product teams: from
-                                    low-latency databases and transactional APIs through to tactile, high-craft user
-                                    interfaces.
-                                </p>
-                                <div className="hero-actions" data-hero="actions">
-                                    <a
-                                        className="button button-dark"
-                                        href="#work"
-                                    >
-                                        Inspect Selected Work <ArrowDownRight/>
-                                    </a>
-                                    <button
-                                        className="button button-text"
-                                        onClick={createResume}
-                                        type="button"
-                                    >
-                                        <Download/> Download Curriculum Vitae
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                <p className="hero-sub-statement">
+                  I&apos;m Ramesh Maharjan — Full-Stack Developer &amp; UI/UX
+                  Designer at NIRC Nepal. I specialize in building
+                  high-performance web applications, combining transactional
+                  relational data integrity (PostgreSQL &amp; MariaDB ACID row
+                  locks) with fluid, human-centered interfaces (Next.js 16,
+                  React 19, TypeScript, Tailwind CSS).
+                </p>
 
-                        <div
-                            ref={portraitRef}
-                            onPointerMove={movePortrait}
-                            onPointerLeave={resetPortrait}
-                            className="hero-portrait"
-                            data-hero="detail"
-                        >
-                            <div className="portrait-image">
-                                <Image
-                                    src={profilePic}
-                                    alt="Ramesh Maharjan - Full-Stack Engineer"
-                                    fill
-                                    priority
-                                    sizes="(max-width: 900px) 100vw, 43vw"
-                                />
-                            </div>
-                            <span className="portrait-coordinate coordinate-top">
-              27.7172° N
-            </span>
-                            <span className="portrait-coordinate coordinate-bottom">
-              85.3240° E
-            </span>
-                            <div className="portrait-note">
-                                <Code2/> Currently building at
-                                <br/>
-                                NIRC Nepal
-                            </div>
-                        </div>
+                <div className="hero-actions-row">
+                  <a href="#work" className="btn btn-primary">
+                    <Layers size={15} />
+                    <span>Explore Selected Work</span>
+                  </a>
 
-                        <div className="hero-metrics" data-hero="detail">
-                            <div>
-                                <strong>Based</strong>
-                                <span>Kathmandu, Nepal</span>
-                            </div>
-                            <div>
-                                <strong>Focus</strong>
-                                <span>Resilient Web & Tactile Systems</span>
-                            </div>
-                            <div>
-                                <strong>Engagement</strong>
-                                <span>Full-time Roles & Contracts</span>
-                            </div>
-                        </div>
-                    </section>
+                  <button
+                    onClick={createResume}
+                    type="button"
+                    className="btn btn-outline"
+                  >
+                    <Download size={15} />
+                    <span>Download Resume (PDF)</span>
+                  </button>
 
-                    <section className="work section" id="work">
-                        <div className="work-header">
-                            <div>
-                                <SectionLabel>Selected Work</SectionLabel>
-                                <h2>
-                                    Shipped Systems,
-                                    <br/>
-                                    Inside &amp; Out.
-                                </h2>
-                            </div>
-                            <p>
-                                Production work across hospitality, education, public services, and enterprise
-                                platforms.
-                            </p>
-                        </div>
+                  <a href="#contact" className="btn btn-ghost">
+                    <Mail size={15} />
+                    <span>Get in Touch</span>
+                  </a>
+                </div>
+              </div>
 
-                        {/* Integrated Interactive Project X-Ray Console */}
-                        <ProjectXRayConsole/>
-                    </section>
-
-                    <section className="about section" id="about">
-                        <div className="section-heading">
-                            <SectionLabel>Philosophy</SectionLabel>
-                            <h2>Requirements matter when they become reliable systems.</h2>
-                        </div>
-                        <div className="about-copy">
-                            <p className="lead">
-                                My engineering approach bridges architecture and human touch: understand the business
-                                domain, construct rigorous data schemas, and execute an interface that feels instant and
-                                mechanical.
-                            </p>
-                            <p>
-                                At NIRC Nepal, I work across React, Next.js, Node.js, Laravel, Django, Java, and Grails
-                                projects. I treat database query plans, network latency, and fluid micro-interactions
-                                with identical mechanical discipline.
-                            </p>
-                            <div className="signature-row">
-                                <div>
-                                    <BriefcaseBusiness/>
-                                    <span>
-                  <strong>NIRC Nepal</strong>Full-Stack Developer (2024 - Present)
-                </span>
-                                </div>
-                                <div>
-                                    <MapPin/>
-                                    <span>
-                  <strong>Kathmandu, Nepal</strong>Available Globally & Remotely
-                </span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section className="expertise section" id="capabilities" style={{paddingBottom: "40px"}}>
-                        <div className="section-heading expertise-heading">
-                            <SectionLabel>Capabilities</SectionLabel>
-                            <h2>Comfortable across the entire application stack.</h2>
-                        </div>
-                        <div className="expertise-grid">
-                            {expertise.map((item, index) => {
-                                const Icon = item.icon;
-                                return (
-                                    <article key={item.title}>
-                                        <span>0{index + 1}</span>
-                                        <Icon/>
-                                        <h3>{item.title}</h3>
-                                        <p>{item.text}</p>
-                                        <small>{item.tools}</small>
-                                    </article>
-                                );
-                            })}
-                        </div>
-                    </section>
-
-                    <section className="section pt-0" id="experience">
-
-                        <div className="experience-row">
-                            <div>
-                                <SectionLabel>Experience</SectionLabel>
-                            </div>
-                            <div className="experience-main">
-                                <span>2024 — Present</span>
-                                <h3>Full-Stack Developer</h3>
-                                <p>Nepal Incubation & Research Center (NIRC Nepal)</p>
-                            </div>
-                            <p>
-                                Developing production applications including real-time restaurant point-of-sale
-                                software, multilingual advisory systems, corporate portals, and public-sector tools.
-                            </p>
-                        </div>
-
-                    </section>
-
-
-                    <section className="section bg-[#161714] text-[#F4F3EE] border-b border-[#2C2E29]" id="lab">
-                        <div className="section-heading mb-8">
-                            <div className="section-label text-[#E3C849]">
-                                <span className="bg-[#E3C849] solid"/>
-                                Simulation Environment
-                            </div>
-                            <h2 className="text-white">
-                                System Telemetry<br/>
-                                Lab.
-                            </h2>
-                        </div>
-                        <p className="font-mono text-xs text-[#A6A89F] max-w-2xl mb-8 leading-relaxed">
-                            An interactive simulation of how requests, validation, transactions, and real-time events
-                            move through a production web system.
-                        </p>
-
-                        <SystemTelemetryLab/>
-                    </section>
-
-                    <section className="statement" id="principles" aria-label="Development approach">
-                        <p>[ENGINEERING AXIOMS]</p>
-                        <div className="statement-line">
-                            <span>RESILIENT UNDERNEATH</span>
-                            <i>and</i>
-                            <strong>OBVIOUS IN HAND.</strong>
-                        </div>
-                        <div className="statement-meta">
-                            <span>01 / PURPOSE-DRIVEN ARCHITECTURE</span>
-                            <span>02 / RESPONSIVE INTERACTION BY DEFAULT</span>
-                            <span>03 / RELATIONAL NORMALIZATION</span>
-                            <span>04 / HUMAN-CENTERED INTERFACES</span>
-                        </div>
-                    </section>
-
-                    <section className="section pt-0" id="education">
-                        <div className="experience-row experience-row-secondary">
-                            <div>
-                                <SectionLabel>Education</SectionLabel>
-                            </div>
-                            <div className="experience-main">
-                                <span>2020 — 2025</span>
-                                <h3>Bachelor of Computer Applications</h3>
-                                <p>Tribhuvan University</p>
-                            </div>
-                            <p>
-                                In-depth study of computer science foundations, relational database management, data
-                                structures, and modern software architectures.
-                            </p>
-                        </div>
-                    </section>
-
-                    <section className="contact section" id="contact">
-                        <div className="contact-copy">
-                            <SectionLabel>Transmission</SectionLabel>
-                            <h2>
-                                Need an engineer
-                                <br/>
-                                <span>who owns the system?</span>
-                            </h2>
-                            <p>
-                                I am open to full-time engineering roles, creative technologist partnerships, and
-                                high-impact contract systems. Send your project parameters or challenges.
-                            </p>
-                            <a
-                                href="mailto:mhrjan0@gmail.com"
-                            >
-                                <Mail/> mhrjan0@gmail.com
-                            </a>
-                        </div>
-
-                        <form onSubmit={handleSubmit}>
-                            <div className="field-grid">
-                                <label>
-                                    Name
-                                    <input name="name" required placeholder="Jane Doe"/>
-                                </label>
-                                <label>
-                                    Email
-                                    <input
-                                        name="email"
-                                        type="email"
-                                        required
-                                        placeholder="jane@company.com"
-                                    />
-                                </label>
-                            </div>
-                            <label>
-                                Subject
-                                <input
-                                    name="subject"
-                                    placeholder="What engineering problem are we solving?"
-                                />
-                            </label>
-                            <label>
-                                Message
-                                <textarea
-                                    name="message"
-                                    required
-                                    rows={5}
-                                    placeholder="System requirements, scope, architecture constraints, and timeline..."
-                                />
-                            </label>
-                            <div className="form-footer">
-                                <p aria-live="polite">{formStatus}</p>
-                                <button
-                                    className="button button-light"
-                                    disabled={sending}
-                                    type="submit"
-                                >
-                                    {sending ? "Transmitting" : "Dispatch Message"}{" "}
-                                    {sending ? <span className="sending-dot"/> : <Send/>}
-                                </button>
-                            </div>
-                        </form>
-                    </section>
-                </main>
-
-                {/* Ergonomic Mobile Dock for Thumb Navigation */}
-                <ErgonomicMobileDock onDownloadCV={createResume}/>
-
-                {/* Analog Colophon / Footer */}
-                <footer>
-                    <a
-                        className="brand"
-                        href="#top"
-                    >
-                        RM<span>.</span>
-                    </a>
-                    <p>
-                        © {new Date().getFullYear()} Ramesh Maharjan · 27.7172° N, 85.3240° E · Kathmandu
-                    </p>
-                    <div>
-                        <a
-                            href="https://github.com/Rames0"
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="GitHub Profile"
-                        >
-                            <Github/>
-                        </a>
-                        <a
-                            href="https://www.linkedin.com/in/ramesh-mhr-1b0514337"
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="LinkedIn Profile"
-                        >
-                            <Linkedin/>
-                        </a>
-                        <a
-                            href="#top"
-                            aria-label="Back to top of dossier"
-                        >
-                            <ArrowUpRight/>
-                        </a>
-                    </div>
-                </footer>
+              {/* Editorial Portrait Card */}
+              <div className="hero-portrait-card">
+                <div className="portrait-container">
+                  <Image
+                    src={profilePic}
+                    alt="Ramesh Maharjan — Full-Stack Developer"
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 480px"
+                  />
+                </div>
+                <div className="portrait-details">
+                  <span className="text-[var(--text-primary)] font-bold">
+                    RAMESH MAHARJAN
+                  </span>
+                  <span className="text-[var(--accent-primary)]">
+                    KATHMANDU, NEPAL
+                  </span>
+                </div>
+              </div>
             </div>
-        </MotionConfig>
-    );
+
+            {/* Milestones Strip */}
+            <div className="stats-strip">
+              <div className="stat-box">
+                <span className="val">06+</span>
+                <span className="desc">
+                  Shipped Production Web Applications
+                </span>
+              </div>
+              <div className="stat-box">
+                <span className="val">BCA</span>
+                <span className="desc">
+                  Tribhuvan University Graduate (2020–2025)
+                </span>
+              </div>
+              <div className="stat-box">
+                <span className="val">2024–</span>
+                <span className="desc">
+                  NIRC Nepal Full-Stack &amp; UI/UX Leadership
+                </span>
+              </div>
+              <div className="stat-box">
+                <span className="val">100%</span>
+                <span className="desc">
+                  High-Reliability SLAs &amp; ACID Data Integrity
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            FEATURED WORK
+            ============================================================ */}
+        <section className="section-wrapper" id="work">
+          <div className="full-container">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-12">
+              <div className="section-header-block mb-0">
+                <div className="section-tag">
+                  <span className="line" />
+                  <span>SELECTED WORK</span>
+                </div>
+                <h2 className="section-title">
+                  Production Platforms &amp; Systems
+                </h2>
+                <p className="section-lead">
+                  Mission-critical applications engineered for sub-second
+                  delivery, relational data integrity, and high-concurrency
+                  environments.
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  soundEngine.modeSwitch();
+                  setInspectingConsole(!inspectingConsole);
+                }}
+                className="btn btn-outline text-xs self-start md:self-auto shrink-0 font-mono"
+                type="button"
+              >
+                <Terminal size={14} className="text-[var(--accent-primary)]" />
+                <span>
+                  {inspectingConsole
+                    ? "Close Architecture Console"
+                    : "Open Architecture X-Ray Console"}
+                </span>
+              </button>
+            </div>
+
+            {/* Architecture Console Drawer */}
+            {inspectingConsole && (
+              <div className="mb-8 sm:mb-12 p-3 sm:p-6 border border-[var(--surface-border)] rounded-2xl bg-[var(--bg-card)] overflow-x-auto shadow-2xl">
+                <ProjectXRayConsole />
+              </div>
+            )}
+
+            {/* Responsive Full-Width Grid of Platforms */}
+            <div className="projects-responsive-grid">
+              {featuredPlatforms.map((platform) => (
+                <article key={platform.title} className="platform-card">
+                  <div className="platform-thumbnail">
+                    <Image
+                      src={platform.image}
+                      alt={platform.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="platform-content">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--accent-primary)] mb-2 block">
+                      {platform.category}
+                    </span>
+
+                    <div className="platform-tags-row">
+                      {platform.tags.map((tag) => (
+                        <span key={tag} className="platform-tag">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <h3>
+                      <span>{platform.title}</span>
+                      {platform.link !== "#" && (
+                        <a
+                          href={platform.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[var(--text-secondary)] hover:text-[var(--accent-primary)] shrink-0"
+                          aria-label={`Open ${platform.title}`}
+                        >
+                          <ArrowUpRight size={18} />
+                        </a>
+                      )}
+                    </h3>
+
+                    <p className="sub">{platform.subtitle}</p>
+                    <p className="description">{platform.desc}</p>
+
+                    {platform.link !== "#" && (
+                      <a
+                        href={platform.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="platform-action-link"
+                      >
+                        <span>View Live Deployment</span>
+                        <ArrowUpRight size={14} />
+                      </a>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            EXPERIENCE & EDUCATION
+            ============================================================ */}
+        <section className="section-wrapper" id="experience">
+          <div className="full-container">
+            <div className="section-header-block">
+              <div className="section-tag">
+                <span className="line" />
+                <span>CAREER TIMELINE</span>
+              </div>
+              <h2 className="section-title">
+                Professional Experience &amp; Education
+              </h2>
+              <p className="section-lead">
+                Engineering leadership, design craftsmanship, and rigorous
+                theoretical foundations in computer applications.
+              </p>
+            </div>
+
+            <div className="timeline-two-col">
+              <div className="journey-card">
+                <span className="journey-badge">
+                  <Briefcase size={13} />
+                  <span>2024 — PRESENT ACTIVE EMPLOYMENT</span>
+                </span>
+                <div>
+                  <h3>Full-Stack Developer</h3>
+                  <div className="journey-org text-[var(--accent-primary)]">
+                    Nepal Incubation &amp; Research Center (NIRC Nepal)
+                  </div>
+                </div>
+                <ul className="journey-bullets">
+                  <li>
+                    Leading full-stack architecture and UI/UX design across 6+
+                    production web systems and enterprise client platforms.
+                  </li>
+                  <li>
+                    Architected local-first restaurant POS with sub-5ms duplex
+                    WebSocket sync and zero-loss offline order queues.
+                  </li>
+                  <li>
+                    Engineered multi-locale study advisory directory with
+                    PostgreSQL GIN/tsvector search and sub-15ms query
+                    resolution.
+                  </li>
+                  <li>
+                    Designed accessible civic portal unifying 50+ municipal
+                    public services using Java / Grails MVC.
+                  </li>
+                  <li>
+                    Created design tokens and interactive Figma components,
+                    translating design systems into pixel-accurate code.
+                  </li>
+                </ul>
+              </div>
+
+              <div className="journey-card">
+                <span className="journey-badge">
+                  <GraduationCap size={13} />
+                  <span>2020 — 2025 ACADEMIC FOUNDATION</span>
+                </span>
+                <div>
+                  <h3>Bachelor of Computer Applications (BCA)</h3>
+                  <div className="journey-org text-[var(--accent-primary)]">
+                    Tribhuvan University, Nepal
+                  </div>
+                </div>
+                <ul className="journey-bullets">
+                  <li>
+                    Comprehensive graduation curriculum covering Relational
+                    Database Management Systems, normalization, and ACID
+                    concurrency.
+                  </li>
+                  <li>
+                    Advanced coursework in Data Structures, Algorithms, Software
+                    Engineering methodologies, and Unix/Linux OS concepts.
+                  </li>
+                  <li>
+                    Engineered practical academic web systems emphasizing W3C
+                    standards compliance and modular software architecture.
+                  </li>
+                  <li>
+                    Solidified theoretical foundations in computer networking,
+                    cryptography protocols, and systems analysis.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            CAPABILITIES & SERVICES
+            ============================================================ */}
+        <section className="section-wrapper" id="capabilities">
+          <div className="full-container">
+            <div className="section-header-block">
+              <div className="section-tag">
+                <span className="line" />
+                <span>03 CORE DISCIPLINES</span>
+              </div>
+              <h2 className="section-title">
+                Engineering Pillars &amp; Capabilities
+              </h2>
+              <p className="section-lead">
+                The foundational disciplines I bring to architecting, designing,
+                and scaling digital products.
+              </p>
+            </div>
+
+            <div className="services-quad-grid">
+              {capabilities.map((cap) => {
+                const Icon = cap.icon;
+                return (
+                  <div key={cap.title} className="service-unit">
+                    <div className="flex items-center justify-between">
+                      <div className="service-unit-icon">
+                        <Icon size={22} />
+                      </div>
+                      <span className="font-mono text-[11px] font-bold text-[var(--text-muted)]">
+                        {cap.number}
+                      </span>
+                    </div>
+                    <h3>{cap.title}</h3>
+                    <p>{cap.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            TECHNOLOGY STACK
+            ============================================================ */}
+        <section className="section-wrapper" id="stack">
+          <div className="full-container">
+            <div className="section-header-block">
+              <div className="section-tag">
+                <span className="line" />
+                <span>04 PRODUCTION TOOLCHAIN</span>
+              </div>
+              <h2 className="section-title">
+                Battle-Tested Technologies &amp; Tools
+              </h2>
+              <p className="section-lead">
+                The production stack I leverage daily to design, build, test,
+                and ship resilient digital systems.
+              </p>
+            </div>
+
+            <div className="skills-quad-grid">
+              {skillCategories.map((cat) => (
+                <div key={cat.category} className="skill-cluster-box">
+                  <h3>{cat.category}</h3>
+                  <p className="desc">{cat.desc}</p>
+                  <div className="skill-tags-group">
+                    {cat.skills.map((s) => (
+                      <span key={s} className="skill-item-pill">
+                        <span className="bullet" />
+                        <span>{s}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            CONTACT SECTION
+            ============================================================ */}
+        <section className="section-wrapper" id="contact">
+          <div className="full-container">
+            <div className="contact-split-grid">
+              <div className="contact-card-sidebar">
+                <div className="section-tag">
+                  <span className="line" />
+                  <span>05 DIRECT CONTACT</span>
+                </div>
+                <h2>Let&apos;s build something exceptional together.</h2>
+                <p>
+                  Have a mission-critical platform to architect, an engineering
+                  opportunity, or a complex UI/UX challenge? Reach out directly
+                  below.
+                </p>
+
+                <button
+                  onClick={copyEmail}
+                  type="button"
+                  className="contact-email-btn"
+                  aria-label="Copy direct email"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Mail
+                      size={16}
+                      className="text-[var(--accent-primary)] shrink-0"
+                    />
+                    <span className="truncate">mhrjan0@gmail.com</span>
+                  </div>
+                  {copiedEmail ? (
+                    <Check
+                      size={16}
+                      className="text-[var(--accent-primary)] shrink-0"
+                    />
+                  ) : (
+                    <Copy size={16} className="shrink-0" />
+                  )}
+                </button>
+                {copiedEmail && (
+                  <p className="text-xs text-[var(--accent-primary)] mt-2 font-mono">
+                    Email copied to clipboard (mhrjan0@gmail.com)!
+                  </p>
+                )}
+
+                <div className="contact-social-cluster">
+                  <a
+                    href="https://github.com/Rames0"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="contact-social-btn"
+                    aria-label="GitHub Profile"
+                  >
+                    <Github size={18} />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/ramesh-mhr-1b0514337"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="contact-social-btn"
+                    aria-label="LinkedIn Profile"
+                  >
+                    <Linkedin size={18} />
+                  </a>
+                </div>
+              </div>
+
+              {/* Form */}
+              <div className="contact-form-box">
+                <form onSubmit={handleSubmit}>
+                  <div className="form-two-fields">
+                    <div className="form-group-item">
+                      <label htmlFor="user-name">Your Name *</label>
+                      <input
+                        id="user-name"
+                        name="name"
+                        required
+                        placeholder="Jane Doe"
+                      />
+                    </div>
+
+                    <div className="form-group-item">
+                      <label htmlFor="user-email">Email Address *</label>
+                      <input
+                        id="user-email"
+                        name="email"
+                        type="email"
+                        required
+                        placeholder="jane@organization.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group-item">
+                    <label htmlFor="user-subject">Subject</label>
+                    <input
+                      id="user-subject"
+                      name="subject"
+                      placeholder="Platform inquiry, systems consultation, or project scope"
+                    />
+                  </div>
+
+                  <div className="form-group-item">
+                    <label htmlFor="user-message">
+                      Message / Project Scope *
+                    </label>
+                    <textarea
+                      id="user-message"
+                      name="message"
+                      required
+                      rows={5}
+                      placeholder="Describe your project requirements, timeline, and architectural targets..."
+                    />
+                  </div>
+
+                  <div className="form-submit-row">
+                    <p
+                      aria-live="polite"
+                      className="text-xs text-[var(--accent-primary)] m-0 font-mono"
+                    >
+                      {formStatus}
+                    </p>
+
+                    <button
+                      className="btn btn-primary"
+                      disabled={sending}
+                      type="submit"
+                    >
+                      <Send size={15} />
+                      <span>
+                        {sending ? "Transmitting..." : "Send Message"}
+                      </span>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================
+            FULL-WIDTH FOOTER
+            ============================================================ */}
+        <footer className="site-footer">
+          <div className="full-container site-footer-inner">
+            <p>
+              © {new Date().getFullYear()} Ramesh Maharjan · Full-Stack
+              Developer.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono text-[var(--text-muted)]">
+              <span className="text-[var(--accent-primary)]">Next.js 16</span>
+              <span>•</span>
+              <span>React 19</span>
+              <span>•</span>
+              <span>TypeScript</span>
+              <span>•</span>
+              <span>PostgreSQL</span>
+              <span>•</span>
+              <span>MariaDB</span>
+              <span>•</span>
+              <span className="text-[var(--accent-secondary)]">
+                Tailwind CSS
+              </span>
+            </div>
+          </div>
+        </footer>
+
+        {/* Mobile Ergonomic Dock */}
+        <ErgonomicMobileDock onDownloadCV={createResume} />
+      </div>
+    </MotionConfig>
+  );
 }

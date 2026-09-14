@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import Script from 'next/script'
+import Script from "next/script";
 
 export function GoogleAnalytics({ gaId }: { gaId: string }) {
   return (
@@ -24,7 +24,7 @@ export function GoogleAnalytics({ gaId }: { gaId: string }) {
         }}
       />
     </>
-  )
+  );
 }
 
 export function MicrosoftClarity({ clarityId }: { clarityId: string }) {
@@ -42,5 +42,5 @@ export function MicrosoftClarity({ clarityId }: { clarityId: string }) {
         `,
       }}
     />
-  )
+  );
 }

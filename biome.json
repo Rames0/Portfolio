@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.12/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
@@ -7,25 +7,32 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["dist", ".next", "node_modules", "build", "src/generated/**"],
-    "include": ["src/**/*.ts", "src/**/*.tsx"]
+    "includes": [
+      "**/src/**/*.ts",
+      "**/src/**/*.tsx",
+      "!**/dist",
+      "!**/.next",
+      "!**/node_modules",
+      "!**/build",
+      "!**/src/generated/**"
+    ]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space"
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "correctness": {
-        "noUnusedVariables": "off"
+        "noUnusedVariables": "off",
+        "noUnusedImports": "off",
+        "useExhaustiveDependencies": "off"
       },
-      "nursery": {
-        "noImgElement": "off"
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
       },
       "a11y": {
         "noAutofocus": "off",
@@ -42,7 +49,20 @@
         "useAltText": "off",
         "useKeyWithClickEvents": "off",
         "useKeyWithMouseEvents": "off",
-        "useButtonType": "off"
+        "useButtonType": "off",
+        "useValidAnchor": "off"
+      },
+      "performance": {
+        "noImgElement": "off"
+      },
+      "style": {
+        "useImportType": "off",
+        "useTemplate": "off"
+      },
+      "suspicious": {
+        "noCommentText": "off",
+        "noArrayIndexKey": "off",
+        "useIterableCallbackReturn": "off"
       }
     }
   },
