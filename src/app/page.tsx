@@ -36,6 +36,7 @@ import faviconSvg from "../../public/favicon.svg";
 
 import { AntigravityBackground } from "@/components/AntigravityBackground";
 import { ErgonomicMobileDock } from "@/components/ErgonomicMobileDock";
+import { FloatingTechIcons } from "@/components/FloatingTechIcons";
 import { PortfolioMotion } from "@/components/PortfolioMotion";
 import { ProjectXRayConsole } from "@/components/ProjectXRayConsole";
 import { ScrollEffects } from "@/components/ScrollEffects";
@@ -145,57 +146,6 @@ const capabilities = [
     title: "UI/UX Design Systems",
     desc: "Creating systematic design languages in Figma. Translating tokens into pixel-accurate code with strict adherence to human ergonomics and WCAG 2.1 AA accessibility.",
     icon: Layers,
-  },
-];
-
-const skillCategories = [
-  {
-    category: "Frontend & Reactive Systems",
-    desc: "Fluid user interfaces, motion physics & design tokens",
-    skills: [
-      "Next.js 16",
-      "React 19",
-      "TypeScript",
-      "Tailwind CSS",
-      "Framer Motion",
-      "HTML5 / CSS3",
-    ],
-  },
-  {
-    category: "Backend & Concurrency",
-    desc: "High-throughput servers, duplex streams & APIs",
-    skills: [
-      "Node.js",
-      "Laravel 11",
-      "PHP 8.x",
-      "Java / Grails",
-      "RESTful APIs",
-      "WebSockets",
-    ],
-  },
-  {
-    category: "Relational Data & Search",
-    desc: "ACID transactions, indexing & full-text engines",
-    skills: [
-      "PostgreSQL",
-      "MariaDB",
-      "MySQL",
-      "ACID Row Locks",
-      "GIN Indexing",
-      "tsvector Search",
-    ],
-  },
-  {
-    category: "Design Systems & DevOps",
-    desc: "Figma component systems, Linux kernel & CI/CD",
-    skills: [
-      "Figma Systems",
-      "Git & GitHub",
-      "Docker",
-      "Linux Shell",
-      "WCAG 2.1 AA",
-      "Vercel / CI",
-    ],
   },
 ];
 
@@ -1056,26 +1006,13 @@ export default function Home() {
               </h2>
               <p className="section-lead">
                 The production stack I leverage daily to design, build, test,
-                and ship resilient digital systems.
+                and ship resilient digital systems. Hover or touch to interact
+                with the kinetic floating tool field.
               </p>
             </div>
 
-            <div className="skills-quad-grid">
-              {skillCategories.map((cat) => (
-                <div key={cat.category} className="skill-cluster-box">
-                  <h3>{cat.category}</h3>
-                  <p className="desc">{cat.desc}</p>
-                  <div className="skill-tags-group">
-                    {cat.skills.map((s) => (
-                      <span key={s} className="skill-item-pill">
-                        <span className="bullet" />
-                        <span>{s}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* Kinetic Randomly Moving Tech Icons Field */}
+            <FloatingTechIcons />
           </div>
         </section>
 
