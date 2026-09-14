@@ -1,351 +1,417 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowRight,
-  CheckCircle2,
-  Code2,
-  Cpu,
-  Download,
-  Layers,
-  MousePointer,
-  Sparkles,
-  X,
-  Zap,
-} from "lucide-react";
-import { SiFigma } from "react-icons/si";
-import { useEffect, useState } from "react";
-import { WORK_STATUS } from "@/lib/config";
-import { soundEngine } from "@/lib/haptics";
+  type CSSProperties,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { ArrowUpRight } from "lucide-react";
+import { EntranceReadyContext } from "@/lib/entrance";
 
-interface WelcomeLandingProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onDownloadResume: () => void;
+type Phase =
+  | "hidden"
+  | "loading"
+  | "charging"
+  | "windup"
+  | "impact"
+  | "shatter"
+  | "reveal";
+
+/* ─── Fragment geometry ────────────────────────────────────────────────
+   24 shards radiating from the centre, each a triangular wedge.
+   Adjacent pairs share edges so the full screen is seamlessly tiled. */
+
+const SHARD_COUNT = 24;
+const CENTER = 50;
+
+// Outer-edge anchor points around the viewport perimeter (24 points)
+const perimeterPoints: [number, number][] = [];
+for (let i = 0; i < SHARD_COUNT; i++) {
+  const angle = (i / SHARD_COUNT) * Math.PI * 2 - Math.PI / 2;
+  // Project onto the viewport bounding box with some overshoot
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  const absC = Math.abs(cos);
+  const absS = Math.abs(sin);
+  const scale = absC > absS ? 55 / absC : 55 / absS;
+  perimeterPoints.push([CENTER + cos * scale, CENTER + sin * scale]);
 }
 
-export function WelcomeLanding({
-  isOpen,
-  onClose,
-  onDownloadResume,
-}: WelcomeLandingProps) {
-  const [greeting, setGreeting] = useState<string>("Welcome to the Canvas");
-  const [ktmTime, setKtmTime] = useState<string>("");
-  const [progress, setProgress] = useState<number>(0);
-  const [statusStage, setStatusStage] = useState<string>(
-    "Loading design tokens...",
+// Jag midpoints along each radial seam for organic cracks
+const jaggedSeams = perimeterPoints.map(([px, py], i) => {
+  const jag1 = 0.28 + (i % 3) * 0.04;
+  const jag2 = 0.62 + (i % 2) * 0.06;
+  const drift1 = i % 2 ? 2.8 : -2.5;
+  const drift2 = i % 2 ? -3.2 : 2.8;
+  return [
+    [CENTER, CENTER],
+    [
+      CENTER + (px - CENTER) * jag1 + drift1,
+      CENTER + (py - CENTER) * jag1 + drift2 * 0.6,
+    ],
+    [
+      CENTER + (px - CENTER) * jag2 + drift2 * 0.5,
+      CENTER + (py - CENTER) * jag2 + drift1 * 0.7,
+    ],
+    [px, py],
+  ];
+});
+
+const fragments = jaggedSeams.map((seam, i) => {
+  const next = jaggedSeams[(i + 1) % SHARD_COUNT];
+  const [ex, ey] = perimeterPoints[i];
+  const [nex, ney] = perimeterPoints[(i + 1) % SHARD_COUNT];
+  const midX = (ex + nex) / 2 - CENTER;
+  const midY = (ey + ney) / 2 - CENTER;
+  // Velocity magnitude increases for edge shards
+  const dist = Math.sqrt(midX * midX + midY * midY);
+  const velScale = 1.6 + dist * 0.04;
+  return {
+    points: [...seam, ...[...next].reverse()]
+      .map((pt) => pt.join(","))
+      .join(" "),
+    style: {
+      "--shard-x": `${midX * velScale}px`,
+      "--shard-y": `${midY * velScale}px`,
+      "--shard-turn": `${i % 2 ? 18 + (i % 5) * 3 : -(15 + (i % 4) * 4)}deg`,
+      "--shard-delay": `${(i % 5) * 30}ms`,
+    } as CSSProperties,
+  };
+});
+
+/* ─── Crack lines ──────────────────────────────────────────────────────
+   12 jagged radial cracks from exact centre, rendered as SVG paths.
+   They appear on impact via stroke-dashoffset animation. */
+const CRACK_COUNT = 12;
+const crackPaths: string[] = [];
+for (let i = 0; i < CRACK_COUNT; i++) {
+  const angle = (i / CRACK_COUNT) * Math.PI * 2 - Math.PI / 2;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  let d = `M ${CENTER} ${CENTER}`;
+  const segments = 4 + (i % 3);
+  for (let s = 1; s <= segments; s++) {
+    const t = s / segments;
+    const reach = 58;
+    const jx = (i % 2 ? 1.5 : -1.5) * (s % 2 ? 1 : -1);
+    const jy = (i % 2 ? -1.2 : 1.8) * (s % 2 ? -1 : 1);
+    const x = CENTER + cos * reach * t + jx;
+    const y = CENTER + sin * reach * t + jy;
+    d += ` L ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }
+  crackPaths.push(d);
+}
+
+/* ─── Components ───────────────────────────────────────────────────── */
+
+export function PortfolioEntrance({ children }: { children: ReactNode }) {
+  const [ready, setReady] = useState(false);
+  const finish = useCallback(() => setReady(true), []);
+  return (
+    <EntranceReadyContext.Provider value={ready}>
+      <WelcomeLanding onComplete={finish} />
+      <noscript>
+        <style>{`.impact-entrance { display: none !important; }`}</style>
+      </noscript>
+      {children}
+    </EntranceReadyContext.Provider>
   );
+}
 
-  // Time & dynamic greeting calculation
+export function WelcomeLanding({ onComplete }: { onComplete: () => void }) {
+  const [phase, setPhase] = useState<Phase>("loading");
+  const skipRef = useRef<HTMLButtonElement>(null);
+  const active = phase !== "hidden";
+
+  const finish = useCallback(() => {
+    setPhase("hidden");
+    onComplete();
+  }, [onComplete]);
+
+  /* Phase state machine — always runs the full cinematic sequence */
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const hours = now.getHours();
-      if (hours < 12) setGreeting("Good morning, welcome to the canvas");
-      else if (hours < 18) setGreeting("Good afternoon, welcome to the canvas");
-      else setGreeting("Good evening, welcome to the canvas");
+    if (phase === "hidden") return;
 
-      setKtmTime(
-        now.toLocaleTimeString("en-US", {
-          timeZone: "Asia/Kathmandu",
-          hour12: false,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        }),
-      );
+    const transitions: Record<Exclude<Phase, "hidden">, [number, () => void]> =
+      {
+        loading: [3000, () => setPhase("charging")],
+        charging: [1200, () => setPhase("windup")],
+        windup: [600, () => setPhase("impact")],
+        impact: [500, () => setPhase("shatter")],
+        shatter: [1800, () => setPhase("reveal")],
+        reveal: [1200, finish],
+      };
+
+    const [delay, advance] = transitions[phase];
+    const timer = window.setTimeout(advance, delay);
+    return () => window.clearTimeout(timer);
+  }, [phase, finish]);
+
+  /* Accessibility: trap focus, lock scroll, keyboard shortcuts */
+  useEffect(() => {
+    if (!active) return;
+    const content = document.getElementById("portfolio-content");
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    if (content) content.inert = true;
+    document.body.style.overflow = "hidden";
+    skipRef.current?.focus({ preventScroll: true });
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" || event.key === "Enter") {
+        event.preventDefault();
+        finish();
+      }
+      if (event.key === "Tab") {
+        event.preventDefault();
+        skipRef.current?.focus();
+      }
     };
+    window.addEventListener("keydown", onKey);
 
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      if (content) content.inert = false;
+      document.body.style.overflow = overflow;
+      window.removeEventListener("keydown", onKey);
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [active, finish]);
 
-  // Super animation progress sequence with Figma-style stages
+  /* Portfolio reveal class management */
   useEffect(() => {
-    if (!isOpen) {
-      setProgress(0);
-      return;
+    const content = document.getElementById("portfolio-content");
+    if (!content) return;
+    if (phase === "reveal") {
+      content.classList.add("portfolio-entering");
+      const timer = window.setTimeout(() => {
+        content.classList.remove("portfolio-entering");
+      }, 1300);
+      return () => window.clearTimeout(timer);
     }
-    let p = 0;
-    const interval = setInterval(() => {
-      p += Math.floor(Math.random() * 12) + 8;
-      if (p >= 100) {
-        p = 100;
-        setProgress(100);
-        setStatusStage("Figma Prototype Ready");
-        clearInterval(interval);
-      } else {
-        setProgress(p);
-        if (p < 30) setStatusStage("Binding typography & design tokens...");
-        else if (p < 65)
-          setStatusStage("Compiling auto-layout & prototypes...");
-        else if (p < 90) setStatusStage("Optimizing 60fps hardware canvas...");
-      }
-    }, 40);
-    return () => clearInterval(interval);
-  }, [isOpen]);
+  }, [phase]);
 
-  // Keyboard accessibility: Escape, Enter, or Space to enter
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" || e.key === "Enter" || e.code === "Space") {
-        e.preventDefault();
-        soundEngine.relayClick();
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [isOpen, onClose]);
+  if (!active) return null;
+
+  const showSolid = phase === "loading" || phase === "charging" || phase === "windup";
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.25 } }}
-          className="fixed inset-0 z-[300] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-slate-950/80 backdrop-blur-2xl"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="welcome-modal-title"
+    <div
+      className={`impact-entrance is-${phase}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="welcome-title"
+    >
+      {/* Dark backdrop — fades out in reveal */}
+      <div className="impact-backdrop" aria-hidden="true" />
+
+      {/* Screen surface — solid or shattered fragments */}
+      <svg
+        className="impact-screen"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <defs>
+          <radialGradient
+            id="impact-surface"
+            gradientUnits="userSpaceOnUse"
+            cx="50"
+            cy="50"
+            r="70"
+          >
+            <stop offset="0" stopColor="#18342f" />
+            <stop offset=".6" stopColor="#0a151a" />
+            <stop offset="1" stopColor="#05090f" />
+          </radialGradient>
+        </defs>
+        {showSolid ? (
+          <rect width="100" height="100" fill="url(#impact-surface)" />
+        ) : (
+          fragments.map((fragment) => (
+            <polygon
+              key={fragment.points}
+              points={fragment.points}
+              style={fragment.style}
+              className="impact-fragment"
+              fill="url(#impact-surface)"
+            />
+          ))
+        )}
+      </svg>
+
+      {/* Crack lines — appear on impact, persist into shatter */}
+      {(phase === "impact" || phase === "shatter") && (
+        <svg
+          className="impact-cracks"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
         >
-          {/* Subtle Figma Canvas Background Grid with Coordinate Crosshairs */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-25"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(99, 102, 241, 0.4) 1px, transparent 0)`,
-              backgroundSize: "32px 32px",
-            }}
-          />
-
-          {/* Ambient Glowing Orbs */}
-          <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-indigo-500/20 blur-[120px] pointer-events-none" />
-          <div className="absolute bottom-1/4 right-1/3 translate-x-1/2 translate-y-1/2 w-96 h-96 rounded-full bg-pink-500/20 blur-[120px] pointer-events-none" />
-
-          {/* Floating Figma Collaborator Cursor with Super Motion Animation */}
-          <motion.div
-            initial={{ x: -60, y: -40, opacity: 0 }}
-            animate={{
-              x: [10, 180, 120, 240, 60],
-              y: [20, 80, 200, 140, 50],
-              opacity: [0, 1, 1, 1, 0.85],
-            }}
-            transition={{
-              duration: 12,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute z-20 pointer-events-none hidden md:flex items-center gap-1.5"
-            style={{ top: "12%", left: "18%" }}
-          >
-            <div className="relative">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="drop-shadow-[0_2px_8px_rgba(13,153,255,0.6)]"
-              >
-                <path
-                  d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.88c.45 0 .67-.54.35-.85L5.85 2.85c-.32-.31-.85-.09-.85.36z"
-                  fill="#0d99ff"
-                  stroke="#ffffff"
-                  strokeWidth="1.5"
-                />
-              </svg>
-              <div className="absolute left-4 top-3 px-2 py-0.5 rounded-full bg-[#0d99ff] text-white font-mono text-[10px] font-semibold tracking-wide whitespace-nowrap shadow-md">
-                Ramesh (Lead Designer)
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Main Figma Canvas Modal Card */}
-          <motion.div
-            initial={{ scale: 0.92, y: 24, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.95, y: 16, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/15 bg-slate-900/90 text-slate-100 shadow-[0_24px_70px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.08)] backdrop-blur-2xl"
-          >
-            {/* Figma-Style Window Chrome Header */}
-            <div className="flex items-center justify-between border-b border-white/10 bg-slate-950/60 px-5 py-3.5">
-              {/* Traffic Light Dots */}
-              <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-full bg-[#ff5f57] border border-[#e0443e]/50" />
-                <span className="h-3 w-3 rounded-full bg-[#febc2e] border border-[#d89e24]/50" />
-                <span className="h-3 w-3 rounded-full bg-[#28c840] border border-[#1aab29]/50" />
-
-                <div className="ml-3 hidden sm:flex items-center gap-2 pl-3 border-l border-white/10 font-mono text-[11px] text-slate-400">
-                  <SiFigma size={12} className="text-[#a855f7]" />
-                  <span>Figma Frame: /Canvas/Welcome_Prototype_v4.2</span>
-                </div>
-              </div>
-
-              {/* Status & Close */}
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                  </span>
-                  <span className="text-emerald-400 font-semibold hidden xs:inline">
-                    KTM {ktmTime || "UTC+5:45"}
-                  </span>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.relayClick();
-                    onClose();
-                  }}
-                  className="rounded-full border border-white/10 p-1.5 text-slate-400 transition-all hover:bg-white/10 hover:text-white hover:rotate-90"
-                  aria-label="Close welcome prototype"
-                >
-                  <X size={15} />
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-6 sm:p-8 space-y-6">
-              {/* Eyebrow Chip & Status Indicator */}
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-semibold text-indigo-300">
-                  <Sparkles size={13} className="text-indigo-400" />
-                  <span>Interactive Design Experience</span>
-                </div>
-
-                <div className="font-mono text-xs text-slate-400 flex items-center gap-2">
-                  <span className="text-[var(--accent-primary)] font-bold">
-                    {progress}%
-                  </span>
-                  <span className="text-slate-500">·</span>
-                  <span className="truncate max-w-[200px]">{statusStage}</span>
-                </div>
-              </div>
-
-              {/* Animated Progress Bar */}
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
-                  initial={{ width: "0%" }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.2 }}
-                />
-              </div>
-
-              {/* Title & Introduction */}
-              <div>
-                <p className="font-mono text-xs uppercase tracking-widest text-slate-400 font-medium">
-                  {greeting}
-                </p>
-                <h2
-                  id="welcome-modal-title"
-                  className="mt-1.5 text-3xl font-bold sm:text-4xl tracking-tight text-white flex items-center gap-2"
-                >
-                  Ramesh Maharjan
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 text-xs">
-                    ❖
-                  </span>
-                </h2>
-                <p className="mt-2 text-sm sm:text-base text-slate-300 leading-relaxed">
-                  Senior Product Designer & Full-Stack Developer creating
-                  intuitive, human-first Figma design systems, fluid responsive
-                  frontends, and resilient sub-second backend architectures.
-                </p>
-              </div>
-
-              {/* 3-Column Bento Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-1.5 transition-colors hover:bg-white/[0.06]">
-                  <div className="flex items-center gap-1.5 text-indigo-400 font-semibold">
-                    <Layers size={14} />
-                    <span>Figma & UI/UX</span>
-                  </div>
-                  <p className="text-slate-400 leading-snug">
-                    Auto-layout 5.0, design tokens, interactive prototypes, and
-                    WCAG accessibility.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-1.5 transition-colors hover:bg-white/[0.06]">
-                  <div className="flex items-center gap-1.5 text-purple-400 font-semibold">
-                    <Code2 size={14} />
-                    <span>Modern Web Core</span>
-                  </div>
-                  <p className="text-slate-400 leading-snug">
-                    Next.js 16, React 19, TypeScript, Tailwind CSS, Node.js,
-                    Laravel 11.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-1.5 transition-colors hover:bg-white/[0.06]">
-                  <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                    <CheckCircle2 size={14} />
-                    <span>Studio Status</span>
-                  </div>
-                  <p className="text-slate-300 font-medium leading-snug">
-                    {WORK_STATUS.label}
-                  </p>
-                  <p className="text-[10px] text-slate-500 font-mono">
-                    Kathmandu · Global Remote
-                  </p>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.relayClick();
-                    onClose();
-                  }}
-                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-6 py-3.5 font-semibold text-sm text-white shadow-lg shadow-indigo-500/25 transition-all hover:opacity-95 hover:scale-[1.01] active:scale-[0.99]"
-                >
-                  <span>Enter Prototype Canvas</span>
-                  <ArrowRight size={16} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundEngine.relayClick();
-                    onDownloadResume();
-                  }}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-5 py-3.5 font-semibold text-sm text-white transition-all hover:bg-white/10 hover:border-white/30 active:scale-[0.99]"
-                >
-                  <Download size={16} className="text-indigo-400" />
-                  <span>Curriculum Vitae</span>
-                </button>
-              </div>
-
-              {/* Keyboard Navigation Quick Tip */}
-              <div className="flex items-center justify-between border-t border-white/10 pt-4 font-mono text-[11px] text-slate-400">
-                <span>
-                  Press{" "}
-                  <kbd className="rounded-md border border-white/20 bg-white/10 px-1.5 py-0.5 text-white">
-                    Enter
-                  </kbd>{" "}
-                  or{" "}
-                  <kbd className="rounded-md border border-white/20 bg-white/10 px-1.5 py-0.5 text-white">
-                    Esc
-                  </kbd>{" "}
-                  to enter
-                </span>
-                <span className="hidden sm:inline text-indigo-400">
-                  ✦ 100% Canvas Scale
-                </span>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+          {crackPaths.map((d, i) => (
+            <path
+              key={d}
+              d={d}
+              className="impact-crack-line"
+              style={
+                {
+                  "--crack-delay": `${i * 15}ms`,
+                  "--crack-length": `${140 + i * 8}`,
+                } as CSSProperties
+              }
+            />
+          ))}
+        </svg>
       )}
-    </AnimatePresence>
+
+      {/* Full-screen flash on impact */}
+      <div className="impact-flash" aria-hidden="true" />
+
+      {/* Manga speed lines */}
+      <div className="impact-speed-lines" aria-hidden="true" />
+
+      {/* Welcome intro content */}
+      <div className="impact-intro">
+        <p className="impact-eyebrow">RAMESH MAHARJAN / CREATIVE DEVELOPER</p>
+        <div className="impact-emblem" aria-hidden="true">
+          <svg viewBox="0 0 120 120" className="impact-loader-ring">
+            <circle cx="60" cy="60" r="56" />
+            <circle cx="60" cy="60" r="56" className="impact-loader-fill" />
+          </svg>
+          <span>
+            RM<span className="impact-accent">.</span>
+          </span>
+        </div>
+        <h2 id="welcome-title">
+          Creative mind.
+          <br />
+          <span>Serious impact.</span>
+        </h2>
+        <div className="impact-loading" aria-hidden="true">
+          <span />
+        </div>
+        <p className="impact-caption">
+          {phase === "loading"
+            ? "Building momentum"
+            : phase === "charging"
+              ? "Concentrating power"
+              : "One idea. Full force."}
+          <span className="impact-dots" aria-hidden="true">
+            ...
+          </span>
+        </p>
+      </div>
+
+      {/* Energy particles converging during charging phase */}
+      {phase === "charging" && (
+        <div className="impact-energy-particles" aria-hidden="true">
+          {Array.from({ length: 16 }, (_, i) => (
+            <span
+              key={i}
+              className="impact-particle"
+              style={
+                {
+                  "--p-angle": `${(i / 16) * 360}deg`,
+                  "--p-delay": `${i * 60}ms`,
+                  "--p-dist": `${38 + (i % 4) * 8}vmin`,
+                } as CSSProperties
+              }
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Strike zone: Saitama's fist flying from right side */}
+      <div className="impact-strike" aria-hidden="true">
+        {/* Double shockwave rings */}
+        <div className="impact-shockwave" />
+        <div className="impact-shockwave impact-shockwave-2" />
+
+        {/* Ghost afterimage trails — 3 fading copies behind the fist */}
+        <div className="impact-fist-trail impact-trail-1">
+          <svg viewBox="0 0 260 240" fill="none">
+            <path d="M195 0 197 80 104 88 80 0" fill="#e7b337" opacity=".5" />
+            <path d="M210 92 170 220 44 194Q24 174 26 147L30 87 48 34Q56 14 80 18L96 26Q120 8 138 26L152 35 165 49Q176 31 200 44L210 58Z" fill="#e7b337" opacity=".5" />
+          </svg>
+        </div>
+        <div className="impact-fist-trail impact-trail-2">
+          <svg viewBox="0 0 260 240" fill="none">
+            <path d="M195 0 197 80 104 88 80 0" fill="#e7b337" opacity=".3" />
+            <path d="M210 92 170 220 44 194Q24 174 26 147L30 87 48 34Q56 14 80 18L96 26Q120 8 138 26L152 35 165 49Q176 31 200 44L210 58Z" fill="#e7b337" opacity=".3" />
+          </svg>
+        </div>
+        <div className="impact-fist-trail impact-trail-3">
+          <svg viewBox="0 0 260 240" fill="none">
+            <path d="M195 0 197 80 104 88 80 0" fill="#e7b337" opacity=".15" />
+            <path d="M210 92 170 220 44 194Q24 174 26 147L30 87 48 34Q56 14 80 18L96 26Q120 8 138 26L152 35 165 49Q176 31 200 44L210 58Z" fill="#e7b337" opacity=".15" />
+          </svg>
+        </div>
+
+        {/* Main fist — Saitama's yellow glove, horizontal punch from right */}
+        <svg className="impact-fist" viewBox="0 0 260 240" fill="none">
+          {/* Wrist / arm extending to the right */}
+          <path
+            d="M195 0 197 80 104 88 80 0"
+            fill="#e7b337"
+            stroke="#111827"
+            strokeWidth="6"
+          />
+          {/* Cuff stripe */}
+          <path
+            d="M103 88 197 78 194 56 100 66Z"
+            fill="#f4f0df"
+            stroke="#111827"
+            strokeWidth="5"
+          />
+          {/* Glove body — clenched fist facing left (punching direction) */}
+          <path
+            d="M210 92 170 220 44 194Q24 174 26 147L30 87 48 34Q56 14 80 18L96 26Q120 8 138 26L152 35 165 49Q176 31 200 44L210 58Z"
+            fill="#e7b337"
+            stroke="#111827"
+            strokeWidth="7"
+            strokeLinejoin="round"
+          />
+          {/* Knuckle definition lines */}
+          <path
+            d="M62 42 52 100m36-74 6 68m38-60 8 56m33-34 4 32M36 120l54-16 68 10q24 6 14 28l-50 8-22 34"
+            stroke="#b8860b"
+            strokeWidth="6"
+            strokeLinecap="round"
+          />
+          {/* Knuckle highlights — bright */}
+          <path
+            d="M72 50 66 84m36-44 4 38m38-30 6 26M50 90l2 18"
+            stroke="#fff4c8"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          {/* Impact starburst at knuckle contact point */}
+          <circle cx="46" cy="160" r="22" fill="#fff8" className="impact-knuckle-flash" />
+        </svg>
+
+        {/* Impact starburst lines */}
+        <div className="impact-starburst" />
+
+        {/* BOOM manga text */}
+        <span className="impact-hit-word">
+          BOOM<span>!</span>
+        </span>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="impact-bottom">
+        <span>KATHMANDU, NP · BUILT WITH INTENT</span>
+        <button
+          ref={skipRef}
+          type="button"
+          className="impact-skip"
+          onClick={finish}
+        >
+          Skip intro <ArrowUpRight size={16} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
   );
 }

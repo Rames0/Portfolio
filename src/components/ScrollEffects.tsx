@@ -27,18 +27,25 @@ export function ScrollEffects() {
       ".platform-card, .journey-card, .service-unit, .skill-cluster-box, .stat-box, .contact-card-sidebar, .contact-form-box",
     );
 
-    const onMouseMove = (e: MouseEvent) => {
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty("--mouse-x", `${x}px`);
-        card.style.setProperty("--mouse-y", `${y}px`);
-      });
-    };
+    if (
+      !window.matchMedia("(hover: hover) and (pointer: fine)").matches ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
 
-    window.addEventListener("mousemove", onMouseMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMouseMove);
+    const onMouseMove = (event: MouseEvent) => {
+      const card = event.currentTarget as HTMLElement;
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty("--mouse-x", `${event.clientX - rect.left}px`);
+      card.style.setProperty("--mouse-y", `${event.clientY - rect.top}px`);
+    };
+    cards.forEach((card) =>
+      card.addEventListener("mousemove", onMouseMove, { passive: true }),
+    );
+    return () =>
+      cards.forEach((card) =>
+        card.removeEventListener("mousemove", onMouseMove),
+      );
   }, []);
 
   return (

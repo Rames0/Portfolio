@@ -1,82 +1,67 @@
 "use client";
 
-import { useLayoutEffect } from "react";
-import { MOTION } from "@/lib/motion";
+import { useEffect } from "react";
 
 /**
  * PortfolioMotion:
- * Instantaneous initial render with zero artificial blocking loaders or fake boot screens.
- * Provides subtle, hardware-accelerated intersection reveals for sections as the user scrolls.
+ * Smooth, hardware-accelerated intersection reveals for content cards and sections as the user scrolls.
+ * Creates a slow, luxurious cascading reveal effect as each element scrolls into view.
  */
 export function PortfolioMotion() {
-  useLayoutEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (media.matches) return;
+  useEffect(() => {
+    const targets = document.querySelectorAll<HTMLElement>(
+      ".platform-card, .journey-card, .service-unit, .stat-box, .contact-card-sidebar, .contact-form-box",
+    );
 
-    const root = document.querySelector<HTMLElement>(".site-shell");
-    if (!root) return;
+    if (
+      targets.length === 0 ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
 
-    let cleanup = () => {};
+    const windowHeight = window.innerHeight;
 
-    import("gsap")
-      .then(({ gsap }) => {
-        if (media.matches) return;
+    targets.forEach((el, index) => {
+      el.classList.add("scroll-reveal-item");
+      const staggerIndex = index % 3;
+      el.style.transitionDelay = `${staggerIndex * 110}ms`;
 
-        const observers: IntersectionObserver[] = [];
-        const context = gsap.context(() => {
-          const groups: [string, string][] = [
-            ["#work", ".section-heading, .case-study-showcase"],
-            ["#philosophy", ".section-heading, .philosophy-card"],
-            ["#stack", ".section-heading, .stack-category-card"],
-            ["#experience", ".section-heading, .timeline-card"],
-            ["#systems-lab", ".section-heading, .lab-container"],
-            ["#contact", ".contact-info, .contact-form-card"],
-          ];
+      const rect = el.getBoundingClientRect();
+      if (rect.top < windowHeight * 0.9) {
+        el.classList.add("is-revealed");
+      }
+    });
 
-          groups.forEach(([section, selector]) => {
-            root.querySelectorAll<HTMLElement>(section).forEach((element) => {
-              const targets = element.querySelectorAll(selector);
-              if (targets.length === 0) return;
+    if (typeof IntersectionObserver === "undefined") {
+      targets.forEach((el) => el.classList.add("is-revealed"));
+      return;
+    }
 
-              const observer = new IntersectionObserver(
-                ([entry]) => {
-                  if (!entry.isIntersecting) return;
-                  observer.disconnect();
-                  context.add(() => {
-                    gsap.fromTo(
-                      targets,
-                      { opacity: 0, y: 16 },
-                      {
-                        opacity: 1,
-                        y: 0,
-                        duration: MOTION.normal,
-                        stagger: 0.08,
-                        ease: "power2.out",
-                        clearProps: "all",
-                      },
-                    );
-                  });
-                },
-                { threshold: 0.08 },
-              );
-              observer.observe(element);
-              observers.push(observer);
-            });
-          });
-        }, root);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.08,
+        rootMargin: "0px 0px -40px 0px",
+      },
+    );
 
-        cleanup = () => {
-          observers.forEach((obs) => obs.disconnect());
-          context.revert();
-        };
-      })
-      .catch(() => {});
+    targets.forEach((el) => {
+      if (!el.classList.contains("is-revealed")) {
+        observer.observe(el);
+      }
+    });
 
     return () => {
-      cleanup();
+      observer.disconnect();
     };
   }, []);
 
-  // No blocking overlay: renders null for instant first paint
   return null;
 }
