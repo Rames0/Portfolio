@@ -1,31 +1,7 @@
-// noinspection JSUnresolvedComponentProps
 "use client";
 
-import emailjs from "@emailjs/browser";
-import { MotionConfig } from "framer-motion";
-import {
-  ArrowUpRight,
-  Briefcase,
-  Check,
-  Code2,
-  Copy,
-  Cpu,
-  Database,
-  Download,
-  GraduationCap,
-  Layers,
-  Mail,
-  Menu,
-  Send,
-  Sparkles,
-  Terminal,
-  User,
-  X,
-  Zap,
-} from "lucide-react";
-import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
-import { FiGithub as Github, FiLinkedin as Linkedin } from "react-icons/fi";
+import Image from "next/image";
 import profilePic from "../../public/Profile.jpeg";
 import ambienceImg from "../../public/Ambience.png";
 import gwpImg from "../../public/GWP.png";
@@ -38,15 +14,11 @@ import faviconSvg from "../../public/favicon.svg";
 import { AntigravityBackground } from "@/components/AntigravityBackground";
 import { ErgonomicMobileDock } from "@/components/ErgonomicMobileDock";
 import { FloatingTechIcons } from "@/components/FloatingTechIcons";
-import { HeroTypingIntro } from "@/components/HeroTypingIntro";
 import { PortfolioEntrance } from "@/components/WelcomeLanding";
+import { LightningPortrait } from "@/components/LightningPortrait";
 import { PortfolioMotion } from "@/components/PortfolioMotion";
-import { ProjectXRayConsole } from "@/components/ProjectXRayConsole";
-import { ScrollEffects } from "@/components/ScrollEffects";
-import { ScrollTypingSectionHeader } from "@/components/ScrollTypingSectionHeader";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { ScrollTypewriter } from "@/components/ScrollTypewriter";
-import { TactileThemeToggle } from "@/components/TactileThemeToggle";
-import { soundEngine } from "@/lib/haptics";
 
 const featuredPlatforms = [
   {
@@ -129,755 +101,445 @@ const featuredPlatforms = [
 
 const capabilities = [
   {
-    number: "01",
+    index: "01",
+    icon: "fa-solid fa-code",
     title: "Modern Web Engineering",
     desc: "Architecting high-performance web applications using Next.js 16, React 19, TypeScript, and modern Tailwind design systems. Built to endure high traffic with zero layout shifts.",
-    icon: Code2,
   },
   {
-    number: "02",
+    index: "02",
+    icon: "fa-solid fa-microchip",
     title: "Systems & API Architecture",
     desc: "Engineering scalable application backends with Node.js, Laravel 11, and Java/Grails MVC. Designing duplex WebSockets and resilient offline-first write queues.",
-    icon: Cpu,
   },
   {
-    number: "03",
+    index: "03",
+    icon: "fa-solid fa-database",
     title: "Relational Schemas & ACID Locks",
     desc: "Structuring relational databases with PostgreSQL and MariaDB. Implementing tsvector full-text search, GIN indexes, and row-level locking for zero transaction corruption.",
-    icon: Database,
   },
   {
-    number: "04",
+    index: "04",
+    icon: "fa-solid fa-layer-group",
     title: "UI/UX Design Systems",
     desc: "Creating systematic design languages in Figma. Translating tokens into pixel-accurate code with strict adherence to human ergonomics and WCAG 2.1 AA accessibility.",
-    icon: Layers,
   },
 ];
 
-async function createResume() {
-  const { default: jsPDF } = await import("jspdf");
-  const doc = new jsPDF({ unit: "mm", format: "a4" });
-
-  const K = [15, 23, 42] as const;
-  const GR = [71, 85, 105] as const;
-  const LG = [148, 163, 184] as const;
-  const WH = [255, 255, 255] as const;
-
-  const PW = 210,
-    PH = 297;
-  const SB = 68;
-  const ML = SB + 8;
-  const MR = 14;
-  const MW = PW - ML - MR;
-  const SML = 8;
-  const SMW = SB - SML - 4;
-
-  doc.setFillColor(...WH);
-  doc.rect(0, 0, PW, 46, "F");
-  doc.setDrawColor(...LG);
-  doc.setLineWidth(0.4);
-  doc.line(0, 46, PW, 46);
-
-  doc.setTextColor(...K);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text("RAMESH MAHARJAN", PW / 2, 17, { align: "center" });
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.setTextColor(...GR);
-  doc.text("Full-Stack Developer", PW / 2, 25, {
-    align: "center",
-  });
-
-  doc.setFontSize(9);
-  doc.setTextColor(...GR);
-  doc.text(
-    "Full-Stack Web Systems · UI/UX Design Systems · Resilient Web Architecture",
-    PW / 2,
-    32,
-    { align: "center" },
-  );
-
-  doc.setFontSize(8.5);
-  doc.setTextColor(...LG);
-  const headerContactText =
-    "mhrjan0@gmail.com   |   Kathmandu, Nepal   |   github.com/Rames0   |   linkedin.com/in/ramesh-mhr";
-  doc.text(headerContactText, PW / 2, 39, { align: "center" });
-  const hctw = doc.getTextWidth(headerContactText);
-  doc.link((PW - hctw) / 2, 39 - 3.5, hctw, 4.5, {
-    url: "mailto:mhrjan0@gmail.com",
-  });
-
-  doc.setFillColor(...LG);
-  doc.rect(SB - 0.5, 46, 0.5, PH - 46, "F");
-
-  let sy = 52;
-  let my = 52;
-
-  const sectionHeading = (label: string, x: number, y: number, w: number) => {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
-    doc.setTextColor(...K);
-    doc.text(label.toUpperCase(), x, y);
-    doc.setDrawColor(...K);
-    doc.setLineWidth(0.4);
-    doc.line(x, y + 1.2, x + w, y + 1.2);
-    return y + 5;
-  };
-
-  const bodyText = (text: string, x: number, y: number, w: number) => {
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9.5);
-    doc.setTextColor(...K);
-    const lines: string[] = doc.splitTextToSize(text, w);
-    lines.forEach((line: string, idx: number) => {
-      doc.text(line, x, y + idx * 4.6);
-    });
-    return y + lines.length * 4.6;
-  };
-
-  const bullet = (text: string, x: number, y: number, w: number) => {
-    doc.setFontSize(9.5);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...K);
-    doc.text("-", x + 0.5, y);
-    const bw = w - 4;
-    const lines: string[] = doc.splitTextToSize(text, bw);
-    lines.forEach((line: string, idx: number) => {
-      doc.text(line, x + 3.5, y + idx * 4.6);
-    });
-    return y + lines.length * 4.6;
-  };
-
-  const checkMain = (need: number) => {
-    if (my + need > PH - 10) {
-      doc.addPage();
-      doc.setFillColor(...LG);
-      doc.rect(SB - 0.5, 0, 0.5, PH, "F");
-      my = 14;
-    }
-  };
-
-  // SIDEBAR
-  sy = sectionHeading("Contact & Links", SML, sy, SMW);
-  [
-    {
-      label: "Email",
-      val: "mhrjan0@gmail.com",
-      url: "mailto:mhrjan0@gmail.com",
-    },
-    { label: "Location", val: "Kathmandu, Nepal", url: "" },
-    {
-      label: "GitHub",
-      val: "github.com/Rames0",
-      url: "https://github.com/Rames0",
-    },
-    {
-      label: "LinkedIn",
-      val: "linkedin.com/in/ramesh-mhr",
-      url: "https://www.linkedin.com/in/ramesh-mhr-1b0514337/",
-    },
-  ].forEach(({ label, val, url }) => {
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...GR);
-    doc.text(label, SML, sy);
-    doc.setFont("helvetica", "normal");
-    const lines = doc.splitTextToSize(val, SMW);
-    const textY = sy + 3.8;
-    if (url) {
-      doc.setTextColor(0, 0, 200);
-      doc.text(lines, SML, textY);
-      const tw = doc.getTextWidth(lines[0]);
-      doc.link(SML, textY - 3.5, tw, 4.5, { url });
-    } else {
-      doc.setTextColor(...K);
-      doc.text(lines, SML, textY);
-    }
-    sy += lines.length * 3.8 + 4;
-  });
-  sy += 2;
-
-  sy = sectionHeading("Technical Stack", SML, sy, SMW);
-  [
-    {
-      cat: "Frontend",
-      items: "Next.js 16, React 19, TypeScript, Tailwind CSS, Framer Motion",
-    },
-    {
-      cat: "Backend",
-      items: "Node.js, Laravel 11, PHP 8.x, Java/Grails MVC, REST, WebSockets",
-    },
-    {
-      cat: "Databases",
-      items: "PostgreSQL (GIN/tsvector), MariaDB, MySQL, ACID Row Locks",
-    },
-    {
-      cat: "Design & UX",
-      items: "Figma Design Systems, Wireframing, Prototyping, WCAG 2.1 AA",
-    },
-    {
-      cat: "Tools & DevOps",
-      items: "Git, GitHub, Docker, Linux, CI/CD, Performance Profiling",
-    },
-  ].forEach((g) => {
-    doc.setFontSize(8);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...GR);
-    doc.text(g.cat, SML, sy);
-    sy += 3.8;
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...K);
-    const lines = doc.splitTextToSize(g.items, SMW);
-    doc.text(lines, SML, sy);
-    sy += lines.length * 4 + 2;
-  });
-  sy += 2;
-
-  sy = sectionHeading("Education", SML, sy, SMW);
-  doc.setFontSize(8.5);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...K);
-  doc.text("Bachelor of Computer", SML, sy);
-  sy += 4;
-  doc.text("Applications (BCA)", SML, sy);
-  sy += 4;
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(...GR);
-  doc.text("Tribhuvan University, Nepal", SML, sy);
-  sy += 4;
-  doc.text("2020 — 2025", SML, sy);
-  sy += 8;
-
-  // MAIN CONTENT
-  my = sectionHeading("Profile Summary", ML, my, MW);
-  const summaryText =
-    "Versatile Full-Stack Developer dedicated to engineering resilient web applications " +
-    "and thoughtfully crafted human experiences. Experienced in shipping production-grade platforms including real-time " +
-    "restaurant POS engines with local-first offline synchronization, multi-locale directories powered by PostgreSQL " +
-    "tsvector search, corporate enterprise platforms, and accessible civic governance systems. Combines strong relational " +
-    "database fundamentals with contemporary design system expertise.";
-  my = bodyText(summaryText, ML, my, MW) + 6;
-
-  checkMain(50);
-  my = sectionHeading("Professional Experience", ML, my, MW);
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10.5);
-  doc.setTextColor(...K);
-  doc.text("Full-Stack Developer", ML, my);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.setTextColor(...GR);
-  doc.text("2024 - Present", PW - MR, my, { align: "right" });
-  my += 4.5;
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.setTextColor(...GR);
-  doc.text("Nepal Incubation & Research Center (NIRC Nepal)", ML, my);
-  my += 6;
-
-  [
-    "Architected and deployed 6+ production web systems spanning hospitality POS, civic governance, and global consulting.",
-    "Engineered local-first restaurant POS system with sub-5ms WebSocket synchronization and zero-loss offline order queuing.",
-    "Built an 8-locale study advisory directory leveraging PostgreSQL tsvector full-text search with sub-15ms query resolution.",
-    "Designed accessible civic public portal unifying 50+ administrative services using Java and Grails MVC with Spring Security RBAC.",
-    "Created design systems and interactive UI prototypes in Figma, translating concepts into responsive, pixel-perfect production code.",
-  ].forEach((point) => {
-    checkMain(8);
-    my = bullet(point, ML, my, MW) + 1.2;
-  });
-  my += 5;
-
-  checkMain(40);
-  my = sectionHeading("Key Production Systems", ML, my, MW);
-
-  [
-    {
-      title: "Lucazsoft POS — High-Pressure Hospitality Engine",
-      stack:
-        "Laravel 11 · MariaDB (ACID Row Locks) · Node.js WebSockets · Local-First Queue",
-      desc: "Engineered operational point-of-sale platform featuring instant kitchen dispatch synchronization, atomic offline order buffering, and touch-ergonomic counter UI.",
-    },
-    {
-      title: "Ambience Infosys — Enterprise Digital Platform",
-      stack: "Next.js 16 (App Router / RSC) · React 19 · Node.js · TypeScript",
-      desc: "Architected enterprise services showcase engineered for sub-second page delivery, zero runtime layout shift, and 100 Lighthouse performance metrics.",
-    },
-    {
-      title: "Rakmina Consultancy — Multilingual Academic Directory",
-      stack:
-        "Laravel · PostgreSQL (GIN & tsvector Full-Text Search) · i18n (8 Locales)",
-      desc: "Delivered global scholarship portal with deep parametric search indexing and instantaneous locale switching across European and Asian language pairs.",
-    },
-    {
-      title: "GWP — Government Web Portal",
-      stack:
-        "Java · Grails MVC · Spring Security RBAC · MariaDB Relational Store",
-      desc: "Constructed accessible, high-trust civic portal consolidating 50+ municipal administrative services with strict role-based authorization and tamper-evident audit logs.",
-    },
-  ].forEach((p) => {
-    checkMain(22);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
-    doc.setTextColor(...K);
-    doc.text(p.title, ML, my);
-    my += 4;
-
-    doc.setFont("helvetica", "italic");
-    doc.setFontSize(8.5);
-    doc.setTextColor(...GR);
-    doc.text(p.stack, ML, my);
-    my += 4.2;
-
-    my = bodyText(p.desc, ML, my, MW) + 4;
-  });
-
-  const date = new Date().toISOString().split("T")[0];
-  doc.save(`Ramesh_Maharjan_CV_${date}.pdf`);
-}
-
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [inspectingConsole, setInspectingConsole] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [formStatus, setFormStatus] = useState("");
-  const [sending, setSending] = useState(false);
-  const [timeKTM, setTimeKTM] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        timeZone: "Asia/Kathmandu",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      };
-      setTimeKTM(new Intl.DateTimeFormat("en-US", options).format(now));
+    const header = document.getElementById("site-header");
+    const progress = document.getElementById("scroll-progress");
+    const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".nav-link"));
+
+    let shownProgress = 0;
+    let rafId = 0;
+
+    const onScroll = () => {
+      const winSmooth = (window as unknown as { Smooth?: { state?: { scroll: number; progress: number } } }).Smooth;
+      const S = winSmooth?.state;
+      const y = S ? S.scroll : window.scrollY;
+      if (header) {
+        header.classList.toggle("is-scrolled", y > 10);
+      }
+      const target = S
+        ? S.progress
+        : (() => {
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            return max > 0 ? Math.min(1, y / max) : 0;
+          })();
+      shownProgress += (target - shownProgress) * 0.15;
+      if (progress) {
+        progress.style.transform = `scaleX(${shownProgress.toFixed(4)})`;
+      }
+      rafId = requestAnimationFrame(onScroll);
     };
-    updateTime();
-    const interval = setInterval(updateTime, 30000);
-    return () => clearInterval(interval);
+    rafId = requestAnimationFrame(onScroll);
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    // Active nav link highlight
+    const sections = navLinks
+      .map((a) => {
+        const href = a.getAttribute("href");
+        return href ? document.querySelector<HTMLElement>(href) : null;
+      })
+      .filter(Boolean) as HTMLElement[];
+
+    const updateActiveNav = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight;
+      const winHeight = window.innerHeight;
+
+      if (scrollY + winHeight >= docHeight - 70) {
+        navLinks.forEach((a) =>
+          a.classList.toggle("is-active", a.getAttribute("href") === "#contact")
+        );
+        return;
+      }
+
+      if (scrollY < 180) {
+        navLinks.forEach((a) => a.classList.remove("is-active"));
+        return;
+      }
+
+      let currentId = "";
+      for (const sec of sections) {
+        const top = sec.getBoundingClientRect().top;
+        if (top <= 140) {
+          currentId = sec.id;
+        }
+      }
+
+      if (currentId) {
+        navLinks.forEach((a) =>
+          a.classList.toggle("is-active", a.getAttribute("href") === `#${currentId}`)
+        );
+      }
+    };
+
+    window.addEventListener("scroll", updateActiveNav, { passive: true });
+    updateActiveNav();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("scroll", updateActiveNav);
+    };
   }, []);
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    const winSmooth = (window as unknown as { Smooth?: { scrollTo: (target: string) => void } }).Smooth;
+    if (winSmooth?.scrollTo) {
+      winSmooth.scrollTo(href);
+    } else {
+      const el = document.querySelector(href);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    history.replaceState(null, "", href);
+    const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>(".nav-link"));
+    navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === href));
+  };
+
   const copyEmail = async () => {
-    soundEngine.relayClick();
     try {
       await navigator.clipboard.writeText("mhrjan0@gmail.com");
       setCopiedEmail(true);
-      setTimeout(() => setCopiedEmail(false), 2000);
+      setTimeout(() => setCopiedEmail(false), 1800);
     } catch {
-      setFormStatus("Copy unavailable. Email me at mhrjan0@gmail.com.");
+      window.location.href = "mailto:mhrjan0@gmail.com";
     }
   };
 
-  useEffect(() => {
-    if (!mobileMenuOpen) return;
-    const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setMobileMenuOpen(false);
-        document.getElementById("menu-toggle")?.focus();
-      }
-    };
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [mobileMenuOpen]);
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const subject = String(formData.get("subject") || "").trim();
+    const message = String(formData.get("message") || "").trim();
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (sending) return;
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
-
-    if (!serviceId || !templateId || !publicKey) {
-      setFormStatus(
-        "Opening your email app. Send the draft there to complete your message.",
-      );
-      window.location.href = `mailto:mhrjan0@gmail.com?subject=${encodeURIComponent(
-        String(data.get("subject") || "Inquiry from Portfolio"),
-      )}&body=${encodeURIComponent(
-        `${data.get("message")}\n\nFrom: ${data.get("name")} (${data.get("email")})`,
-      )}`;
+    if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || message.length < 5) {
+      setFormStatus("Please fill in your name, a valid email, and a message.");
       return;
     }
 
-    setSending(true);
-    setFormStatus("Transmitting your message...");
+    setIsSubmitting(true);
+    setFormStatus("Transmitting…");
+
     try {
-      const templateParams = {
-        ...Object.fromEntries(data.entries()),
-        from_name: data.get("name"),
-        from_email: data.get("email"),
-        reply_to: data.get("email"),
-      };
-      await emailjs.send(serviceId, templateId, templateParams, publicKey);
-      soundEngine.modeSwitch();
-      setFormStatus(
-        "Message sent successfully. I will get back to you shortly.",
-      );
+      window.location.href = `mailto:mhrjan0@gmail.com?subject=${encodeURIComponent(
+        subject || "Portfolio Inquiry",
+      )}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
+      setFormStatus("✓ Prepared draft in your email client. Send to complete!");
       form.reset();
     } catch {
-      setFormStatus(
-        "Delivery issue. Please email directly to mhrjan0@gmail.com",
-      );
+      setFormStatus("Could not open email client. Please email mhrjan0@gmail.com directly.");
     } finally {
-      setSending(false);
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
-    <MotionConfig reducedMotion="user">
-      <PortfolioEntrance>
-        <div className="site-wrapper" id="portfolio-content">
-          {/* Antigravity WebGL Canvas: Luminous Particles */}
-          <AntigravityBackground />
+    <PortfolioEntrance>
+      {/* 3D WebGL Background Canvas & Glow */}
+      <AntigravityBackground />
+      <div id="scroll-progress" className="scroll-progress" aria-hidden="true" />
+      <div id="cursor-glow" className="cursor-glow" aria-hidden="true" />
 
-          {/* Scroll Progress & Spotlight Effects */}
-          <ScrollEffects />
+      {/* Tilt, Skew, GSAP Scroll Scenes */}
+      <PortfolioMotion />
 
-          {/* Motion Reveals */}
-          <PortfolioMotion />
+      {/* Main Site Container */}
+      <div id="site" className="site">
+        {/* Header */}
+        <header className="site-header" id="site-header">
+          <div className="container header-inner">
+            <a
+              href="#hero"
+              className="brand"
+              aria-label="Ramesh Maharjan — Home"
+              onClick={(e) => handleNavClick(e, "#hero")}
+            >
+              <span className="brand-logo tilt-3d" data-tilt>
+                <Image src={faviconSvg} alt="" width={38} height={38} priority />
+              </span>
+              <span className="brand-text">
+                <strong>Ramesh Maharjan</strong>
+                <small>Full-Stack Developer</small>
+              </span>
+            </a>
 
-          <a className="skip-link" href="#work">
-            Skip to main content
-          </a>
-
-          {/* ============================================================
-            FULL-WIDTH STICKY TOPBAR
-            ============================================================ */}
-          <header className="site-header">
-            <div className="full-container site-header-inner">
-              <a
-                href="#hero"
-                className="brand-identity group"
-                aria-label="Ramesh Maharjan Home"
-              >
-                <div className="brand-logo-badge group-hover:scale-105 transition-transform overflow-hidden !bg-transparent !border-0 !p-0">
-                  <Image
-                    src={faviconSvg}
-                    alt="Ramesh Maharjan Logo"
-                    width={38}
-                    height={38}
-                    className="w-full h-full object-contain rounded-[10px]"
-                    priority
-                  />
-                </div>
-                <div className="brand-text">
-                  <h1>Ramesh Maharjan</h1>
-                  <p>Full-Stack Developer</p>
-                </div>
+            <nav
+              className={`site-nav ${mobileMenuOpen ? "is-open" : ""}`}
+              id="site-nav"
+              aria-label="Main navigation"
+            >
+              <a href="#work" className="nav-link" onClick={(e) => handleNavClick(e, "#work")}>
+                <span data-text="Work">Work</span>
               </a>
+              <a href="#experience" className="nav-link" onClick={(e) => handleNavClick(e, "#experience")}>
+                <span data-text="Experience">Experience</span>
+              </a>
+              <a href="#capabilities" className="nav-link" onClick={(e) => handleNavClick(e, "#capabilities")}>
+                <span data-text="Capabilities">Capabilities</span>
+              </a>
+              <a href="#stack" className="nav-link" onClick={(e) => handleNavClick(e, "#stack")}>
+                <span data-text="Stack">Stack</span>
+              </a>
+              <a href="#contact" className="nav-link" onClick={(e) => handleNavClick(e, "#contact")}>
+                <span data-text="Contact">Contact</span>
+              </a>
+            </nav>
 
-              <nav className="site-nav-links" aria-label="Main Navigation">
-                <a href="#work">
-                  <span>Work</span>
-                </a>
-                <a href="#experience">
-                  <span>Experience</span>
-                </a>
-                <a href="#capabilities">
-                  <span>Capabilities</span>
-                </a>
-                <a href="#stack">
-                  <span>Stack</span>
-                </a>
-                <a href="#contact">
-                  <span>Contact</span>
-                </a>
-              </nav>
-
-              <div className="header-right-cluster">
-                {timeKTM && (
-                  <div className="time-pill">
-                    <span className="time-dot" />
-                    <span>{timeKTM} KTM · UTC+5:45</span>
-                  </div>
-                )}
-
-                <TactileThemeToggle />
-
-                <button
-                  onClick={createResume}
-                  type="button"
-                  className="btn btn-outline text-xs hidden sm:inline-flex h-9! px-3.5!"
-                >
-                  <Download size={13} />
-                  <span>Resume (PDF)</span>
-                </button>
-
-                <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="p-2 rounded-lg border border-[var(--surface-border)] text-(--text-primary) md:hidden"
-                  id="menu-toggle"
-                  type="button"
-                  aria-expanded={mobileMenuOpen}
-                  aria-controls="mobile-menu"
-                  aria-label="Toggle navigation menu"
-                >
-                  {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
-              </div>
-            </div>
-          </header>
-
-          {/* MOBILE NAVIGATION DRAWER */}
-          {mobileMenuOpen && (
-            <div className="fixed inset-x-0 top-[68px] z-50 bg-(--bg-secondary) border-b border-[var(--surface-border)] p-6 shadow-2xl md:hidden max-h-[calc(100vh-68px)] overflow-y-auto">
-              <nav
-                id="mobile-menu"
-                aria-label="Mobile navigation"
-                className="flex flex-col gap-2 font-mono"
+            <div className="header-actions">
+              <ThemeToggle />
+              <a
+                href="#contact"
+                className="btn btn-outline btn-sm hide-mobile"
+                onClick={(e) => handleNavClick(e, "#contact")}
               >
-                <a
-                  href="#work"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-                >
-                  Selected Work
-                </a>
-                <a
-                  href="#experience"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-                >
-                  Experience &amp; Education
-                </a>
-                <a
-                  href="#capabilities"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-                >
-                  Capabilities &amp; Services
-                </a>
-                <a
-                  href="#stack"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-                >
-                  Technology Stack
-                </a>
-                <a
-                  href="#contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 rounded-lg text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
-                >
-                  Contact
-                </a>
-              </nav>
+                <i className="fa-solid fa-paper-plane" />
+                <span>Hire Me</span>
+              </a>
               <button
-                onClick={() => {
-                  createResume();
-                  setMobileMenuOpen(false);
-                }}
                 type="button"
-                className="btn btn-primary w-full mt-4 font-mono text-xs uppercase tracking-wider"
+                className="menu-toggle"
+                id="menu-toggle"
+                aria-expanded={mobileMenuOpen}
+                aria-controls="site-nav"
+                aria-label="Toggle navigation menu"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                <Download size={15} />
-                <span>Download Resume (PDF)</span>
+                <span />
+                <span />
+                <span />
               </button>
             </div>
-          )}
+          </div>
+        </header>
 
-          {/* ============================================================
-            HERO SECTION
-            ============================================================ */}
-          <section className="hero-section" id="hero">
-            <div className="full-container">
-              <div className="hero-grid-layout">
-                <div>
-                  <div className="status-pill">
-                    <span className="status-dot" />
-                    <span className="truncate">
-                      AVAILABLE FOR COMMISSIONS · KATHMANDU, NEPAL
-                    </span>
-                  </div>
+        {mobileMenuOpen && (
+          <div
+            className="nav-backdrop"
+            aria-hidden="true"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
 
-                  <HeroTypingIntro />
-
-                  <div className="hero-actions-row">
-                    <a href="#work" className="btn btn-primary">
-                      <Layers size={15} />
-                      <span>Explore Selected Work</span>
-                    </a>
-
-                    <button
-                      onClick={createResume}
-                      type="button"
-                      className="btn btn-outline"
-                    >
-                      <Download size={15} />
-                      <span>Download Resume (PDF)</span>
-                    </button>
-
-                    <a href="#contact" className="btn btn-ghost">
-                      <Mail size={15} />
-                      <span>Get in Touch</span>
-                    </a>
-                  </div>
+        <main id="main">
+          {/* ============ HERO ============ */}
+          <section className="hero" id="hero">
+            <div className="container hero-grid">
+              <div className="hero-copy" data-reveal="left">
+                <div className="status-pill">
+                  <span className="status-dot" />
+                  <span>AVAILABLE FOR COMMISSIONS · KATHMANDU, NEPAL</span>
                 </div>
 
-                {/* Editorial Portrait Card */}
-                <div className="hero-portrait-card">
-                  <div className="portrait-container">
-                    <Image
-                      src={profilePic}
-                      alt="Ramesh Maharjan — Full-Stack Developer"
-                      fill
-                      priority
-                      sizes="(max-width: 1024px) 100vw, 480px"
-                    />
-                  </div>
-                  <div className="portrait-details">
-                    <span className="text-[var(--text-primary)] font-bold">
-                      RAMESH MAHARJAN
-                    </span>
-                    <span className="text-[var(--accent-primary)]">
-                      KATHMANDU, NEPAL
-                    </span>
-                  </div>
+                <h1 className="hero-title">
+                  <span className="title-3d" data-depth>
+                    Architecting
+                  </span>
+                  <span className="title-3d gradient-text" data-depth>
+                    resilient web systems
+                  </span>
+                  <span className="title-3d" data-depth>
+                    with modern craft.
+                  </span>
+                </h1>
+
+                <ScrollTypewriter
+                  as="p"
+                  className="hero-sub"
+                  text="I'm Ramesh Maharjan — Full-Stack Developer & UI/UX Designer at NIRC Nepal. I specialize in building high-performance web applications, combining transactional relational data integrity (PostgreSQL & MariaDB ACID row locks) with fluid, human-centered interfaces (Next.js 16, React 19, TypeScript, Tailwind CSS)."
+                  speed={16}
+                  delay={180}
+                />
+
+                <div className="hero-actions">
+                  <a href="#work" className="btn btn-primary btn-3d">
+                    <i className="fa-solid fa-layer-group" />
+                    <span>Explore Selected Work</span>
+                  </a>
+                  <a href="#contact" className="btn btn-outline btn-3d">
+                    <i className="fa-solid fa-envelope" />
+                    <span>Get in Touch</span>
+                  </a>
+                  <a
+                    href="https://github.com/Rames0"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-ghost btn-3d"
+                  >
+                    <i className="fa-brands fa-github" />
+                    <span>GitHub</span>
+                  </a>
                 </div>
               </div>
 
-              {/* Milestones Strip */}
-              <div className="stats-strip">
-                <div className="stat-box">
-                  <span className="val">06+</span>
-                  <span className="desc">
-                    Shipped Production Web Applications
-                  </span>
-                </div>
-                <div className="stat-box">
-                  <span className="val">BCA</span>
-                  <span className="desc">
-                    Tribhuvan University Graduate (2020–2025)
-                  </span>
-                </div>
-                <div className="stat-box">
-                  <span className="val">2024–</span>
-                  <span className="desc">
-                    NIRC Nepal Full-Stack &amp; UI/UX Leadership
-                  </span>
-                </div>
-                <div className="stat-box">
-                  <span className="val">100%</span>
-                  <span className="desc">
-                    High-Reliability SLAs &amp; ACID Data Integrity
-                  </span>
+              <div className="hero-visual" data-reveal="right">
+                <div className="portrait-scene" id="portrait-scene">
+                  <LightningPortrait
+                    image={profilePic}
+                    alt="Ramesh Maharjan — Full-Stack Developer"
+                    name="RAMESH MAHARJAN"
+                    location="KATHMANDU, NEPAL"
+                  />
+                  <div className="portrait-orbit orbit-a" aria-hidden="true" />
+                  <div className="portrait-orbit orbit-b" aria-hidden="true" />
                 </div>
               </div>
             </div>
+
+            <div className="container">
+              <ul className="stats-strip" aria-label="Key statistics">
+                <li className="stat-cube" data-reveal="up">
+                  <div className="stat-cube-inner">
+                    <div className="stat-face stat-front">
+                      <span className="val">06+</span>
+                      <span className="desc">Shipped Production Web Applications</span>
+                    </div>
+                    <div className="stat-face stat-back">
+                      <i className="fa-solid fa-rocket" />
+                      <span className="desc">From POS engines to civic portals</span>
+                    </div>
+                  </div>
+                </li>
+                <li className="stat-cube" data-reveal="up">
+                  <div className="stat-cube-inner">
+                    <div className="stat-face stat-front">
+                      <span className="val">BCA</span>
+                      <span className="desc">Tribhuvan University Graduate (2020–2025)</span>
+                    </div>
+                    <div className="stat-face stat-back">
+                      <i className="fa-solid fa-graduation-cap" />
+                      <span className="desc">Bachelor of Computer Applications</span>
+                    </div>
+                  </div>
+                </li>
+                <li className="stat-cube" data-reveal="up">
+                  <div className="stat-cube-inner">
+                    <div className="stat-face stat-front">
+                      <span className="val">2024–</span>
+                      <span className="desc">NIRC Nepal Full-Stack &amp; UI/UX Leadership</span>
+                    </div>
+                    <div className="stat-face stat-back">
+                      <i className="fa-solid fa-briefcase" />
+                      <span className="desc">Nepal Incubation &amp; Research Center</span>
+                    </div>
+                  </div>
+                </li>
+                <li className="stat-cube" data-reveal="up">
+                  <div className="stat-cube-inner">
+                    <div className="stat-face stat-front">
+                      <span className="val">100%</span>
+                      <span className="desc">High-Reliability SLAs &amp; ACID Data Integrity</span>
+                    </div>
+                    <div className="stat-face stat-back">
+                      <i className="fa-solid fa-shield-halved" />
+                      <span className="desc">Zero transaction corruption</span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <a href="#work" className="scroll-hint" aria-label="Scroll to selected work">
+              <span className="mouse">
+                <span />
+              </span>
+            </a>
           </section>
 
-          {/* ============================================================
-            FEATURED WORK
-            ============================================================ */}
-          <section className="section-wrapper" id="work">
-            <div className="full-container">
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 sm:mb-12">
-                <ScrollTypingSectionHeader
-                  tag="SELECTED WORK"
-                  title="Production Platforms & Systems"
-                  lead="Mission-critical applications engineered for sub-second delivery, relational data integrity, and high-concurrency environments."
-                  className="mb-0"
+          {/* ============ WORK ============ */}
+          <section className="section" id="work">
+            <div className="container">
+              <header className="section-head" data-reveal="up">
+                <p className="section-tag">
+                  <span className="line" />01 · SELECTED WORK
+                </p>
+                <h2 className="section-title">Production Platforms &amp; Systems</h2>
+                <ScrollTypewriter
+                  as="p"
+                  className="section-lead"
+                  text="Mission-critical applications engineered for sub-second delivery, relational data integrity, and high-concurrency environments. Hover a card to move it in 3D."
+                  speed={18}
+                  delay={100}
                 />
+              </header>
 
-                <button
-                  onClick={() => {
-                    soundEngine.modeSwitch();
-                    setInspectingConsole(!inspectingConsole);
-                  }}
-                  className="btn btn-outline text-xs self-start md:self-auto shrink-0 font-mono"
-                  type="button"
-                >
-                  <Terminal
-                    size={14}
-                    className="text-[var(--accent-primary)]"
-                  />
-                  <span>
-                    {inspectingConsole
-                      ? "Close Architecture Console"
-                      : "Open Architecture X-Ray Console"}
-                  </span>
-                </button>
-              </div>
-
-              {/* Architecture Console Drawer */}
-              {inspectingConsole && (
-                <div className="mb-8 sm:mb-12 p-3 sm:p-6 border border-[var(--surface-border)] rounded-2xl bg-[var(--bg-card)] overflow-x-auto shadow-2xl">
-                  <ProjectXRayConsole />
-                </div>
-              )}
-
-              {/* Responsive Full-Width Grid of Platforms */}
-              <div className="projects-responsive-grid">
-                {featuredPlatforms.map((platform) => (
-                  <article key={platform.title} className="platform-card">
-                    <div className="platform-thumbnail">
+              <div className="projects-grid">
+                {featuredPlatforms.map((project, idx) => (
+                  <article
+                    key={project.title}
+                    className="project-card"
+                    data-tilt
+                    data-tilt-max="10"
+                    data-tilt-glare
+                    data-reveal="up"
+                  >
+                    <div className="project-thumb" data-layer="30">
                       <Image
-                        src={platform.image}
-                        alt={platform.title}
+                        src={project.image}
+                        alt={`${project.title} screenshot`}
                         fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1080px) 50vw, 33vw"
+                        className="object-cover"
+                        priority={idx === 0}
                       />
                     </div>
-                    <div className="platform-content">
-                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--accent-primary)] mb-2 block">
-                        {platform.category}
-                      </span>
-
-                      <div className="platform-tags-row">
-                        {platform.tags.map((tag) => (
-                          <span key={tag} className="platform-tag">
-                            {tag}
-                          </span>
+                    <div className="project-body">
+                      <span className="project-kicker">{project.category}</span>
+                      <div className="tag-row">
+                        {project.tags.map((tag) => (
+                          <span key={tag}>{tag}</span>
                         ))}
                       </div>
-
-                      <h3>
-                        <span>{platform.title}</span>
-                        {platform.link !== "#" && (
-                          <a
-                            href={platform.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-[var(--text-secondary)] hover:text-[var(--accent-primary)] shrink-0"
-                            aria-label={`Open ${platform.title}`}
-                          >
-                            <ArrowUpRight size={18} />
-                          </a>
-                        )}
-                      </h3>
-
-                      <ScrollTypewriter
-                        text={platform.subtitle}
-                        as="p"
-                        className="sub"
-                        speed={24}
-                      />
-                      <ScrollTypewriter
-                        text={platform.desc}
-                        as="p"
-                        className="description"
-                        speed={20}
-                      />
-
-                      {platform.link !== "#" && (
-                        <a
-                          href={platform.link}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="platform-action-link"
-                        >
-                          <span>View Project</span>
-                          <ArrowUpRight size={14} />
-                        </a>
-                      )}
+                      <h3 data-layer="20">{project.title}</h3>
+                      <p className="project-sub">{project.subtitle}</p>
+                      <p className="project-desc">{project.desc}</p>
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="project-link"
+                      >
+                        View Project <i className="fa-solid fa-arrow-up-right" />
+                      </a>
                     </div>
                   </article>
                 ))}
@@ -885,333 +547,313 @@ export default function Home() {
             </div>
           </section>
 
-          {/* ============================================================
-            EXPERIENCE & EDUCATION
-            ============================================================ */}
-          <section className="section-wrapper" id="experience">
-            <div className="full-container">
-              <ScrollTypingSectionHeader
-                tag="CAREER TIMELINE"
-                title="Professional Experience & Education"
-                lead="Engineering leadership, design craftsmanship, and rigorous theoretical foundations in computer applications."
-              />
+          {/* ============ EXPERIENCE ============ */}
+          <section className="section" id="experience">
+            <div className="container">
+              <header className="section-head" data-reveal="up">
+                <p className="section-tag">
+                  <span className="line" />02 · CAREER TIMELINE
+                </p>
+                <h2 className="section-title">Professional Experience &amp; Education</h2>
+                <ScrollTypewriter
+                  as="p"
+                  className="section-lead"
+                  text="Engineering leadership, design craftsmanship, and rigorous theoretical foundations in computer applications."
+                  speed={20}
+                  delay={100}
+                />
+              </header>
 
-              <div className="timeline-two-col">
-                <div className="journey-card">
+              <div className="timeline">
+                <div className="timeline-spine" aria-hidden="true" />
+
+                <article className="journey-card" data-tilt data-tilt-max="6" data-reveal="left">
+                  <span className="journey-node" aria-hidden="true" />
                   <span className="journey-badge">
-                    <Briefcase size={13} />
-                    <span>2024 — PRESENT ACTIVE EMPLOYMENT</span>
+                    <i className="fa-solid fa-briefcase" /> 2024 — PRESENT · ACTIVE EMPLOYMENT
                   </span>
-                  <div>
-                    <h3>Full-Stack Developer</h3>
-                    <div className="journey-org text-[var(--accent-primary)]">
-                      Nepal Incubation &amp; Research Center (NIRC Nepal)
-                    </div>
-                  </div>
+                  <h3>Full-Stack Developer</h3>
+                  <p className="journey-org">Nepal Incubation &amp; Research Center (NIRC Nepal)</p>
                   <ul className="journey-bullets">
                     <li>
-                      <ScrollTypewriter
-                        text="Leading full-stack architecture and UI/UX design across 6+ production web systems and enterprise client platforms."
-                        as="span"
-                        speed={20}
-                      />
+                      Leading full-stack architecture and UI/UX design across 6+ production web
+                      systems and enterprise client platforms.
                     </li>
                     <li>
-                      <ScrollTypewriter
-                        text="Architected local-first restaurant POS with sub-5ms duplex WebSocket sync and zero-loss offline order queues."
-                        as="span"
-                        speed={20}
-                      />
+                      Architected local-first restaurant POS with sub-5ms duplex WebSocket sync and
+                      zero-loss offline order queues.
                     </li>
                     <li>
-                      <ScrollTypewriter
-                        text="Engineered multi-locale study advisory directory with PostgreSQL GIN/tsvector search and sub-15ms query resolution."
-                        as="span"
-                        speed={20}
-                      />
+                      Engineered multi-locale study advisory directory with PostgreSQL GIN/tsvector
+                      search and sub-15ms query resolution.
                     </li>
                     <li>
-                      <ScrollTypewriter
-                        text="Designed accessible civic portal unifying 50+ municipal public services using Java / Grails MVC."
-                        as="span"
-                        speed={20}
-                      />
+                      Designed accessible civic portal unifying 50+ municipal public services using
+                      Java / Grails MVC.
                     </li>
                     <li>
-                      <ScrollTypewriter
-                        text="Created design tokens and interactive Figma components, translating design systems into pixel-accurate code."
-                        as="span"
-                        speed={20}
-                      />
+                      Created design tokens and interactive Figma components, translating design
+                      systems into pixel-accurate code.
                     </li>
                   </ul>
-                </div>
+                </article>
 
-                <div className="journey-card">
+                <article className="journey-card" data-tilt data-tilt-max="6" data-reveal="right">
+                  <span className="journey-node" aria-hidden="true" />
                   <span className="journey-badge">
-                    <GraduationCap size={13} />
-                    <span>2020 — 2025 ACADEMIC FOUNDATION</span>
+                    <i className="fa-solid fa-graduation-cap" /> 2020 — 2025 · ACADEMIC FOUNDATION
                   </span>
-                  <div>
-                    <h3>Bachelor of Computer Applications (BCA)</h3>
-                    <div className="journey-org text-[var(--accent-primary)]">
-                      Tribhuvan University, Nepal
-                    </div>
-                  </div>
+                  <h3>Bachelor of Computer Applications (BCA)</h3>
+                  <p className="journey-org">Tribhuvan University, Nepal</p>
                   <ul className="journey-bullets">
                     <li>
-                      <ScrollTypewriter
-                        text="Comprehensive graduation curriculum covering Relational Database Management Systems, normalization, and ACID concurrency."
-                        as="span"
-                        speed={20}
-                      />
+                      Comprehensive graduation curriculum covering Relational Database Management
+                      Systems, normalization, and ACID concurrency.
                     </li>
                     <li>
-                      <ScrollTypewriter
-                        text="Advanced coursework in Data Structures, Algorithms, Software Engineering methodologies, and Unix/Linux OS concepts."
-                        as="span"
-                        speed={20}
-                      />
+                      Advanced coursework in Data Structures, Algorithms, Software Engineering
+                      methodologies, and Unix/Linux OS concepts.
                     </li>
                     <li>
-                      <ScrollTypewriter
-                        text="Engineered practical academic web systems emphasizing W3C standards compliance and modular software architecture."
-                        as="span"
-                        speed={20}
-                      />
+                      Engineered practical academic web systems emphasizing W3C standards compliance
+                      and modular software architecture.
                     </li>
                     <li>
-                      <ScrollTypewriter
-                        text="Solidified theoretical foundations in computer networking, cryptography protocols, and systems analysis."
-                        as="span"
-                        speed={20}
-                      />
+                      Solidified theoretical foundations in computer networking, cryptography
+                      protocols, and systems analysis.
                     </li>
                   </ul>
-                </div>
+                </article>
               </div>
             </div>
           </section>
 
-          {/* ============================================================
-            CAPABILITIES & SERVICES
-            ============================================================ */}
-          <section className="section-wrapper" id="capabilities">
-            <div className="full-container">
-              <ScrollTypingSectionHeader
-                tag="CORE DISCIPLINES"
-                title="Engineering Pillars & Capabilities"
-                lead="The foundational disciplines I bring to architecting, designing, and scaling digital products."
-              />
+          {/* ============ CAPABILITIES ============ */}
+          <section className="section" id="capabilities">
+            <div className="container">
+              <header className="section-head" data-reveal="up">
+                <p className="section-tag">
+                  <span className="line" />03 · CORE DISCIPLINES
+                </p>
+                <h2 className="section-title">Engineering Pillars &amp; Capabilities</h2>
+                <ScrollTypewriter
+                  as="p"
+                  className="section-lead"
+                  text="The foundational disciplines I bring to architecting, designing, and scaling digital products. Hover (or tap) a card to flip it."
+                  speed={18}
+                  delay={100}
+                />
+              </header>
 
-              <div className="services-quad-grid">
-                {capabilities.map((cap) => {
-                  const Icon = cap.icon;
-                  return (
-                    <div key={cap.title} className="service-unit">
-                      <div className="flex items-center justify-between">
-                        <div className="service-unit-icon">
-                          <Icon size={22} />
-                        </div>
-                        <span className="font-mono text-[11px] font-bold text-[var(--text-muted)]">
-                          {cap.number}
+              <div className="flip-grid">
+                {capabilities.map((cap) => (
+                  <article key={cap.index} className="flip-card" data-reveal="up" tabIndex={0}>
+                    <div className="flip-inner">
+                      <div className="flip-face flip-front">
+                        <span className="flip-index">{cap.index}</span>
+                        <span className="flip-icon">
+                          <i className={cap.icon} />
+                        </span>
+                        <h3>{cap.title}</h3>
+                        <span className="flip-hint">
+                          Flip <i className="fa-solid fa-rotate" />
                         </span>
                       </div>
-                      <h3>{cap.title}</h3>
-                      <ScrollTypewriter text={cap.desc} as="p" speed={20} />
+                      <div className="flip-face flip-back">
+                        <p>{cap.desc}</p>
+                      </div>
                     </div>
-                  );
-                })}
+                  </article>
+                ))}
               </div>
             </div>
           </section>
 
-          {/* ============================================================
-            TECHNOLOGY STACK
-            ============================================================ */}
-          <section className="section-wrapper" id="stack">
-            <div className="full-container">
-              <ScrollTypingSectionHeader
-                tag="04 PRODUCTION TOOLCHAIN"
-                title="Battle-Tested Technologies & Tools"
-                lead="The production stack I leverage daily to design, build, test, and ship resilient digital systems. Hover or touch to interact with the kinetic floating tool field."
-              />
+          {/* ============ STACK ============ */}
+          <section className="section" id="stack">
+            <div className="container">
+              <header className="section-head" data-reveal="up">
+                <p className="section-tag">
+                  <span className="line" />04 · PRODUCTION TOOLCHAIN
+                </p>
+                <h2 className="section-title">Battle-Tested Technologies &amp; Tools</h2>
+                <ScrollTypewriter
+                  as="p"
+                  className="section-lead"
+                  text="The production stack I leverage daily to design, build, test, and ship resilient digital systems. Drag or move your cursor to spin the 3D sphere."
+                  speed={18}
+                  delay={100}
+                />
+              </header>
 
-              {/* Kinetic Randomly Moving Tech Icons Field */}
               <FloatingTechIcons />
             </div>
           </section>
 
-          {/* ============================================================
-            CONTACT SECTION
-            ============================================================ */}
-          <section className="section-wrapper" id="contact">
-            <div className="full-container">
-              <div className="contact-split-grid">
-                <div className="contact-card-sidebar">
-                  <div className="section-tag">
-                    <span className="line" />
-                    <ScrollTypewriter
-                      text="05 DIRECT CONTACT"
-                      as="span"
-                      speed={26}
+          {/* ============ CONTACT ============ */}
+          <section className="section" id="contact">
+            <div className="container contact-grid">
+              <aside className="contact-side" data-reveal="left">
+                <p className="section-tag">
+                  <span className="line" />05 · DIRECT CONTACT
+                </p>
+                <h2 className="section-title">
+                  Let&apos;s build something <span className="gradient-text">exceptional</span>{" "}
+                  together.
+                </h2>
+                <ScrollTypewriter
+                  as="p"
+                  className="section-lead"
+                  text="Have a mission-critical platform to architect, an engineering opportunity, or a complex UI/UX challenge? Reach out directly below."
+                  speed={18}
+                  delay={100}
+                />
+
+                <button
+                  type="button"
+                  className="email-copy glass"
+                  id="copy-email"
+                  aria-label="Copy email address"
+                  onClick={copyEmail}
+                >
+                  <span>
+                    <i className="fa-solid fa-envelope" /> mhrjan0@gmail.com
+                  </span>
+                  <i
+                    className={copiedEmail ? "fa-solid fa-check" : "fa-regular fa-copy"}
+                    id="copy-icon"
+                    style={copiedEmail ? { color: "#10b981" } : undefined}
+                  />
+                </button>
+
+                <div className="social-row">
+                  <a
+                    href="https://github.com/Rames0"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="social-cube"
+                    aria-label="GitHub"
+                    data-tilt
+                    data-tilt-max="20"
+                  >
+                    <i className="fa-brands fa-github" />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/ramesh-mhr-1b0514337"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="social-cube"
+                    aria-label="LinkedIn"
+                    data-tilt
+                    data-tilt-max="20"
+                  >
+                    <i className="fa-brands fa-linkedin-in" />
+                  </a>
+                  <a
+                    href="https://twitter.com/rameshdev"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="social-cube"
+                    aria-label="Twitter / X"
+                    data-tilt
+                    data-tilt-max="20"
+                  >
+                    <i className="fa-brands fa-x-twitter" />
+                  </a>
+                  <a
+                    href="mailto:mhrjan0@gmail.com"
+                    className="social-cube"
+                    aria-label="Email"
+                    data-tilt
+                    data-tilt-max="20"
+                  >
+                    <i className="fa-solid fa-at" />
+                  </a>
+                </div>
+              </aside>
+
+              <form
+                className="contact-form glass"
+                id="contact-form"
+                data-tilt
+                data-tilt-max="4"
+                data-reveal="right"
+                noValidate
+                onSubmit={handleFormSubmit}
+              >
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="user-name">Your Name *</label>
+                    <input
+                      id="user-name"
+                      name="name"
+                      autoComplete="name"
+                      maxLength={100}
+                      required
+                      placeholder="Jane Doe"
                     />
                   </div>
-                  <ScrollTypewriter
-                    text="Let's build something exceptional together."
-                    as="h2"
-                    speed={30}
-                  />
-                  <ScrollTypewriter
-                    text="Have a mission-critical platform to architect, an engineering opportunity, or a complex UI/UX challenge? Reach out directly below."
-                    as="p"
-                    speed={20}
-                  />
-
-                  <button
-                    onClick={copyEmail}
-                    type="button"
-                    className="contact-email-btn"
-                    aria-label="Copy direct email"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Mail
-                        size={16}
-                        className="text-[var(--accent-primary)] shrink-0"
-                      />
-                      <span className="truncate">mhrjan0@gmail.com</span>
-                    </div>
-                    {copiedEmail ? (
-                      <Check
-                        size={16}
-                        className="text-[var(--accent-primary)] shrink-0"
-                      />
-                    ) : (
-                      <Copy size={16} className="shrink-0" />
-                    )}
-                  </button>
-                  {copiedEmail && (
-                    <p className="text-xs text-[var(--accent-primary)] mt-2 font-mono">
-                      Email copied to clipboard (mhrjan0@gmail.com)!
-                    </p>
-                  )}
-
-                  <div className="contact-social-cluster">
-                    <a
-                      href="https://github.com/Rames0"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="contact-social-btn"
-                      aria-label="GitHub Profile"
-                    >
-                      <Github size={18} />
-                    </a>
-                    <a
-                      href="https://www.linkedin.com/in/ramesh-mhr-1b0514337"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="contact-social-btn"
-                      aria-label="LinkedIn Profile"
-                    >
-                      <Linkedin size={18} />
-                    </a>
+                  <div className="form-group">
+                    <label htmlFor="user-email">Email Address *</label>
+                    <input
+                      id="user-email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      maxLength={254}
+                      required
+                      placeholder="jane@organization.com"
+                    />
                   </div>
                 </div>
-
-                {/* Form */}
-                <div className="contact-form-box">
-                  <form onSubmit={handleSubmit}>
-                    <div className="form-two-fields">
-                      <div className="form-group-item">
-                        <label htmlFor="user-name">Your Name *</label>
-                        <input
-                          id="user-name"
-                          name="name"
-                          autoComplete="name"
-                          maxLength={100}
-                          required
-                          placeholder="Jane Doe"
-                        />
-                      </div>
-
-                      <div className="form-group-item">
-                        <label htmlFor="user-email">Email Address *</label>
-                        <input
-                          id="user-email"
-                          name="email"
-                          autoComplete="email"
-                          maxLength={254}
-                          type="email"
-                          required
-                          placeholder="jane@organization.com"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-group-item">
-                      <label htmlFor="user-subject">Subject</label>
-                      <input
-                        id="user-subject"
-                        name="subject"
-                        placeholder="Platform inquiry, systems consultation, or project scope"
-                      />
-                    </div>
-
-                    <div className="form-group-item">
-                      <label htmlFor="user-message">
-                        Message / Project Scope *
-                      </label>
-                      <textarea
-                        id="user-message"
-                        name="message"
-                        maxLength={5000}
-                        required
-                        rows={5}
-                        placeholder="Describe your project requirements, timeline, and architectural targets..."
-                      />
-                    </div>
-
-                    <div className="form-submit-row">
-                      <p
-                        aria-live="polite"
-                        className="text-xs text-[var(--accent-primary)] m-0 font-mono"
-                      >
-                        {formStatus}
-                      </p>
-
-                      <button
-                        className="btn btn-primary"
-                        disabled={sending}
-                        type="submit"
-                      >
-                        <Send size={15} />
-                        <span>
-                          {sending ? "Transmitting..." : "Send Message"}
-                        </span>
-                      </button>
-                    </div>
-                  </form>
+                <div className="form-group">
+                  <label htmlFor="user-subject">Subject</label>
+                  <input
+                    id="user-subject"
+                    name="subject"
+                    maxLength={200}
+                    placeholder="Platform inquiry, systems consultation, or project scope"
+                  />
                 </div>
-              </div>
+                <div className="form-group">
+                  <label htmlFor="user-message">Message / Project Scope *</label>
+                  <textarea
+                    id="user-message"
+                    name="message"
+                    rows={5}
+                    maxLength={5000}
+                    required
+                    placeholder="Describe your project requirements, timeline, and architectural targets..."
+                  />
+                </div>
+                <div className="form-submit-row">
+                  <p className="form-status" id="form-status" aria-live="polite">
+                    {formStatus}
+                  </p>
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-3d"
+                    id="form-submit"
+                    disabled={isSubmitting}
+                  >
+                    <i className="fa-solid fa-paper-plane" />
+                    <span>{isSubmitting ? "Sending…" : "Send Message"}</span>
+                  </button>
+                </div>
+              </form>
             </div>
           </section>
+        </main>
 
-          {/* ============================================================
-            FULL-WIDTH FOOTER
-            ============================================================ */}
-          <footer className="site-footer">
-            <div className="full-container site-footer-inner">
-              <p>
-                © {new Date().getFullYear()} Ramesh Maharjan · Full-Stack
-                Developer.
-              </p>
-            </div>
-          </footer>
+        <footer className="site-footer">
+          <div className="container footer-inner">
+            <p>© {new Date().getFullYear()} Ramesh Maharjan · Full-Stack Developer.</p>
+          </div>
+        </footer>
 
-          {/* Mobile Ergonomic Dock */}
-          <ErgonomicMobileDock onDownloadCV={createResume} />
-        </div>
-      </PortfolioEntrance>
-    </MotionConfig>
+        {/* Mobile dock */}
+        <ErgonomicMobileDock />
+      </div>
+    </PortfolioEntrance>
   );
 }

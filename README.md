@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ramesh Maharjan Portfolio
 
-## Getting Started
+The production portfolio is a Next.js 16 / React 19 application in `src/`. Its homepage now brings the cinematic 3D experience from the standalone [`3D/`](3D/) prototype into the main app. The prototype remains in the repository as the visual reference; the Next.js homepage is the production entry point.
 
-First, run the development server:
+The homepage includes a skippable CSS 3D cube intro, a Three.js particle field with floating geometry and a torus-knot hero core, 3D portrait and card interactions, scroll-driven perspective, flip cards, and a draggable technology sphere. Reduced-motion settings bypass the intro and disable animated WebGL. The production features remain available: six linked projects, an interactive architecture console, resume PDF generation, theme toggle, mobile navigation, analytics, and the contact form.
+
+## Run locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>. Add `?skip` or `?static` to bypass the intro. Use the **3D On/Off** control in the header to choose animation; `?motion=on` explicitly enables the WebGL scene even when the device requests reduced motion, while `?motion=off` disables it. Without an explicit choice, the page respects the device setting. Configure EmailJS with the variables in [`.env.example`](.env.example); without them, the contact form opens a prepared email in the visitor's email app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run typecheck
+npm run lint:3d
+npm run build
+```
 
-## Learn More
+`npm run lint` checks the entire existing `src/` tree. It currently reports formatting issues in unrelated files; `lint:3d` checks the files changed for this integration.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The implementation brief used for the 3D port is in [`MASTER_PROMPT_3D.md`](MASTER_PROMPT_3D.md). The Next.js homepage is [`src/app/page.tsx`](src/app/page.tsx), and the integrated 3D styles are in [`src/app/portfolio-3d.css`](src/app/portfolio-3d.css).

@@ -1,9 +1,52 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isReducedMotionEnabled } from "@/lib/useReducedMotion";
 
 export function ScrollEffects() {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const cursorGlowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const glow = cursorGlowRef.current;
+    if (
+      !glow ||
+      !window.matchMedia("(hover: hover) and (pointer: fine)").matches ||
+      isReducedMotionEnabled()
+    )
+      return;
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let x = targetX;
+    let y = targetY;
+    let frame = 0;
+    let last = performance.now();
+    const onMove = (event: PointerEvent) => {
+      targetX = event.clientX;
+      targetY = event.clientY;
+      glow.style.opacity = "1";
+    };
+    const onLeave = () => {
+      glow.style.opacity = "0";
+    };
+    const animate = (now: number) => {
+      frame = requestAnimationFrame(animate);
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const blend = 1 - Math.exp(-14 * dt);
+      x += (targetX - x) * blend;
+      y += (targetY - y) * blend;
+      glow.style.transform = `translate3d(${(x - 210).toFixed(1)}px, ${(y - 210).toFixed(1)}px, 0)`;
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("mouseleave", onLeave);
+    frame = requestAnimationFrame(animate);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,12 +67,12 @@ export function ScrollEffects() {
   // Card interactive spotlight glow on mousemove
   useEffect(() => {
     const cards = document.querySelectorAll<HTMLElement>(
-      ".platform-card, .journey-card, .service-unit, .skill-cluster-box, .stat-box, .contact-card-sidebar, .contact-form-box",
+      ".project-card, .platform-card, .journey-card, .flip-card, .stat-cube, .contact-side, .contact-form",
     );
 
     if (
       !window.matchMedia("(hover: hover) and (pointer: fine)").matches ||
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      isReducedMotionEnabled()
     )
       return;
 
@@ -50,15 +93,16 @@ export function ScrollEffects() {
 
   return (
     <>
+      <div
+        ref={cursorGlowRef}
+        className="cursor-glow portfolio-cursor-glow"
+        aria-hidden="true"
+      />
       {/* Scroll Progress Bar at the top of the viewport */}
       <div
-        className="fixed top-0 left-0 right-0 h-[2.5px] z-[100] pointer-events-none origin-left"
+        className="scroll-progress portfolio-scroll-progress"
         style={{
           transform: `scaleX(${scrollProgress})`,
-          background:
-            "linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #3b82f6 100%)",
-          boxShadow: "0 0 10px rgba(16, 185, 129, 0.6)",
-          transition: "transform 0.08s linear",
         }}
         aria-hidden="true"
       />

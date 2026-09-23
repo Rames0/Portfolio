@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
+    "probe:browser": "node scripts/probe-sections.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "biome check src",
+    "lint:3d": "biome check src/app/page.tsx src/app/layout.tsx src/app/portfolio-3d.css src/components/AntigravityBackground.tsx src/components/FloatingTechIcons.tsx src/components/HeroTypingIntro.tsx src/components/MotionPreferenceToggle.tsx src/components/PortfolioMotion.tsx src/components/ScrollEffects.tsx src/components/WelcomeLanding.tsx src/lib/useReducedMotion.ts",
+    "format:3d": "biome check --write src/app/page.tsx src/app/layout.tsx src/app/portfolio-3d.css src/components/AntigravityBackground.tsx src/components/FloatingTechIcons.tsx src/components/HeroTypingIntro.tsx src/components/MotionPreferenceToggle.tsx src/components/PortfolioMotion.tsx src/components/ScrollEffects.tsx src/components/WelcomeLanding.tsx src/lib/useReducedMotion.ts",
     "typecheck": "tsc --noEmit",
     "format": "biome format --write src"
   },
@@ -21,6 +24,7 @@
     "framer-motion": "^13.2.0",
     "gsap": "^3.15.0",
     "jspdf": "^4.2.1",
+    "lenis": "^1.3.26",
     "lucide-react": "^1.46.0",
     "next": "^16.3.5",
     "react": "^19.3.0",

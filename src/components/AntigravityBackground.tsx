@@ -2,281 +2,355 @@
 
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { useTheme } from "@/lib/theme";
+import { isReducedMotionEnabled } from "@/lib/useReducedMotion";
 
 export function AntigravityBackground() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    // Detect hardware & reduced motion preferences
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    const isMobile = window.innerWidth < 768;
-    const particleCount = isMobile ? 650 : 1350;
-
-    // 1. Scene & Camera
-    const scene = new THREE.Scene();
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    let aspect = width / height;
-
-    const camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 100);
-    camera.position.z = 5.5;
-
-    // 2. Renderer
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-      antialias: true,
-      powerPreference: "high-performance",
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    container.appendChild(renderer.domElement);
-
-    // 3. Geometry & Attributes
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const phases = new Float32Array(particleCount);
-    const scales = new Float32Array(particleCount);
-    const colors = new Float32Array(particleCount * 3);
-
-    // Palette: Antigravity Google signature palette (emerald, cyan, sky blue, mint, cosmic white)
-    const darkPalette = [
-      new THREE.Color("#10b981"), // Emerald
-      new THREE.Color("#06b6d4"), // Cyan
-      new THREE.Color("#38bdf8"), // Sky Azure
-      new THREE.Color("#34d399"), // Mint
-      new THREE.Color("#ffffff"), // Pure luminous starpoint
-    ];
-
-    const lightPalette = [
-      new THREE.Color("#059669"),
-      new THREE.Color("#0891b2"),
-      new THREE.Color("#2563eb"),
-      new THREE.Color("#10b981"),
-      new THREE.Color("#475569"),
-    ];
-
-    const activePalette = isDark ? darkPalette : lightPalette;
-
-    for (let i = 0; i < particleCount; i++) {
-      // Spatial distribution across 3D field
-      positions[i * 3 + 0] = (Math.random() - 0.5) * 16;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 14;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 8;
-
-      phases[i] = Math.random() * Math.PI * 2;
-      scales[i] = Math.random() * 0.65 + 0.45;
-
-      const col =
-        activePalette[Math.floor(Math.random() * activePalette.length)];
-      colors[i * 3 + 0] = col.r;
-      colors[i * 3 + 1] = col.g;
-      colors[i * 3 + 2] = col.b;
+    const canvas = canvasRef.current;
+    if (!canvas || isReducedMotionEnabled()) {
+      (window as unknown as { Scene3D?: { warpIn: () => void; setIntroMode: (v: boolean) => void } }).Scene3D = {
+        warpIn() {},
+        setIntroMode() {},
+      };
+      window.dispatchEvent(new CustomEvent("scene3d:ready"));
+      return;
     }
 
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute("aPhase", new THREE.BufferAttribute(phases, 1));
-    geometry.setAttribute("aScale", new THREE.BufferAttribute(scales, 1));
-    geometry.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
+    const isMobile = window.innerWidth < 760;
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: !isMobile,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+    } catch {
+      return;
+    }
 
-    // 4. Custom GLSL Shader Material
-    const uniforms = {
-      uTime: { value: 0 },
-      uMouse: { value: new THREE.Vector2(-999, -999) },
-      uAspect: { value: aspect },
-      uScrollOffset: { value: 0 },
-    };
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    const vertexShader = `
-      uniform float uTime;
-      uniform vec2 uMouse;
-      uniform float uAspect;
-      uniform float uScrollOffset;
+    const isLightInitial = document.documentElement.getAttribute("data-theme") === "light";
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(isLightInitial ? 0xf8fafc : 0x05080f, 0.035);
 
-      attribute float aPhase;
-      attribute float aScale;
-      attribute vec3 aColor;
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      200,
+    );
+    camera.position.set(0, 0, 14);
 
-      varying float vAlpha;
-      varying vec3 vColor;
+    // Lights
+    scene.add(new THREE.AmbientLight(0x88aacc, 0.45));
+    const keyLight = new THREE.PointLight(0x10b981, 40, 60, 1.6);
+    keyLight.position.set(6, 6, 8);
+    scene.add(keyLight);
+    const fillLight = new THREE.PointLight(0x06b6d4, 30, 60, 1.6);
+    fillLight.position.set(-8, -4, 6);
+    scene.add(fillLight);
+    const rimLight = new THREE.PointLight(0x3b82f6, 20, 50, 1.6);
+    rimLight.position.set(0, 8, -6);
+    scene.add(rimLight);
 
-      void main() {
-        vec3 pos = position;
+    // Particle field
+    const COUNT = isMobile ? 1200 : 2400;
+    const positions = new Float32Array(COUNT * 3);
+    const colors = new Float32Array(COUNT * 3);
+    const sizes = new Float32Array(COUNT);
+    const palette = [
+      new THREE.Color(0x10b981),
+      new THREE.Color(0x06b6d4),
+      new THREE.Color(0x3b82f6),
+      new THREE.Color(0xa7f3d0),
+    ];
+    for (let i = 0; i < COUNT; i++) {
+      const r = 12 + Math.random() * 40;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 0.7;
+      positions[i * 3 + 2] = r * Math.cos(phi) - 10;
+      const c = palette[Math.floor(Math.random() * palette.length)];
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+      sizes[i] = 0.6 + Math.random() * 1.6;
+    }
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    pGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+    pGeo.setAttribute("aSize", new THREE.BufferAttribute(sizes, 1));
 
-        // Harmonic Superposition (Weightless Antigravity Breathing Wave)
-        pos.y += sin(uTime * 0.85 + aPhase) * 0.18 + cos(uTime * 0.45 + aPhase * 1.6) * 0.08;
-        pos.x += cos(uTime * 0.65 + aPhase * 2.0) * 0.14;
-        pos.z += sin(uTime * 0.5 + aPhase) * 0.22;
-
-        // Scroll velocity & offset displacement
-        pos.y -= uScrollOffset * 0.0018;
-
-        // Interactive Cursor Antigravity Repulsion Field
-        vec2 screenPos = pos.xy;
-        screenPos.x *= uAspect;
-        float dist = distance(screenPos, uMouse);
-        float repelRadius = 0.85;
-
-        if (dist < repelRadius && dist > 0.001) {
-          float force = pow(1.0 - dist / repelRadius, 1.8);
-          vec2 dir = normalize(screenPos - uMouse);
-          pos.xy += dir * force * 0.48;
-        }
-
-        vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-        gl_Position = projectionMatrix * mvPosition;
-
-        // Inverse distance point sizing
-        gl_PointSize = (aScale * 38.0) / -mvPosition.z;
-
-        // Distance fog / depth falloff
-        vAlpha = smoothstep(0.05, 0.95, 1.0 - (-mvPosition.z / 14.0));
-        vColor = aColor;
-      }
-    `;
-
-    const fragmentShader = `
-      precision highp float;
-      varying float vAlpha;
-      varying vec3 vColor;
-
-      void main() {
-        vec2 coord = gl_PointCoord - vec2(0.5);
-        float dist = length(coord);
-
-        if (dist > 0.5) discard;
-
-        // Soft luminous glowing disc
-        float strength = pow(smoothstep(0.5, 0.0, dist), 1.6);
-        gl_FragColor = vec4(vColor, strength * vAlpha * 0.95);
-      }
-    `;
-
-    const material = new THREE.ShaderMaterial({
-      vertexShader,
-      fragmentShader,
-      uniforms,
+    const pMat = new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
-      blending: isDark ? THREE.AdditiveBlending : THREE.NormalBlending,
+      blending: isLightInitial ? THREE.NormalBlending : THREE.AdditiveBlending,
+      vertexColors: true,
+      uniforms: {
+        uTime: { value: 0 },
+        uPixelRatio: { value: renderer.getPixelRatio() },
+        uBurst: { value: 0 },
+      },
+      vertexShader: `
+        attribute float aSize;
+        uniform float uTime; uniform float uPixelRatio; uniform float uBurst;
+        varying vec3 vColor; varying float vAlpha;
+        void main() {
+          vColor = color;
+          vec3 p = position;
+          p.y += sin(uTime * 0.4 + position.x * 0.2) * 0.4;
+          p.x += cos(uTime * 0.3 + position.z * 0.15) * 0.3;
+          p += normalize(position) * uBurst * 6.0;
+          vec4 mv = modelViewMatrix * vec4(p, 1.0);
+          float twinkle = 0.7 + 0.3 * sin(uTime * 2.0 + position.x * 5.0);
+          vAlpha = twinkle;
+          gl_PointSize = aSize * uPixelRatio * (28.0 / -mv.z) * (1.0 + uBurst * 1.5);
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        varying vec3 vColor; varying float vAlpha;
+        void main() {
+          float d = length(gl_PointCoord - 0.5);
+          if (d > 0.5) discard;
+          float glow = smoothstep(0.5, 0.0, d);
+          gl_FragColor = vec4(vColor, glow * vAlpha * 0.9);
+        }`,
+    });
+    const particles = new THREE.Points(pGeo, pMat);
+    scene.add(particles);
+
+    // Floating wireframe primitives
+    const shapesGroup = new THREE.Group();
+    scene.add(shapesGroup);
+    const wireMat = (color: number, opacity = 0.35) =>
+      new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity });
+    const solidMat = (color: number) =>
+      new THREE.MeshStandardMaterial({
+        color,
+        metalness: 0.7,
+        roughness: 0.2,
+        transparent: true,
+        opacity: 0.55,
+        emissive: color,
+        emissiveIntensity: 0.15,
+      });
+
+    const defs: Array<{
+      geo: THREE.BufferGeometry;
+      pos: [number, number, number];
+      mat: THREE.Material;
+      spin: [number, number];
+    }> = [
+      { geo: new THREE.IcosahedronGeometry(1.4, 0), pos: [-7, 3, -4], mat: wireMat(0x10b981, 0.5), spin: [0.003, 0.004] },
+      { geo: new THREE.TorusGeometry(1.2, 0.35, 12, 40), pos: [7.5, -2.5, -6], mat: wireMat(0x06b6d4, 0.4), spin: [0.004, 0.002] },
+      { geo: new THREE.OctahedronGeometry(1.1, 0), pos: [6, 4.5, -8], mat: solidMat(0x3b82f6), spin: [0.002, 0.005] },
+      { geo: new THREE.DodecahedronGeometry(0.9, 0), pos: [-6.5, -4, -7], mat: solidMat(0x10b981), spin: [0.005, 0.003] },
+      { geo: new THREE.TetrahedronGeometry(1.2, 0), pos: [0, -6, -10], mat: wireMat(0x3b82f6, 0.45), spin: [0.003, 0.006] },
+      { geo: new THREE.TorusKnotGeometry(0.8, 0.25, 80, 10, 2, 3), pos: [-3, 7, -12], mat: wireMat(0xa7f3d0, 0.3), spin: [0.004, 0.004] },
+      { geo: new THREE.BoxGeometry(1.4, 1.4, 1.4), pos: [9, 1, -14], mat: wireMat(0x10b981, 0.3), spin: [0.002, 0.003] },
+      { geo: new THREE.IcosahedronGeometry(0.7, 1), pos: [-9, 0, -12], mat: solidMat(0x06b6d4), spin: [0.006, 0.002] },
+      { geo: new THREE.ConeGeometry(0.9, 1.6, 6), pos: [3, -8, -16], mat: wireMat(0x06b6d4, 0.35), spin: [0.003, 0.004] },
+    ];
+    if (isMobile) defs.length = 6;
+    const shapes = defs.map((d, i) => {
+      const m = new THREE.Mesh(d.geo, d.mat);
+      m.position.set(...d.pos);
+      m.userData = {
+        spin: d.spin,
+        baseY: d.pos[1],
+        baseZ: d.pos[2],
+        phase: i * 0.8,
+        amp: 0.4 + Math.random() * 0.5,
+      };
+      shapesGroup.add(m);
+      return m;
     });
 
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
+    // Central core
+    const core = new THREE.Mesh(
+      new THREE.TorusKnotGeometry(2.4, 0.55, 220, 24, 3, 4),
+      new THREE.MeshPhysicalMaterial({
+        color: 0x0b2f2a,
+        metalness: 0.9,
+        roughness: 0.15,
+        transparent: true,
+        opacity: 0.85,
+        emissive: isLightInitial ? 0x059669 : 0x10b981,
+        emissiveIntensity: 0.35,
+        clearcoat: 1,
+        clearcoatRoughness: 0.1,
+      }),
+    );
+    core.position.set(isMobile ? 0 : 5, isMobile ? 5 : 1.2, -9);
+    core.scale.setScalar(0.001);
+    scene.add(core);
 
-    // 5. Input Tracking (Mouse + Scroll)
-    const mouseTarget = new THREE.Vector2(-999, -999);
-    let scrollOffset = window.scrollY;
-    let targetScrollOffset = window.scrollY;
+    const coreWire = new THREE.Mesh(
+      new THREE.TorusKnotGeometry(2.55, 0.62, 120, 12, 3, 4),
+      wireMat(isLightInitial ? 0x059669 : 0x34d399, isLightInitial ? 0.3 : 0.18),
+    );
+    coreWire.position.copy(core.position);
+    coreWire.scale.setScalar(0.001);
+    scene.add(coreWire);
+
+    // Theme update listener
+    const updateTheme = () => {
+      const isLight = document.documentElement.getAttribute("data-theme") === "light";
+      if (scene.fog) {
+        scene.fog.color.setHex(isLight ? 0xf8fafc : 0x05080f);
+      }
+      pMat.blending = isLight ? THREE.NormalBlending : THREE.AdditiveBlending;
+      pMat.needsUpdate = true;
+      (core.material as THREE.MeshPhysicalMaterial).emissive.setHex(isLight ? 0x059669 : 0x10b981);
+      (coreWire.material as THREE.MeshBasicMaterial).color.setHex(isLight ? 0x059669 : 0x34d399);
+      (coreWire.material as THREE.MeshBasicMaterial).opacity = isLight ? 0.32 : 0.18;
+    };
+
+    window.addEventListener("theme:change", updateTheme);
+    const themeObserver = new MutationObserver(updateTheme);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    // Interaction state with buttery smooth damping
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+    let scrollY = window.scrollY;
+    let introMode = !document.documentElement.dataset.portfolioEntered;
+    let burst = 0;
+    let coreScale = introMode ? 0.001 : 1;
+    let smoothProgress = 0;
+    const damp = (c: number, t: number, k: number, dt: number) =>
+      c + (t - c) * (1 - Math.exp(-k * dt));
 
     const onPointerMove = (e: PointerEvent) => {
-      mouseTarget.x = ((e.clientX / width) * 2 - 1) * aspect;
-      mouseTarget.y = -(e.clientY / height) * 2 + 1;
+      mouse.tx = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.ty = -(e.clientY / window.innerHeight) * 2 + 1;
     };
-
-    const onPointerLeave = () => {
-      mouseTarget.set(-999, -999);
-    };
-
     const onScroll = () => {
-      targetScrollOffset = window.scrollY;
+      scrollY = window.scrollY;
+    };
+    const onResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1.5 : 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      pMat.uniforms.uPixelRatio.value = renderer.getPixelRatio();
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    document.addEventListener("mouseleave", onPointerLeave, { passive: true });
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
 
-    // 6. Resize handler
-    const onResize = () => {
-      width = window.innerWidth;
-      height = window.innerHeight;
-      aspect = width / height;
-
-      camera.aspect = aspect;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(width, height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-      uniforms.uAspect.value = aspect;
+    // Public API
+    (window as unknown as {
+      Scene3D?: {
+        warpIn: () => void;
+        setIntroMode: (v: boolean) => void;
+      };
+    }).Scene3D = {
+      warpIn() {
+        introMode = false;
+        burst = 1;
+      },
+      setIntroMode(v: boolean) {
+        introMode = v;
+      },
     };
 
-    window.addEventListener("resize", onResize, { passive: true });
-
-    // 7. Animation Loop
-    let animationFrameId: number;
     const startTime = performance.now();
+    let visible = true;
+    const onVisibilityChange = () => {
+      visible = !document.hidden;
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
-    const animate = (time: number) => {
-      animationFrameId = requestAnimationFrame(animate);
+    let lastT = 0;
+    let roll = 0;
+    let frameId: number;
 
-      if (document.hidden) return;
+    const tick = () => {
+      frameId = requestAnimationFrame(tick);
+      if (!visible) return;
+      const now = performance.now();
+      const t = (now - startTime) / 1000;
+      const dt = Math.min(0.05, t - lastT) || 0.016;
+      lastT = t;
 
-      const elapsed = (time - startTime) * 0.001;
-      uniforms.uTime.value = prefersReducedMotion ? elapsed * 0.2 : elapsed;
+      mouse.x = damp(mouse.x, mouse.tx, 3.2, dt);
+      mouse.y = damp(mouse.y, mouse.ty, 3.2, dt);
 
-      // Smooth pointer lerp
-      uniforms.uMouse.value.lerp(mouseTarget, 0.08);
+      burst = damp(burst, 0, 2.2, dt);
+      pMat.uniforms.uBurst.value = burst;
+      pMat.uniforms.uTime.value = t;
+      coreScale = damp(coreScale, introMode ? 0.001 : 1, 3, dt);
+      core.scale.setScalar(coreScale);
+      coreWire.scale.setScalar(coreScale * 1.02);
 
-      // Smooth scroll interpolation
-      scrollOffset += (targetScrollOffset - scrollOffset) * 0.06;
-      uniforms.uScrollOffset.value = scrollOffset;
+      const winSmooth = (window as unknown as { Smooth?: { state?: { progress: number; velocity: number } } }).Smooth;
+      const S = winSmooth?.state;
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const rawProgress = S ? S.progress : scrollY / maxScroll;
+      smoothProgress = damp(smoothProgress, rawProgress, 3.5, dt);
+      const scrollNorm = smoothProgress;
 
-      // Subtle camera breathing
-      if (!prefersReducedMotion) {
-        camera.position.x = Math.sin(elapsed * 0.15) * 0.15;
-        camera.position.y = Math.cos(elapsed * 0.12) * 0.15;
-      }
+      const camTargetZ = 14 - scrollNorm * 7;
+      const camTargetY = -scrollNorm * 7 + Math.sin(scrollNorm * Math.PI) * 1.2;
+      const camTargetX = Math.sin(scrollNorm * Math.PI * 2) * 2.2 + mouse.x * 1.8;
+      camera.position.x = damp(camera.position.x, camTargetX, 2.4, dt);
+      camera.position.y = damp(camera.position.y, camTargetY + mouse.y * 1.2, 2.4, dt);
+      camera.position.z = damp(camera.position.z, camTargetZ, 2.4, dt);
+      camera.lookAt(mouse.x * 0.4, camTargetY * 0.6, -6);
+      roll = damp(roll, (S ? S.velocity : 0) * -0.0004 + mouse.x * -0.018, 2.4, dt);
+      camera.rotateZ(roll);
+
+      particles.rotation.y = t * 0.02 + scrollNorm * 0.9;
+      particles.rotation.x = scrollNorm * 0.35;
+      shapesGroup.rotation.y = scrollNorm * 1.6;
+      shapesGroup.rotation.x = scrollNorm * 0.25;
+
+      shapes.forEach((m) => {
+        m.rotation.x += m.userData.spin[0] * dt * 60;
+        m.rotation.y += m.userData.spin[1] * dt * 60;
+        m.position.y = m.userData.baseY + Math.sin(t * 0.6 + m.userData.phase) * m.userData.amp;
+        m.position.z = m.userData.baseZ + scrollNorm * 6;
+      });
+
+      core.rotation.x = t * 0.18 + scrollNorm * 2;
+      core.rotation.y = t * 0.25 + mouse.x * 0.4;
+      core.position.y = (isMobile ? 5 : 1.2) - scrollNorm * 4 + Math.sin(t * 0.7) * 0.25;
+      coreWire.rotation.copy(core.rotation);
+      coreWire.position.copy(core.position);
+
+      keyLight.position.x = Math.sin(t * 0.4) * 8;
+      keyLight.position.z = 6 + Math.cos(t * 0.4) * 4;
+      fillLight.intensity = 30 + Math.sin(t * 1.3) * 8;
 
       renderer.render(scene, camera);
     };
 
-    animationFrameId = requestAnimationFrame(animate);
+    tick();
+    window.dispatchEvent(new CustomEvent("scene3d:ready"));
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(frameId);
+      window.removeEventListener("theme:change", updateTheme);
+      themeObserver.disconnect();
       window.removeEventListener("pointermove", onPointerMove);
-      document.removeEventListener("mouseleave", onPointerLeave);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
-
-      geometry.dispose();
-      material.dispose();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       renderer.dispose();
-      if (renderer.domElement.parentElement) {
-        renderer.domElement.parentElement.removeChild(renderer.domElement);
-      }
     };
-  }, [isDark]);
+  }, []);
 
   return (
     <>
-      {/* Three.js Antigravity WebGL Canvas Container */}
-      <div
-        ref={containerRef}
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
-        style={{ width: "100vw", height: "100vh" }}
-      />
-
-      {/* Atmospheric Vignette & Lighting matching Google Antigravity */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none z-0"
-        style={{
-          background: isDark
-            ? "radial-gradient(ellipse 70% 50% at 50% -10%, rgba(16, 185, 129, 0.14), transparent 75%), radial-gradient(ellipse 60% 40% at 90% 70%, rgba(6, 182, 212, 0.08), transparent 70%)"
-            : "radial-gradient(ellipse 70% 50% at 50% -10%, rgba(5, 150, 105, 0.09), transparent 75%), radial-gradient(ellipse 60% 40% at 90% 70%, rgba(8, 145, 178, 0.06), transparent 70%)",
-        }}
-      />
+      <canvas id="scene-canvas" className="scene-canvas" ref={canvasRef} aria-hidden="true" />
+      <div className="scene-glow" aria-hidden="true" />
     </>
   );
 }

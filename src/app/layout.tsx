@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./portfolio-3d.css";
 import ClientBody from "./ClientBody";
 import { GoogleAnalytics, MicrosoftClarity } from "./analytics";
 
@@ -85,6 +86,23 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning data-theme="dark" className="dark">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"
+        />
+        <script
+          id="motion-init"
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){var p=new URLSearchParams(location.search).get("motion");if(p==="off"){document.documentElement.classList.add("motion-off");}else{document.documentElement.classList.remove("motion-off");}})()',
+          }}
+        />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <script
           id="theme-init"
@@ -188,12 +206,14 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body suppressHydrationWarning className="antialiased">
+      <body suppressHydrationWarning className="antialiased is-intro">
         {process.env.NEXT_PUBLIC_GA_ID && (
           <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
-        {process.env.NEXT_PUBLIC_CLARITY_ID && (
-          <MicrosoftClarity clarityId={process.env.NEXT_PUBLIC_CLARITY_ID} />
+        {process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID && (
+          <MicrosoftClarity
+            clarityId={process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID}
+          />
         )}
         <ClientBody>{children}</ClientBody>
       </body>

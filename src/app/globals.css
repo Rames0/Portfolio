@@ -1314,14 +1314,15 @@ section[id] { scroll-margin-top: 100px; }
 @media (hover: hover) and (pointer: fine) { .platform-card:hover .platform-thumbnail img { transform: scale(1.035); } }
 .scroll-reveal-item.is-revealed { will-change: auto; }
 @media (max-width: 767px) { .site-footer { padding-bottom: calc(88px + env(safe-area-inset-bottom)); } }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *:not(.impact-entrance):not(.impact-entrance *),
-  *:not(.impact-entrance):not(.impact-entrance *)::before,
-  *:not(.impact-entrance):not(.impact-entrance *)::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-  .scroll-reveal-item { opacity: 1; transform: none; }
-  .typing-cursor { display: none; }
+html.motion-off { scroll-behavior: auto; }
+html.motion-off *, html.motion-off *::before, html.motion-off *::after {
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
+  scroll-behavior: auto !important;
 }
+html.motion-off .scroll-reveal-item { opacity: 1; transform: none; }
+html.motion-off .typing-cursor { display: none; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    ONE PUNCH MAN — CINEMATIC SCREEN-CRACK ENTRANCE
@@ -1775,4 +1776,3 @@ section[id] { scroll-margin-top: 100px; }
   .impact-loader-fill { stroke-dashoffset: 0; }
   .is-charging .impact-intro { animation: none; }
 }
-

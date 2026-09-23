@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useEntranceReady } from "@/lib/entrance";
-import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
+import { useMotionOff } from "@/lib/useReducedMotion";
 import { useEffect, useRef, useState } from "react";
 
 export interface ScrollTypewriterProps {
@@ -44,7 +44,7 @@ export const ScrollTypewriter: React.FC<ScrollTypewriterProps> = (props) => {
   } = props;
 
   const entranceReady = useEntranceReady();
-  const reducedMotion = usePrefersReducedMotion();
+  const reducedMotion = useMotionOff();
   const [charCount, setCharCount] = useState(text.length);
   const [hasStarted, setHasStarted] = useState(false);
   const [isDone, setIsDone] = useState(false);

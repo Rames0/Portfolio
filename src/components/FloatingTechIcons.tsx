@@ -1,485 +1,251 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { FaCss3Alt, FaJava } from "react-icons/fa";
-import {
-  SiDocker,
-  SiFigma,
-  SiFramer,
-  SiGit,
-  SiGithub,
-  SiHtml5,
-  SiJavascript,
-  SiLaravel,
-  SiLinux,
-  SiMariadb,
-  SiMysql,
-  SiNextdotjs,
-  SiNodedotjs,
-  SiPhp,
-  SiPostgresql,
-  SiReact,
-  SiTailwindcss,
-  SiThreedotjs,
-  SiTypescript,
-  SiVercel,
-} from "react-icons/si";
+import { useEffect, useRef } from "react";
+import { isReducedMotionEnabled } from "@/lib/useReducedMotion";
 
-export interface TechIconItem {
-  id: string;
+interface TechItem {
   name: string;
-  category: string;
   color: string;
-  icon: React.ComponentType<{
-    size?: number;
-    className?: string;
-    style?: React.CSSProperties;
-  }>;
+  icon: string;
 }
 
-const TECH_ICONS: TechIconItem[] = [
-  {
-    id: "nextjs",
-    name: "Next.js 16",
-    category: "Frontend",
-    color: "#ffffff",
-    icon: SiNextdotjs,
-  },
-  {
-    id: "react",
-    name: "React 19",
-    category: "Frontend",
-    color: "#61dafb",
-    icon: SiReact,
-  },
-  {
-    id: "typescript",
-    name: "TypeScript",
-    category: "Language",
-    color: "#3178c6",
-    icon: SiTypescript,
-  },
-  {
-    id: "javascript",
-    name: "JavaScript",
-    category: "Language",
-    color: "#f7df1e",
-    icon: SiJavascript,
-  },
-  {
-    id: "tailwind",
-    name: "Tailwind CSS",
-    category: "Styles",
-    color: "#06b6d4",
-    icon: SiTailwindcss,
-  },
-  {
-    id: "nodejs",
-    name: "Node.js",
-    category: "Backend",
-    color: "#5fa04e",
-    icon: SiNodedotjs,
-  },
-  {
-    id: "laravel",
-    name: "Laravel 11",
-    category: "Backend",
-    color: "#ff2d20",
-    icon: SiLaravel,
-  },
-  {
-    id: "php",
-    name: "PHP 8.x",
-    category: "Language",
-    color: "#777bb4",
-    icon: SiPhp,
-  },
-  {
-    id: "java",
-    name: "Java / Grails",
-    category: "Backend",
-    color: "#ea2d2e",
-    icon: FaJava,
-  },
-  {
-    id: "postgresql",
-    name: "PostgreSQL",
-    category: "Database",
-    color: "#4169e1",
-    icon: SiPostgresql,
-  },
-  {
-    id: "mariadb",
-    name: "MariaDB",
-    category: "Database",
-    color: "#003545",
-    icon: SiMariadb,
-  },
-  {
-    id: "mysql",
-    name: "MySQL",
-    category: "Database",
-    color: "#00758f",
-    icon: SiMysql,
-  },
-  {
-    id: "docker",
-    name: "Docker",
-    category: "DevOps",
-    color: "#2496ed",
-    icon: SiDocker,
-  },
-  { id: "git", name: "Git", category: "DevOps", color: "#f05032", icon: SiGit },
-  {
-    id: "github",
-    name: "GitHub",
-    category: "DevOps",
-    color: "#ffffff",
-    icon: SiGithub,
-  },
-  {
-    id: "figma",
-    name: "Figma",
-    category: "Design",
-    color: "#f24e1e",
-    icon: SiFigma,
-  },
-  {
-    id: "linux",
-    name: "Linux",
-    category: "OS",
-    color: "#fcc624",
-    icon: SiLinux,
-  },
-  {
-    id: "vercel",
-    name: "Vercel",
-    category: "Cloud",
-    color: "#ffffff",
-    icon: SiVercel,
-  },
-  {
-    id: "threejs",
-    name: "Three.js",
-    category: "3D",
-    color: "#ffffff",
-    icon: SiThreedotjs,
-  },
-  {
-    id: "framer",
-    name: "Framer Motion",
-    category: "Motion",
-    color: "#0055ff",
-    icon: SiFramer,
-  },
-  {
-    id: "html5",
-    name: "HTML5",
-    category: "Frontend",
-    color: "#e34f26",
-    icon: SiHtml5,
-  },
-  {
-    id: "css3",
-    name: "CSS3",
-    category: "Frontend",
-    color: "#1572b6",
-    icon: FaCss3Alt,
-  },
+const technologies: TechItem[] = [
+  { name: "Next.js", color: "#000000", icon: "fa-solid fa-n" },
+  { name: "React 19", color: "#61dafb", icon: "fa-brands fa-react" },
+  { name: "TypeScript", color: "#3178c6", icon: "fa-solid fa-t" },
+  { name: "JavaScript", color: "#f7df1e", icon: "fa-brands fa-js" },
+  { name: "Tailwind", color: "#38bdf8", icon: "fa-solid fa-wind" },
+  { name: "Node.js", color: "#83cd29", icon: "fa-brands fa-node-js" },
+  { name: "Laravel 11", color: "#ff2d20", icon: "fa-brands fa-laravel" },
+  { name: "PHP", color: "#777bb4", icon: "fa-brands fa-php" },
+  { name: "Java", color: "#f89820", icon: "fa-brands fa-java" },
+  { name: "Grails", color: "#feb672", icon: "fa-solid fa-g" },
+  { name: "Python", color: "#4584b6", icon: "fa-brands fa-python" },
+  { name: "Django", color: "#0c4b33", icon: "fa-solid fa-d" },
+  { name: "PostgreSQL", color: "#336791", icon: "fa-solid fa-database" },
+  { name: "MariaDB", color: "#c0765a", icon: "fa-solid fa-server" },
+  { name: "Docker", color: "#2496ed", icon: "fa-brands fa-docker" },
+  { name: "Git", color: "#f05032", icon: "fa-brands fa-git-alt" },
+  { name: "GitHub", color: "#ffffff", icon: "fa-brands fa-github" },
+  { name: "Linux", color: "#fcc624", icon: "fa-brands fa-linux" },
+  { name: "Figma", color: "#a259ff", icon: "fa-brands fa-figma" },
+  { name: "Vercel", color: "#ffffff", icon: "fa-solid fa-caret-up" },
+  { name: "Alpine.js", color: "#8bc0d0", icon: "fa-solid fa-mountain" },
+  { name: "HTML5", color: "#e34f26", icon: "fa-brands fa-html5" },
+  { name: "CSS3", color: "#1572b6", icon: "fa-brands fa-css3-alt" },
+  { name: "Three.js", color: "#10b981", icon: "fa-solid fa-cube" },
+  { name: "WebSockets", color: "#06b6d4", icon: "fa-solid fa-bolt" },
 ];
 
-interface ParticleState {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  size: number;
-  baseVx: number;
-  baseVy: number;
-  phase: number;
-  rotation: number;
-  vRot: number;
-}
-
 export function FloatingTechIcons() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const elementsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const sphereRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    const sphere = sphereRef.current;
+    if (!sphere) return;
+    const tags = Array.from(sphere.querySelectorAll<HTMLElement>(".tech"));
+    const n = tags.length;
+    if (!n) return;
 
-  useEffect(() => {
-    if (!mounted) return;
-    const container = containerRef.current;
-    if (!container) return;
+    tags.forEach((t) => {
+      const color = t.dataset.color;
+      if (color) t.style.setProperty("--tech-color", color);
+    });
 
-    let width = container.clientWidth;
-    let height = container.clientHeight;
-    if (width <= 0 || height <= 0) {
-      width = 800;
-      height = 500;
-    }
-
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    const isMobile = window.innerWidth < 768;
-    const iconSize = isMobile ? 50 : 60;
-
-    // Initialize particles state with calm, slow velocity
-    const particles: ParticleState[] = TECH_ICONS.map((_, i) => {
-      // Distribute evenly in a grid with randomized offsets to avoid starting clump
-      const cols = Math.max(
-        3,
-        Math.floor(
-          Math.sqrt(TECH_ICONS.length * (width / Math.max(height, 1))),
-        ),
-      );
-      const rows = Math.ceil(TECH_ICONS.length / cols);
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-
-      const cellW = (width - iconSize - 20) / Math.max(cols - 1, 1);
-      const cellH = (height - iconSize - 20) / Math.max(rows - 1, 1);
-
-      const initialX =
-        10 + col * cellW + (Math.random() - 0.5) * (cellW * 0.45);
-      const initialY =
-        10 + row * cellH + (Math.random() - 0.5) * (cellH * 0.45);
-
-      const angle = Math.random() * Math.PI * 2;
-      // Gentle, slow cruise speed
-      const speed = prefersReducedMotion
-        ? 0.04
-        : (isMobile ? 0.12 : 0.16) + Math.random() * 0.06;
-
+    const pts = tags.map((_, i) => {
+      const phi = Math.acos(-1 + (2 * i + 1) / n);
+      const theta = Math.sqrt(n * Math.PI) * phi;
       return {
-        x: Math.max(0, Math.min(width - iconSize, initialX)),
-        y: Math.max(0, Math.min(height - iconSize, initialY)),
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        baseVx: Math.cos(angle) * speed,
-        baseVy: Math.sin(angle) * speed,
-        size: iconSize,
-        phase: Math.random() * Math.PI * 2,
-        rotation: (Math.random() - 0.5) * 14,
-        vRot: (Math.random() - 0.5) * 0.03, // slow gentle rotation
+        x: Math.cos(theta) * Math.sin(phi),
+        y: Math.sin(theta) * Math.sin(phi),
+        z: Math.cos(phi),
       };
     });
 
-    // Pointer tracking for interactive antigravity cursor repulsion
-    const pointer = { x: -9999, y: -9999, active: false };
+    const radiusFor = () =>
+      sphere.clientWidth / 2 - (window.innerWidth < 600 ? 70 : 40);
+    let radius = radiusFor();
+    let rotX = 0.3;
+    let rotY = 0;
+    const idle = { x: 0.16, y: 0.11 };
+    let velX = idle.x;
+    let velY = idle.y;
+    let targetVelX = idle.x;
+    let targetVelY = idle.y;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let dragVX = 0;
+    let dragVY = 0;
+    let lastScroll = window.scrollY;
 
-    const handlePointerMove = (e: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      pointer.x = e.clientX - rect.left;
-      pointer.y = e.clientY - rect.top;
-      pointer.active = true;
+    const damp = (c: number, t: number, k: number, dt: number) =>
+      c + (t - c) * (1 - Math.exp(-k * dt));
+
+    const rotate = (
+      p: { x: number; y: number; z: number },
+      ax: number,
+      ay: number,
+    ) => {
+      const y = p.y * Math.cos(ax) - p.z * Math.sin(ax);
+      let z = p.y * Math.sin(ax) + p.z * Math.cos(ax);
+      const x = p.x * Math.cos(ay) + z * Math.sin(ay);
+      z = -p.x * Math.sin(ay) + z * Math.cos(ay);
+      return { x, y, z };
     };
 
-    const handlePointerLeave = () => {
-      pointer.active = false;
-      pointer.x = -9999;
-      pointer.y = -9999;
-    };
+    function render() {
+      for (let i = 0; i < n; i++) {
+        const r = rotate(pts[i], rotX, rotY);
+        const depth = (r.z + 1) / 2;
+        const el = tags[i];
+        el.style.transform = `translate(-50%, -50%) translate3d(${(r.x * radius).toFixed(1)}px, ${(r.y * radius).toFixed(1)}px, ${(r.z * radius).toFixed(1)}px) scale(${(0.55 + depth * 0.65).toFixed(3)})`;
+        el.style.opacity = (0.18 + depth * 0.82).toFixed(3);
+        el.style.zIndex = String(Math.round(depth * 100));
+        el.style.filter = `blur(${((1 - depth) * 1.2).toFixed(2)}px)`;
+      }
+    }
 
-    container.addEventListener("pointermove", handlePointerMove);
-    container.addEventListener("pointerleave", handlePointerLeave);
+    let frame = 0;
+    let last = performance.now();
+    function loop(now: number) {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (!dragging) {
+        velX = damp(velX, targetVelX, 2.6, dt);
+        velY = damp(velY, targetVelY, 2.6, dt);
+        rotX += velX * dt;
+        rotY += velY * dt;
+        const winSmooth = (window as unknown as { Smooth?: { state?: { scroll: number } } }).Smooth;
+        const s = winSmooth?.state ? winSmooth.state.scroll : window.scrollY;
+        const ds = s - lastScroll;
+        lastScroll = s;
+        rotY += ds * 0.0012;
+      }
+      render();
+      frame = requestAnimationFrame(loop);
+    }
 
-    const handleResize = () => {
-      if (!container) return;
-      width = container.clientWidth;
-      height = container.clientHeight;
-    };
-    window.addEventListener("resize", handleResize);
-
-    let animId: number;
-    let lastTime = performance.now();
-
-    const animate = (now: number) => {
-      animId = requestAnimationFrame(animate);
-
-      if (document.hidden) return;
-
-      const dt = Math.min((now - lastTime) / 16.666, 2.0);
-      lastTime = now;
-      const t = now * 0.001;
-
-      const repelRadius = isMobile ? 80 : 120;
-      const repelForce = isMobile ? 0.6 : 0.9;
-      const maxSpeed = isMobile ? 0.45 : 0.65;
-
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-
-        // Soft, slow harmonic organic turbulence wave
-        const waveX = Math.sin(t * 0.35 + p.phase) * 0.015;
-        const waveY = Math.cos(t * 0.3 + p.phase * 1.3) * 0.015;
-
-        p.vx += waveX;
-        p.vy += waveY;
-
-        // Smooth return damping towards base slow velocity
-        p.vx = p.vx * 0.97 + p.baseVx * 0.03;
-        p.vy = p.vy * 0.97 + p.baseVy * 0.03;
-
-        // Gentle Cursor Antigravity Repulsion
-        if (pointer.active) {
-          const centerX = p.x + p.size / 2;
-          const centerY = p.y + p.size / 2;
-          const dx = centerX - pointer.x;
-          const dy = centerY - pointer.y;
-          const dist = Math.hypot(dx, dy);
-
-          if (dist < repelRadius && dist > 1) {
-            const factor = (1 - dist / repelRadius) ** 1.5 * repelForce;
-            const nx = dx / dist;
-            const ny = dy / dist;
-            p.vx += nx * factor;
-            p.vy += ny * factor;
-          }
-        }
-
-        // Clamp speed to guarantee slow, graceful movement
-        const currentSpeed = Math.hypot(p.vx, p.vy);
-        if (currentSpeed > maxSpeed) {
-          p.vx = (p.vx / currentSpeed) * maxSpeed;
-          p.vy = (p.vy / currentSpeed) * maxSpeed;
-        }
-
-        // Apply velocities
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        p.rotation += p.vRot * dt;
-
-        // Soft bounce against boundaries
-        const minX = 6;
-        const maxX = width - p.size - 6;
-        const minY = 6;
-        const maxY = height - p.size - 6;
-
-        if (p.x < minX) {
-          p.x = minX;
-          p.vx = Math.abs(p.baseVx);
-          p.baseVx = Math.abs(p.baseVx);
-        } else if (p.x > maxX) {
-          p.x = maxX;
-          p.vx = -Math.abs(p.baseVx);
-          p.baseVx = -Math.abs(p.baseVx);
-        }
-
-        if (p.y < minY) {
-          p.y = minY;
-          p.vy = Math.abs(p.baseVy);
-          p.baseVy = Math.abs(p.baseVy);
-        } else if (p.y > maxY) {
-          p.y = maxY;
-          p.vy = -Math.abs(p.baseVy);
-          p.baseVy = -Math.abs(p.baseVy);
-        }
-
-        // Soft, slow inter-particle separation to prevent overlap
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const c1X = p.x + p.size / 2;
-          const c1Y = p.y + p.size / 2;
-          const c2X = p2.x + p2.size / 2;
-          const c2Y = p2.y + p2.size / 2;
-          const diffX = c1X - c2X;
-          const diffY = c1Y - c2Y;
-          const d = Math.hypot(diffX, diffY);
-          const minSep = p.size * 0.95;
-
-          if (d < minSep && d > 0.1) {
-            const push = ((minSep - d) / minSep) * 0.08;
-            const pushX = (diffX / d) * push;
-            const pushY = (diffY / d) * push;
-            p.vx += pushX;
-            p.vy += pushY;
-            p2.vx -= pushX;
-            p2.vy -= pushY;
-          }
-        }
-
-        // Direct DOM write for 60fps performance without React re-renders
-        const el = elementsRef.current[i];
-        if (el) {
-          el.style.transform = `translate3d(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px, 0px) rotate(${p.rotation.toFixed(1)}deg)`;
-        }
+    const onPointerMove = (e: PointerEvent) => {
+      const rect = sphere.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width - 0.5;
+      const ny = (e.clientY - rect.top) / rect.height - 0.5;
+      if (dragging) {
+        const dx = (e.clientX - lastX) * 0.005;
+        const dy = -(e.clientY - lastY) * 0.005;
+        rotY += dx;
+        rotX += dy;
+        dragVX = Math.max(-3.5, Math.min(3.5, dy * 45));
+        dragVY = Math.max(-3.5, Math.min(3.5, dx * 45));
+        lastX = e.clientX;
+        lastY = e.clientY;
+      } else {
+        targetVelY = idle.y + nx * 1.4;
+        targetVelX = idle.x - ny * 1.0;
       }
     };
 
-    animId = requestAnimationFrame(animate);
+    const onPointerLeave = () => {
+      targetVelX = idle.x;
+      targetVelY = idle.y;
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (isReducedMotionEnabled()) return;
+      dragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      sphere.setPointerCapture(e.pointerId);
+    };
+
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      velX = dragVX;
+      velY = dragVY;
+      targetVelX = idle.x;
+      targetVelY = idle.y;
+    };
+
+    const onResize = () => {
+      radius = radiusFor();
+      render();
+    };
+
+    sphere.addEventListener("pointermove", onPointerMove, { passive: true });
+    sphere.addEventListener("pointerleave", onPointerLeave);
+    sphere.addEventListener("pointerdown", onPointerDown);
+    sphere.addEventListener("pointerup", endDrag);
+    sphere.addEventListener("pointercancel", endDrag);
+    window.addEventListener("resize", onResize);
+
+    render();
+    if (!isReducedMotionEnabled()) {
+      frame = requestAnimationFrame(loop);
+    }
 
     return () => {
-      cancelAnimationFrame(animId);
-      container.removeEventListener("pointermove", handlePointerMove);
-      container.removeEventListener("pointerleave", handlePointerLeave);
-      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(frame);
+      sphere.removeEventListener("pointermove", onPointerMove);
+      sphere.removeEventListener("pointerleave", onPointerLeave);
+      sphere.removeEventListener("pointerdown", onPointerDown);
+      sphere.removeEventListener("pointerup", endDrag);
+      sphere.removeEventListener("pointercancel", endDrag);
+      window.removeEventListener("resize", onResize);
     };
-  }, [mounted]);
+  }, []);
 
   return (
-    <div className="relative w-full overflow-hidden select-none">
-      {/* Interactive Physics Arena (clean, no square box in background) */}
-      <div
-        ref={containerRef}
-        className="relative w-full h-[380px] sm:h-[480px] md:h-[520px] overflow-hidden select-none touch-none cursor-crosshair"
-      >
-        {TECH_ICONS.map((tech, idx) => {
-          const IconComponent = tech.icon;
-          const isHovered = activeTooltip === tech.id;
-
-          return (
-            <div
-              key={tech.id}
-              ref={(el) => {
-                elementsRef.current[idx] = el;
-              }}
-              onPointerEnter={() => setActiveTooltip(tech.id)}
-              onPointerLeave={() => setActiveTooltip(null)}
-              className="absolute top-0 left-0 will-change-transform group cursor-pointer"
+    <div className="stack-layout">
+      {/* 3D Fibonacci Word Sphere */}
+      <div className="tag-sphere-wrap" data-reveal="up">
+        <div
+          ref={sphereRef}
+          className="tag-sphere"
+          id="tag-sphere"
+          role="img"
+          aria-label="Interactive 3D tag sphere"
+        >
+          {technologies.map((tech) => (
+            <span
+              key={tech.name}
+              className="tech"
+              data-color={tech.color}
             >
-              {/* Circular Soft Glassmorphic Tech Icon Badge */}
-              <div
-                className={`relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full border transition-all duration-200 backdrop-blur-sm ${
-                  isHovered
-                    ? "scale-125 border-[var(--accent-primary)] bg-[var(--bg-card)] shadow-[0_0_24px_var(--accent-glow)] z-30"
-                    : "border-[var(--surface-border)] bg-[var(--bg-card)]/50 hover:border-[var(--surface-border-strong)] shadow-sm z-10"
-                }`}
-                style={{
-                  color: isHovered ? tech.color : "var(--text-primary)",
-                }}
-              >
-                <IconComponent
-                  size={24}
-                  className="transition-transform duration-200 group-hover:scale-110 shrink-0"
-                />
-
-                {/* Subtle Glow on Hover */}
-                {isHovered && (
-                  <span
-                    className="absolute inset-0 rounded-full pointer-events-none opacity-25"
-                    style={{
-                      boxShadow: `inset 0 0 16px ${tech.color}`,
-                    }}
-                  />
-                )}
-              </div>
-
-              {/* Responsive Floating Tooltip Badge */}
-              {isHovered && (
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 pointer-events-none whitespace-nowrap z-40 bg-[var(--bg-primary)] border border-[var(--accent-primary)] text-[var(--text-primary)] text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full shadow-lg">
-                  {tech.name}
-                </div>
-              )}
-            </div>
-          );
-        })}
+              <i className={tech.icon} />
+              {tech.name}
+            </span>
+          ))}
+        </div>
       </div>
+
+      {/* Stack Notes */}
+      <aside className="stack-notes" data-reveal="right">
+        <div className="stack-note glass" data-tilt data-tilt-max="8">
+          <i className="fa-solid fa-code" />
+          <h3>Frontend</h3>
+          <p>
+            Next.js 16, React 19, TypeScript, Tailwind CSS, Alpine.js, Framer
+            Motion, Three.js / WebGL
+          </p>
+        </div>
+        <div className="stack-note glass" data-tilt data-tilt-max="8">
+          <i className="fa-solid fa-server" />
+          <h3>Backend</h3>
+          <p>
+            Node.js, Laravel 11, Java / Grails MVC, Spring Security, Python
+            Django, duplex WebSockets
+          </p>
+        </div>
+        <div className="stack-note glass" data-tilt data-tilt-max="8">
+          <i className="fa-solid fa-database" />
+          <h3>Data &amp; Ops</h3>
+          <p>
+            PostgreSQL (tsvector, GIN), MariaDB ACID row locks, Docker, Git,
+            Linux, Vercel
+          </p>
+        </div>
+      </aside>
     </div>
   );
 }

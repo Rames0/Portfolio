@@ -1,74 +1,59 @@
 "use client";
 
-import { Compass, FileText, Layers, Mail, Moon, Sun } from "lucide-react";
-import { soundEngine } from "@/lib/haptics";
+import { useEffect, useState } from "react";
 import { useTheme } from "@/lib/theme";
 
-interface ErgonomicMobileDockProps {
-  onDownloadCV: () => void;
-}
-
-export function ErgonomicMobileDock({
-  onDownloadCV,
-}: ErgonomicMobileDockProps) {
+export function ErgonomicMobileDock() {
   const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const isDark = theme === "dark";
 
+  const handleToggle = () => {
+    toggleTheme();
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("theme:change", {
+          detail: { theme: isDark ? "light" : "dark" },
+        }),
+      );
+    }
+  };
+
   return (
-    <nav
-      aria-label="Mobile navigation dock"
-      className="md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-4 z-50 bg-[var(--bg-secondary)]/95 backdrop-blur-md border border-[var(--surface-border)] rounded-2xl py-1.5 px-3 flex items-center justify-around shadow-[var(--card-shadow)] text-[var(--text-primary)] font-mono text-[10px]"
-    >
-      <a
-        href="#hero"
-        onClick={() => soundEngine.tick()}
-        className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] gap-1 rounded text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
-      >
-        <Compass size={16} className="text-[var(--accent-primary)]" />
+    <nav className="mobile-dock" aria-label="Mobile navigation dock">
+      <a href="#hero">
+        <i className="fa-solid fa-compass" />
         <span>Top</span>
       </a>
-
-      <a
-        href="#work"
-        onClick={() => soundEngine.tick()}
-        className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] gap-1 rounded text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
-      >
-        <Layers size={16} />
-        <span>Projects</span>
+      <a href="#work">
+        <i className="fa-solid fa-layer-group" />
+        <span>Work</span>
       </a>
-
-      <button
-        type="button"
-        onClick={() => {
-          soundEngine.tick();
-          toggleTheme();
-        }}
-        aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] gap-1 rounded text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
-      >
-        {isDark ? <Sun size={16} /> : <Moon size={16} />}
-        <span>{isDark ? "Light" : "Dark"}</span>
-      </button>
-
-      <button
-        type="button"
-        onClick={() => {
-          soundEngine.relayClick();
-          onDownloadCV();
-        }}
-        aria-label="Download Curriculum Vitae"
-        className="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] gap-1 rounded text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
-      >
-        <FileText size={16} />
-        <span>CV</span>
-      </button>
-
-      <a
-        href="#contact"
-        onClick={() => soundEngine.relayClick()}
-        className="flex flex-col items-center justify-center min-w-[56px] min-h-[42px] gap-1 px-2.5 bg-[var(--accent-primary)] text-[var(--bg-primary)] font-bold rounded-xl transition-transform active:scale-95"
-      >
-        <Mail size={14} />
+      <a href="#stack">
+        <i className="fa-solid fa-cube" />
+        <span>Stack</span>
+      </a>
+      {mounted && (
+        <button
+          type="button"
+          onClick={handleToggle}
+          className="dock-theme-btn"
+          aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        >
+          <i
+            className={isDark ? "fa-solid fa-sun" : "fa-solid fa-moon"}
+            style={{ color: isDark ? "#fbbf24" : "#0284c7" }}
+          />
+          <span>{isDark ? "Light" : "Dark"}</span>
+        </button>
+      )}
+      <a href="#contact" className="dock-cta">
+        <i className="fa-solid fa-envelope" />
         <span>Contact</span>
       </a>
     </nav>
