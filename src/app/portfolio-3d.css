@@ -627,9 +627,10 @@ main > .section > .container, .hero-grid, .stats-strip { will-change: transform,
 .timeline .journey-card:nth-child(2) .journey-node { right: -1.2rem; transform: translateX(50%); }
 .timeline .journey-card:nth-child(3) .journey-node { left: -1.2rem; transform: translateX(-50%); }
 .journey-badge {
-  display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.8rem; border-radius: 8px;
-  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em;
+  display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.35rem 0.75rem; border-radius: 8px;
+  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em;
   background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--accent); margin-bottom: 1rem;
+  max-width: 100%; white-space: normal; word-break: break-word; line-height: 1.4;
 }
 .journey-card h3 { font-size: 1.35rem; }
 .journey-org { margin: 0.3rem 0 1rem; color: var(--accent-2); font-weight: 500; font-size: 0.92rem; }
@@ -675,10 +676,13 @@ main > .section > .container, .hero-grid, .stats-strip { will-change: transform,
 .tech {
   position: absolute; left: 50%; top: 50%;
   display: inline-flex; align-items: center; gap: 0.45rem;
-  padding: 0.5rem 0.85rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
-  background: rgba(10, 15, 26, 0.85); border: 1px solid var(--border-strong); color: var(--text);
-  white-space: nowrap; will-change: transform, opacity; backdrop-filter: blur(6px);
-  transition: border-color 0.3s, box-shadow 0.3s;
+  padding: 0.48rem 0.85rem; border-radius: 999px; font-size: 0.82rem; font-weight: 600;
+  background: rgba(10, 15, 26, 0.92); border: 1px solid var(--border-strong); color: var(--text);
+  white-space: nowrap; will-change: transform;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .tech i { color: var(--tech-color, var(--accent)); width: 1em; text-align: center; }
 .tech:hover { border-color: var(--tech-color, var(--accent)); box-shadow: 0 0 20px color-mix(in srgb, var(--tech-color, var(--accent)) 40%, transparent); }
@@ -782,10 +786,16 @@ main > .section > .container, .hero-grid, .stats-strip { will-change: transform,
   .portrait-scene { width: min(100%, 300px); }
   .float-chip { font-size: 0.68rem; }
   .chip-1 { left: -6%; } .chip-3 { left: -8%; } .chip-2 { right: -8%; } .chip-4 { right: -4%; }
-  .timeline { grid-template-columns: 1fr; gap: 1.6rem; }
-  .timeline-spine { left: 0.6rem; transform: none; }
-  .timeline .journey-card { margin-left: 2rem; }
-  .timeline .journey-card .journey-node { left: -1.4rem; right: auto; transform: translateX(-50%); }
+  .timeline { grid-template-columns: 1fr; gap: 1.6rem; width: 100%; max-width: 100%; box-sizing: border-box; }
+  .timeline-spine { left: 0.5rem; transform: none; }
+  .timeline .journey-card {
+    margin-left: 1.6rem;
+    margin-right: 0;
+    max-width: calc(100% - 1.6rem);
+    box-sizing: border-box;
+    padding: 1.4rem 1.2rem;
+  }
+  .timeline .journey-card .journey-node { left: -1.1rem; right: auto; transform: translateX(-50%); }
   .contact-grid { grid-template-columns: 1fr; gap: 2.4rem; }
   .stack-notes { flex-direction: column; }
   .site-nav {
@@ -816,7 +826,18 @@ main > .section > .container, .hero-grid, .stats-strip { will-change: transform,
 }
 
 @media (max-width: 600px) {
-  .container { padding-inline: 0.9rem; }
+  .container { padding-inline: 0.75rem; }
+  .timeline .journey-card {
+    margin-left: 1.3rem;
+    max-width: calc(100% - 1.3rem);
+    padding: 1.15rem 0.9rem;
+    border-radius: 16px;
+  }
+  .timeline-spine { left: 0.35rem; }
+  .timeline .journey-card .journey-node { left: -0.95rem; width: 12px; height: 12px; }
+  .journey-card h3 { font-size: 1.15rem; word-break: break-word; }
+  .journey-org { font-size: 0.86rem; word-break: break-word; }
+  .journey-bullets li { font-size: 0.84rem; padding-left: 1.1rem; word-break: break-word; }
   .header-inner { height: 64px; }
   .site-nav { top: 64px; }
   .brand-text small { display: none; }

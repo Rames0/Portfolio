@@ -400,9 +400,9 @@ export function PortfolioMotion() {
 
       // C. Item fly-ins
       const dir: Record<string, { y: number; z: number; rotateX: number; rotateY: number; x: number }> = {
-        up: { y: 40, z: -220, rotateX: -32, rotateY: 0, x: 0 },
-        left: { x: -120, z: -220, rotateY: 28, rotateX: -10, y: 30 },
-        right: { x: 120, z: -220, rotateY: -28, rotateX: -10, y: 30 },
+        up: { y: m ? 25 : 40, z: m ? -100 : -220, rotateX: m ? -15 : -32, rotateY: 0, x: 0 },
+        left: { x: m ? 0 : -120, z: m ? -100 : -220, rotateY: m ? 0 : 28, rotateX: m ? -12 : -10, y: m ? 25 : 30 },
+        right: { x: m ? 0 : 120, z: m ? -100 : -220, rotateY: m ? 0 : -28, rotateX: m ? -12 : -10, y: m ? 25 : 30 },
       };
       let idx = 0;
       items.forEach((el) => {

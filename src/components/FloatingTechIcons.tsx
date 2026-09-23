@@ -3,30 +3,22 @@
 import { useEffect, useRef } from "react";
 import { isReducedMotionEnabled } from "@/lib/useReducedMotion";
 
-interface TechItem {
-  name: string;
-  color: string;
-  icon: string;
-}
-
-const technologies: TechItem[] = [
-  { name: "Next.js", color: "#000000", icon: "fa-solid fa-n" },
+const technologies = [
   { name: "React 19", color: "#61dafb", icon: "fa-brands fa-react" },
-  { name: "TypeScript", color: "#3178c6", icon: "fa-solid fa-t" },
+  { name: "Next.js 15", color: "#ffffff", icon: "fa-solid fa-n" },
+  { name: "TypeScript", color: "#3178c6", icon: "fa-solid fa-code" },
+  { name: "Tailwind CSS", color: "#38bdf8", icon: "fa-solid fa-wind" },
   { name: "JavaScript", color: "#f7df1e", icon: "fa-brands fa-js" },
-  { name: "Tailwind", color: "#38bdf8", icon: "fa-solid fa-wind" },
-  { name: "Node.js", color: "#83cd29", icon: "fa-brands fa-node-js" },
+  { name: "Node.js", color: "#68a063", icon: "fa-brands fa-node-js" },
+  { name: "Express", color: "#ffffff", icon: "fa-solid fa-server" },
   { name: "Laravel 11", color: "#ff2d20", icon: "fa-brands fa-laravel" },
   { name: "PHP", color: "#777bb4", icon: "fa-brands fa-php" },
-  { name: "Java", color: "#f89820", icon: "fa-brands fa-java" },
-  { name: "Grails", color: "#feb672", icon: "fa-solid fa-g" },
-  { name: "Python", color: "#4584b6", icon: "fa-brands fa-python" },
-  { name: "Django", color: "#0c4b33", icon: "fa-solid fa-d" },
-  { name: "PostgreSQL", color: "#336791", icon: "fa-solid fa-database" },
-  { name: "MariaDB", color: "#c0765a", icon: "fa-solid fa-server" },
+  { name: "PostgreSQL", color: "#4169e1", icon: "fa-solid fa-database" },
+  { name: "MySQL", color: "#00758f", icon: "fa-solid fa-database" },
+  { name: "Prisma ORM", color: "#2d3748", icon: "fa-solid fa-layer-group" },
   { name: "Docker", color: "#2496ed", icon: "fa-brands fa-docker" },
   { name: "Git", color: "#f05032", icon: "fa-brands fa-git-alt" },
-  { name: "GitHub", color: "#ffffff", icon: "fa-brands fa-github" },
+  { name: "REST APIs", color: "#10b981", icon: "fa-solid fa-network-wired" },
   { name: "Linux", color: "#fcc624", icon: "fa-brands fa-linux" },
   { name: "Figma", color: "#a259ff", icon: "fa-brands fa-figma" },
   { name: "Vercel", color: "#ffffff", icon: "fa-solid fa-caret-up" },
@@ -63,11 +55,13 @@ export function FloatingTechIcons() {
     });
 
     const radiusFor = () =>
-      sphere.clientWidth / 2 - (window.innerWidth < 600 ? 70 : 40);
+      sphere.clientWidth / 2 - (window.innerWidth < 600 ? 50 : 25);
     let radius = radiusFor();
-    let rotX = 0.3;
+    let rotX = 0.25;
     let rotY = 0;
-    const idle = { x: 0.16, y: 0.11 };
+
+    // Responsive, vibrant base rotation speeds
+    const idle = { x: 0.38, y: 0.32 };
     let velX = idle.x;
     let velY = idle.y;
     let targetVelX = idle.x;
@@ -77,7 +71,7 @@ export function FloatingTechIcons() {
     let lastY = 0;
     let dragVX = 0;
     let dragVY = 0;
-    let lastScroll = window.scrollY;
+    let isVisible = true;
 
     const damp = (c: number, t: number, k: number, dt: number) =>
       c + (t - c) * (1 - Math.exp(-k * dt));
@@ -97,31 +91,40 @@ export function FloatingTechIcons() {
     function render() {
       for (let i = 0; i < n; i++) {
         const r = rotate(pts[i], rotX, rotY);
-        const depth = (r.z + 1) / 2;
+        const depth = (r.z + 1) * 0.5; // 0 (back) to 1 (front)
         const el = tags[i];
-        el.style.transform = `translate(-50%, -50%) translate3d(${(r.x * radius).toFixed(1)}px, ${(r.y * radius).toFixed(1)}px, ${(r.z * radius).toFixed(1)}px) scale(${(0.55 + depth * 0.65).toFixed(3)})`;
-        el.style.opacity = (0.18 + depth * 0.82).toFixed(3);
+
+        // Hardware-accelerated GPU 3D transform without expensive filter:blur
+        const px = (r.x * radius).toFixed(1);
+        const py = (r.y * radius).toFixed(1);
+        const pz = (r.z * radius).toFixed(1);
+        const scale = (0.68 + depth * 0.45).toFixed(3);
+
+        el.style.transform = `translate3d(calc(-50% + ${px}px), calc(-50% + ${py}px), ${pz}px) scale(${scale})`;
+        el.style.opacity = (0.35 + depth * 0.65).toFixed(3);
         el.style.zIndex = String(Math.round(depth * 100));
-        el.style.filter = `blur(${((1 - depth) * 1.2).toFixed(2)}px)`;
       }
     }
 
     let frame = 0;
     let last = performance.now();
+
     function loop(now: number) {
-      const dt = Math.min(0.05, (now - last) / 1000);
+      if (!isVisible) {
+        frame = requestAnimationFrame(loop);
+        return;
+      }
+
+      const dt = Math.min(0.04, (now - last) / 1000);
       last = now;
+
       if (!dragging) {
-        velX = damp(velX, targetVelX, 2.6, dt);
-        velY = damp(velY, targetVelY, 2.6, dt);
+        velX = damp(velX, targetVelX, 4.0, dt);
+        velY = damp(velY, targetVelY, 4.0, dt);
         rotX += velX * dt;
         rotY += velY * dt;
-        const winSmooth = (window as unknown as { Smooth?: { state?: { scroll: number } } }).Smooth;
-        const s = winSmooth?.state ? winSmooth.state.scroll : window.scrollY;
-        const ds = s - lastScroll;
-        lastScroll = s;
-        rotY += ds * 0.0012;
       }
+
       render();
       frame = requestAnimationFrame(loop);
     }
@@ -131,17 +134,18 @@ export function FloatingTechIcons() {
       const nx = (e.clientX - rect.left) / rect.width - 0.5;
       const ny = (e.clientY - rect.top) / rect.height - 0.5;
       if (dragging) {
-        const dx = (e.clientX - lastX) * 0.005;
-        const dy = -(e.clientY - lastY) * 0.005;
+        const dx = (e.clientX - lastX) * 0.007;
+        const dy = -(e.clientY - lastY) * 0.007;
         rotY += dx;
         rotX += dy;
-        dragVX = Math.max(-3.5, Math.min(3.5, dy * 45));
-        dragVY = Math.max(-3.5, Math.min(3.5, dx * 45));
+        dragVX = Math.max(-5, Math.min(5, dy * 60));
+        dragVY = Math.max(-5, Math.min(5, dx * 60));
         lastX = e.clientX;
         lastY = e.clientY;
       } else {
-        targetVelY = idle.y + nx * 1.4;
-        targetVelX = idle.x - ny * 1.0;
+        // Dynamic reactive acceleration when hovering
+        targetVelY = idle.y + nx * 2.5;
+        targetVelX = idle.x - ny * 2.0;
       }
     };
 
@@ -172,6 +176,15 @@ export function FloatingTechIcons() {
       render();
     };
 
+    // IntersectionObserver to pause when off-screen
+    const observer = new IntersectionObserver(
+      (entries) => {
+        isVisible = entries[0]?.isIntersecting ?? true;
+      },
+      { rootMargin: "150px" }
+    );
+    observer.observe(sphere);
+
     sphere.addEventListener("pointermove", onPointerMove, { passive: true });
     sphere.addEventListener("pointerleave", onPointerLeave);
     sphere.addEventListener("pointerdown", onPointerDown);
@@ -186,6 +199,7 @@ export function FloatingTechIcons() {
 
     return () => {
       cancelAnimationFrame(frame);
+      observer.disconnect();
       sphere.removeEventListener("pointermove", onPointerMove);
       sphere.removeEventListener("pointerleave", onPointerLeave);
       sphere.removeEventListener("pointerdown", onPointerDown);
@@ -211,41 +225,62 @@ export function FloatingTechIcons() {
               key={tech.name}
               className="tech"
               data-color={tech.color}
+              title={tech.name}
             >
-              <i className={tech.icon} />
-              {tech.name}
+              <i className={tech.icon} aria-hidden="true" />
+              <span>{tech.name}</span>
             </span>
           ))}
         </div>
       </div>
 
-      {/* Stack Notes */}
-      <aside className="stack-notes" data-reveal="right">
-        <div className="stack-note glass" data-tilt data-tilt-max="8">
-          <i className="fa-solid fa-code" />
-          <h3>Frontend</h3>
+      {/* Narrative Stack Breakdown */}
+      <div className="stack-notes" data-reveal="right">
+        <article
+          className="stack-note"
+          data-tilt
+          data-tilt-max="12"
+          data-tilt-glare
+        >
+          <i className="fa-solid fa-layer-group" />
+          <h3>Modern Full-Stack Architecture</h3>
           <p>
-            Next.js 16, React 19, TypeScript, Tailwind CSS, Alpine.js, Framer
-            Motion, Three.js / WebGL
+            React 19 and Next.js 15 App Router on the client, orchestrated with
+            Laravel 11, Node.js, and type-safe REST/WebSocket APIs for reactive
+            client-server communication.
           </p>
-        </div>
-        <div className="stack-note glass" data-tilt data-tilt-max="8">
+        </article>
+
+        <article
+          className="stack-note"
+          data-tilt
+          data-tilt-max="12"
+          data-tilt-glare
+        >
           <i className="fa-solid fa-server" />
-          <h3>Backend</h3>
+          <h3>Relational Systems & Scale</h3>
           <p>
-            Node.js, Laravel 11, Java / Grails MVC, Spring Security, Python
-            Django, duplex WebSockets
+            PostgreSQL and MySQL database modeling with strict indexing,
+            connection pooling, Redis caching, and automated Dockerized CI/CD
+            pipelines for zero-downtime shipping.
           </p>
-        </div>
-        <div className="stack-note glass" data-tilt data-tilt-max="8">
-          <i className="fa-solid fa-database" />
-          <h3>Data &amp; Ops</h3>
+        </article>
+
+        <article
+          className="stack-note"
+          data-tilt
+          data-tilt-max="12"
+          data-tilt-glare
+        >
+          <i className="fa-solid fa-wand-magic-sparkles" />
+          <h3>Spatial 3D & Micro-Interactions</h3>
           <p>
-            PostgreSQL (tsvector, GIN), MariaDB ACID row locks, Docker, Git,
-            Linux, Vercel
+            WebGL particle simulations, Three.js shaders, GSAP timelines, and
+            device-adaptive 60/120 FPS rendering engineered for cinematic web
+            experiences.
           </p>
-        </div>
-      </aside>
+        </article>
+      </div>
     </div>
   );
 }
