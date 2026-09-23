@@ -718,8 +718,19 @@ main > .section > .container, .hero-grid, .stats-strip { will-change: transform,
 .form-group input::placeholder, .form-group textarea::placeholder { color: var(--muted); }
 .form-group.is-invalid input, .form-group.is-invalid textarea { border-color: #f87171; }
 .form-submit-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.form-status { margin: 0; font-family: var(--font-mono); font-size: 0.74rem; color: var(--accent); min-height: 1.2em; }
+.form-status-wrap { display: flex; flex-direction: column; gap: 0.4rem; max-width: 65%; }
+.form-status { margin: 0; font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-2); min-height: 1.2em; transition: color 0.3s; line-height: 1.4; }
 .form-status.is-error { color: #f87171; }
+.form-status.is-success { color: #10b981; font-weight: 600; }
+.fallback-mailto-link {
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent);
+  display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: underline; text-underline-offset: 3px;
+  transition: opacity 0.2s;
+}
+.fallback-mailto-link:hover { opacity: 0.8; }
+@media (max-width: 768px) {
+  .form-status-wrap { max-width: 100%; width: 100%; }
+}
 
 /* ===================== FOOTER ===================== */
 .site-footer {

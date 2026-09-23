@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import emailjs from "@emailjs/browser";
 import Image from "next/image";
 import profilePic from "../../public/Profile.jpeg";
 import ambienceImg from "../../public/Ambience.png";
@@ -130,7 +131,9 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [formStatus, setFormStatus] = useState("");
+  const [formStatusType, setFormStatusType] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fallbackMailto, setFallbackMailto] = useState<string | null>(null);
 
   useEffect(() => {
     const header = document.getElementById("site-header");
@@ -253,21 +256,64 @@ export default function Home() {
     const message = String(formData.get("message") || "").trim();
 
     if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || message.length < 5) {
+      setFormStatusType("error");
       setFormStatus("Please fill in your name, a valid email, and a message.");
       return;
     }
 
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
     setIsSubmitting(true);
-    setFormStatus("Transmitting…");
+    setFormStatusType("loading");
+    setFormStatus("Sending message via EmailJS…");
+
+    const mailtoUrl = `mailto:mhrjan0@gmail.com?subject=${encodeURIComponent(
+      subject || "Portfolio Inquiry",
+    )}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
 
     try {
-      window.location.href = `mailto:mhrjan0@gmail.com?subject=${encodeURIComponent(
-        subject || "Portfolio Inquiry",
-      )}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
-      setFormStatus("✓ Prepared draft in your email client. Send to complete!");
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error("Missing EmailJS environment configuration");
+      }
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          name: name,
+          from_name: name,
+          user_name: name,
+          email: email,
+          user_email: email,
+          reply_to: email,
+          from_email: email,
+          subject: subject || "New Portfolio Inquiry",
+          message: message,
+        },
+        publicKey,
+      );
+
+      setFormStatusType("success");
+      setFallbackMailto(null);
+      setFormStatus("✓ Message sent successfully! I will get back to you shortly.");
       form.reset();
-    } catch {
-      setFormStatus("Could not open email client. Please email mhrjan0@gmail.com directly.");
+    } catch (err: unknown) {
+      const errObj = err as { status?: number; text?: string; message?: string } | null;
+      const errorText = errObj?.text || errObj?.message || JSON.stringify(err);
+      console.error("EmailJS transmission error:", errorText);
+
+      setFormStatusType("error");
+      setFallbackMailto(mailtoUrl);
+
+      if (errorText.includes("535") || errorText.includes("BadCredentials") || errObj?.status === 412) {
+        setFormStatus("EmailJS Error (Google 535 Bad Credentials): The Gmail App Password in your EmailJS dashboard has expired or is invalid. Click the link below to send directly via your mail client.");
+      } else if (errObj?.status === 400 || errObj?.status === 404) {
+        setFormStatus("EmailJS configuration error: Invalid Service ID or Template ID.");
+      } else {
+        setFormStatus("Transmission error over EmailJS socket. Please click below to send via your mail client.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -827,9 +873,25 @@ export default function Home() {
                   />
                 </div>
                 <div className="form-submit-row">
-                  <p className="form-status" id="form-status" aria-live="polite">
-                    {formStatus}
-                  </p>
+                  <div className="form-status-wrap">
+                    <p
+                      className={`form-status ${formStatusType === "error" ? "is-error" : ""} ${
+                        formStatusType === "success" ? "is-success" : ""
+                      }`}
+                      id="form-status"
+                      aria-live="polite"
+                    >
+                      {formStatus}
+                    </p>
+                    {fallbackMailto && (
+                      <a
+                        href={fallbackMailto}
+                        className="fallback-mailto-link"
+                      >
+                        <i className="fa-solid fa-envelope" /> Send via Email App (mailto fallback) &rarr;
+                      </a>
+                    )}
+                  </div>
                   <button
                     type="submit"
                     className="btn btn-primary btn-3d"

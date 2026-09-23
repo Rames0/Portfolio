@@ -150,7 +150,7 @@ export function AntigravityBackground() {
       { geo: new THREE.IcosahedronGeometry(1.4, 0), pos: [-7, 3, -4], mat: wireMat(0x10b981, 0.5), spin: [0.003, 0.004] },
       { geo: new THREE.TorusGeometry(1.2, 0.35, 12, 40), pos: [7.5, -2.5, -6], mat: wireMat(0x06b6d4, 0.4), spin: [0.004, 0.002] },
       { geo: new THREE.OctahedronGeometry(1.1, 0), pos: [6, 4.5, -8], mat: solidMat(0x3b82f6), spin: [0.002, 0.005] },
-      { geo: new THREE.DodecahedronGeometry(0.9, 0), pos: [-6.5, -4, -7], mat: solidMat(0x10b981), spin: [0.005, 0.003] },
+      // { geo: new THREE.DodecahedronGeometry(0.9, 0), pos: [-6.5, -4, -7], mat: solidMat(0x10b981), spin: [0.005, 0.003] },
       { geo: new THREE.TetrahedronGeometry(1.2, 0), pos: [0, -6, -10], mat: wireMat(0x3b82f6, 0.45), spin: [0.003, 0.006] },
       { geo: new THREE.TorusKnotGeometry(0.8, 0.25, 80, 10, 2, 3), pos: [-3, 7, -12], mat: wireMat(0xa7f3d0, 0.3), spin: [0.004, 0.004] },
       { geo: new THREE.BoxGeometry(1.4, 1.4, 1.4), pos: [9, 1, -14], mat: wireMat(0x10b981, 0.3), spin: [0.002, 0.003] },
