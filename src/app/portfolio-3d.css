@@ -49,31 +49,25 @@ body {
 }
 body.is-intro { overflow: hidden; }
 
-/* ===================== UNIFIED SINGLE CUSTOM SCROLLBAR ===================== */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
-}
-[data-theme="light"] html {
-  scrollbar-color: rgba(100, 116, 139, 0.35) transparent;
+/* ===================== HIDE SCROLLBAR WEBKIT & ALL BROWSERS ===================== */
+html,
+body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.28);
-  border-radius: 9999px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
-  background-clip: content-box;
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 img { max-width: 100%; display: block; }

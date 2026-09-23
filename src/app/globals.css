@@ -1776,3 +1776,14 @@ html.motion-off .typing-cursor { display: none; }
   .impact-loader-fill { stroke-dashoffset: 0; }
   .is-charging .impact-intro { animation: none; }
 }
+
+/* Hide scrollbar */
+html, body, * {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
